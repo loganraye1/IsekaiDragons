@@ -2,18 +2,18 @@
   "expo": {
     "name": "Isekai Dragons",
     "slug": "isekai-dragons",
-    "version": "1.0.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "splash": {
       "backgroundColor": "#160c2f"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/**/*"
     ],
     "ios": {
       "bundleIdentifier": "com.logan.isekaidragons",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "supportsTablet": false
     },
     "android": {},

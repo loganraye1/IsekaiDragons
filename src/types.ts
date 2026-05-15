@@ -1,10 +1,93 @@
-export type DragonElement = "fire" | "water" | "earth";
+export type DragonElement = "fire" | "water" | "earth" | "light" | "dark";
+
+export type DragonSkillArchetype = "fire" | "frost" | "storm" | "shadow" | "gold" | "ancient";
+
+export type DragonSkillDraft = {
+  id: string;
+  archetype: DragonSkillArchetype;
+  elementFocus: DragonElement;
+  roleFocus: "guardian" | "raider" | "mystic";
+  name: string;
+  trigger: string;
+  effect: string;
+  synergy: string;
+  pathPayoff: string;
+  activeBonus: {
+    damageMultiplier: number;
+    damageReduction: number;
+    combatEffect: string;
+  };
+  statHooks: Array<keyof Stats>;
+};
+
+export type ActiveSkillSummary = {
+  id: string;
+  name: string;
+  elementFocus: DragonSkillDraft["elementFocus"];
+  roleFocus: DragonSkillDraft["roleFocus"];
+  trigger: string;
+  combatEffect: string;
+};
+
+export type EliteSkillDraftOffer = {
+  sourceNodeId: string;
+  sourceNodeTitle: string;
+  offeredAt: number;
+  skillIds: string[];
+  chosenSkillId: string | null;
+  reason: string;
+};
+
+export type SupportingSystemRecommendation = {
+  id: string;
+  lane: "gear-relics" | "hoard" | "idle" | "daily-starter" | "automation";
+  name: string;
+  purpose: string;
+  inGameProof: string;
+  nextHook: string;
+};
+
+export type ProductiveWorkNowSlice = {
+  id: string;
+  lane: "Adventure path" | "Flashy battle" | "Impact stats" | "Fire evolution";
+  productionTarget: string;
+  visibleDeliverable: string;
+  nextHook: string;
+};
+
+export type FireStarterAdventureMilestone = {
+  id: string;
+  phase: "research" | "route" | "combat" | "evolution";
+  title: string;
+  capybaraLesson: string;
+  dragonTwist: string;
+  visibleProof: string;
+};
 
 export type DragonStage = "egg" | "hatchling" | "drake" | "dragon" | "wyrm";
 
+export type DragonPathId =
+  | "fireGuardian"
+  | "fireRaider"
+  | "fireMystic"
+  | "waterGuardian"
+  | "waterRaider"
+  | "waterMystic"
+  | "earthGuardian"
+  | "earthRaider"
+  | "earthMystic"
+  | "lightGuardian"
+  | "lightRaider"
+  | "lightMystic"
+  | "darkGuardian"
+  | "darkRaider"
+  | "darkMystic";
+
 export type ScreenKey = "den" | "egg" | "adventure" | "battle" | "upgrade" | "quests" | "shop";
 
-export type AdventureNodeKind = "battle" | "elite" | "treasure" | "shrine" | "camp" | "boss";
+export type AdventureNodeKind = "battle" | "elite" | "treasure" | "shrine" | "camp" | "shop" | "boss";
+
+export type AdventureDifficultyId = "hatchlingTrail" | "drakeExpedition" | "ancientRift";
 
 export type GamePhase = "egg" | "question" | "hatching" | "journey";
 
@@ -33,7 +116,7 @@ export type EquipmentSlot = "horn" | "scales" | "claws" | "relic";
 
 export type EquipmentRarity = "common" | "rare" | "epic" | "legendary";
 
-export type EquipmentBonusType = "tap" | "eps" | "questReward" | "battleDamage" | "treasureDrop";
+export type EquipmentBonusType = "adventureLoot" | "questReward" | "battleDamage" | "treasureDrop";
 
 export type EquipmentItem = {
   id: string;
@@ -51,7 +134,11 @@ export type EvolutionTraitId =
   | "tideheartDrake"
   | "mistveilDrake"
   | "ironrootDrake"
-  | "gemscaleDrake";
+  | "gemscaleDrake"
+  | "haloheartDrake"
+  | "sunlanceDrake"
+  | "voidscaleDrake"
+  | "nightfangDrake";
 
 export type AchievementId =
   | "firstHatch"
@@ -62,7 +149,7 @@ export type AchievementId =
   | "treasureHoarder"
   | "essenceTycoon";
 
-export type DailyGoalId = "tapDragon50" | "completeQuest5" | "buyUpgrade3" | "earnTreasure1";
+export type DailyGoalId = "completeAdventure1" | "completeQuest5" | "buyUpgrade3" | "earnTreasure1";
 
 export type DailyGoalState = {
   progress: number;
@@ -90,6 +177,10 @@ export type Stats = {
   health: number;
   defense: number;
   speed: number;
+  block: number;
+  dodge: number;
+  critChance: number;
+  critDamage: number;
 };
 
 export type EggChoice = {
@@ -141,6 +232,9 @@ export type AdventureEventChoice = {
 export type AdventureNode = {
   id: string;
   step: number;
+  chapter?: number;
+  chapterStop?: number;
+  evolutionMilestone?: boolean;
   kind: AdventureNodeKind;
   title: string;
   description: string;
@@ -174,6 +268,7 @@ export type DragonState = {
   name: string;
   stage: DragonStage;
   element: DragonElement | null;
+  path: DragonPathId | null;
   level: number;
   xp: number;
   evolution: number;
@@ -192,19 +287,42 @@ export type PlayerState = {
   claimedQuests: string[];
 };
 
+export type BattleDamageSummary = {
+  playerDamage: number;
+  enemyCounterDamage: number;
+  totalPlayerDamage: number;
+  totalEnemyCounterDamage: number;
+};
+
 export type BattleResult = {
   encounter: Encounter;
   won: boolean;
   playerHp: number;
   enemyHp: number;
   rounds: string[];
+  damageSummary?: BattleDamageSummary;
+  activeSkill?: ActiveSkillSummary;
   nodeKind?: AdventureNodeKind;
   title?: string;
   rewardSummary?: string;
 };
 
+export type AdventureRewardBundle = {
+  lootGained: string[];
+  statsImproved: string[];
+  hoardProgress: string;
+  evolutionProgress: string;
+  nextRecommendedAdventure: string;
+  treasureDrop?: TreasureId;
+  equipmentDrop?: EquipmentItem;
+};
+
 export type AdventureRun = {
   id: string;
+  difficultyId: AdventureDifficultyId;
+  title: string;
+  background: AdventureNode["scene"];
+  enemyFamilies: string[];
   step: number;
   maxSteps: number;
   nodes: AdventureNode[];
@@ -286,6 +404,7 @@ export type GameState = {
   equipmentInventory: EquipmentItem[];
   elementalShards: Record<DragonElement, number>;
   selectedEvolutionTraits: Partial<Record<DragonStage, EvolutionTraitId>>;
+  selectedActiveSkillId: string | null;
   lifetimeEssence: number;
   dragonSouls: number;
   totalReincarnations: number;
@@ -304,6 +423,10 @@ export type GameState = {
   activeScreen: ScreenKey;
   lastBattle: BattleResult | null;
   adventureRun: AdventureRun | null;
+  adventureCompletions: Record<AdventureDifficultyId, number>;
+  completedAdventureRuns: number;
+  lastAdventureRewards: AdventureRewardBundle | null;
+  lastSkillDraftOffer: EliteSkillDraftOffer | null;
   tutorialCompleted: boolean;
   lastLoginRewardDate: string | null;
   loginStreakDay: number;
@@ -320,9 +443,9 @@ export type GameAction =
   | { type: "chooseEggAnswer"; choiceId: string; element: DragonElement; trait: string }
   | { type: "hatchDragon" }
   | { type: "finishHatching" }
+  | { type: "selectDragonPath"; pathId: DragonPathId }
+  | { type: "selectActiveSkill"; skillId: string }
   | { type: "advanceJourney" }
-  | { type: "tapDragon"; amount?: number }
-  | { type: "collectPassiveEssence"; amount: number }
   | { type: "buyIdleUpgrade"; upgradeId: IdleUpgradeId }
   | { type: "evolveDragon"; traitId?: EvolutionTraitId }
   | { type: "autoQuestAction" }
@@ -344,7 +467,7 @@ export type GameAction =
   | { type: "resolveJourneyEvent"; choiceId: string }
   | { type: "completeReturnPresence" }
   | { type: "startReturnPresenceTest"; awayDurationMs: number; withRewards?: boolean }
-  | { type: "startAdventureRun" }
+  | { type: "startAdventureRun"; difficultyId?: AdventureDifficultyId; startStep?: number }
   | { type: "selectAdventureNode"; nodeId: string }
   | { type: "resolveAdventureChoice"; nodeId: string; choiceId: string }
   | { type: "runAdventure" }
