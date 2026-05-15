@@ -12,3 +12,20 @@ yarn-error.*
 *.mobileprovision
 *.orig.*
 web-build/
+artifacts/test-run/
+artifacts/mission-control/latest/*.log
+artifacts/mission-control/latest/*.tmp
+artifacts/mission-control/latest/*.cache
+
+# First safe cleanup pass: cache/temp/vendor/tooling noise only.
+# Do not broaden these to src/, scripts/, docs/, curated assets, or Mission Control canonical data.
+__pycache__/
+*.py[cod]
+.openclaw/
+tmp_*
+expo-lan-qr.png
+memory/.dreams/
+tools/krita-portable/
+artifacts/autonomous-loop/*.log
+artifacts/autonomous-10h/*.log
+artifacts/mission-control/latest/*public-health*.json
