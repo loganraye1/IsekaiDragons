@@ -439,6 +439,7 @@ export const initialGameState: GameState = {
   lastLoot: null,
   lastSavedAt: Date.now(),
   eggAnswers: {},
+  eggTaps: 0,
   phase: "egg",
   currentQuestionIndex: 0,
   journeyStep: 0,
@@ -1348,7 +1349,10 @@ function getNextStage(stage: DragonStage, evolution: number, level: number): Dra
   return stage;
 }
 
-function chooseElement(answers: Record<string, DragonElement>): DragonElement {
+function chooseElement(answers: Record<string, DragonElement>, fallback: DragonElement | null = null): DragonElement {
+  if (Object.keys(answers).length === 0 && fallback) {
+    return fallback;
+  }
   return getLeadingElement(answers);
 }
 
@@ -1430,17 +1434,56 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
 export function gameReducer(state: GameState, action: GameAction): GameState {
   state = action.type === "hydrate" || action.type === "resetGame" ? state : removeExpiredJourneyEffects(resetDailyIfNeeded(state));
   switch (action.type) {
-    case "tapEgg": {
-      if (state.phase !== "egg") {
+    case "selectEgg": {
+      if ((state.phase !== "egg" && state.phase !== "question") || state.dragon.stage !== "egg") {
         return state;
       }
+
       return {
         ...state,
         activeScreen: "egg",
-        phase: "question"
+        eggAnswers: { selectedEgg: action.element },
+        eggTaps: 0,
+        currentQuestionIndex: 0,
+        dragon: {
+          ...state.dragon,
+          element: action.element,
+          evolution: 8,
+          chosenTraits: [`${action.element} egg`]
+        }
+      };
+    }
+    case "tapEgg": {
+      if ((state.phase !== "egg" && state.phase !== "question") || state.dragon.stage !== "egg" || !state.dragon.element) {
+        return state;
+      }
+
+      const nextEggTaps = Math.min(3, (state.eggTaps ?? 0) + 1);
+      const nextAnswers = {
+        selectedEgg: state.dragon.element,
+        tapOne: state.dragon.element,
+        ...(nextEggTaps >= 2 ? { tapTwo: state.dragon.element } : {}),
+        ...(nextEggTaps >= 3 ? { tapThree: state.dragon.element } : {})
+      };
+
+      return {
+        ...state,
+        activeScreen: "egg",
+        eggTaps: nextEggTaps,
+        eggAnswers: nextAnswers,
+        phase: nextEggTaps >= 3 ? "hatching" : "egg",
+        currentQuestionIndex: Math.min(nextEggTaps, 2),
+        dragon: {
+          ...state.dragon,
+          evolution: Math.min(100, 8 + nextEggTaps * 26)
+        }
       };
     }
     case "chooseEggAnswer": {
+      if ((state.phase !== "egg" && state.phase !== "question") || state.dragon.stage !== "egg") {
+        return state;
+      }
+
       const nextAnswers = {
         ...state.eggAnswers,
         [action.choiceId]: action.element
@@ -1461,12 +1504,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
     case "hatchDragon": {
-      const element = chooseElement(state.eggAnswers);
+      const legacyAnsweredCount = Object.keys(state.eggAnswers ?? {}).length;
+      const canHatchSelectedEgg = Boolean(state.dragon.element) && (state.eggTaps ?? 0) >= 3;
+      const canHatchLegacyQuiz = legacyAnsweredCount >= 3;
+      if (state.dragon.stage !== "egg" || (!canHatchSelectedEgg && !canHatchLegacyQuiz)) {
+        return state;
+      }
+
+      const element = chooseElement(state.eggAnswers, state.dragon.element);
       const boostedStats = addStats(baseStats, elementStatBonus[element]);
+      const defaultPathTrait = `path:${element}:raider`;
+      const defaultSkillTrait = `skill:${element}:starter`;
 
       return syncAchievements({
         ...state,
-        activeScreen: "egg",
+        activeScreen: "den",
         phase: "journey",
         journeyStep: 0,
         dragon: {
@@ -1475,7 +1527,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           element,
           stage: "hatchling",
           evolution: 12,
-          stats: boostedStats
+          stats: boostedStats,
+          chosenTraits: Array.from(new Set([...state.dragon.chosenTraits, defaultPathTrait, defaultSkillTrait]))
         },
         journeyEvents: {
           activeEventId: null,
@@ -1485,11 +1538,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       });
     }
     case "finishHatching": {
+      if (state.phase !== "hatching" && state.dragon.stage !== "hatchling") {
+        return state;
+      }
       if (state.dragon.stage === "hatchling") {
         return {
           ...state,
           phase: "journey",
-          activeScreen: "egg"
+          activeScreen: "den"
         };
       }
       return gameReducer(state, { type: "hatchDragon" });
@@ -2176,6 +2232,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         },
         autoBattle: action.state.autoBattle ?? createAutoBattle(action.state.currentArea ?? initialGameState.currentArea),
         dailyResetDate: action.state.dailyResetDate ?? getTodayKey(),
+        eggTaps: action.state.eggTaps ?? initialGameState.eggTaps,
         lastLoginRewardDate: action.state.lastLoginRewardDate ?? null,
         loginStreakDay: action.state.loginStreakDay ?? 0,
         lifetimeEssence: action.state.lifetimeEssence ?? 0,

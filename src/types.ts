@@ -297,6 +297,7 @@ export type GameState = {
   lastLoot: LootEvent | null;
   lastSavedAt: number;
   eggAnswers: Record<string, DragonElement>;
+  eggTaps: number;
   phase: GamePhase;
   currentQuestionIndex: number;
   journeyStep: number;
@@ -314,6 +315,7 @@ export type GameState = {
 };
 
 export type GameAction =
+  | { type: "selectEgg"; element: DragonElement }
   | { type: "tapEgg" }
   | { type: "chooseEggAnswer"; choiceId: string; element: DragonElement; trait: string }
   | { type: "hatchDragon" }
