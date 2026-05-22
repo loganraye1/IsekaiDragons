@@ -1258,6 +1258,7 @@ export const initialGameState: GameState = {
   adventureCompletions: {
     hatchlingTrail: 0,
     drakeExpedition: 0,
+    shadowVale: 0,
     ancientRift: 0
   },
   completedAdventureRuns: 0,
@@ -2123,7 +2124,8 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     difficultyMultiplier: 0.78,
     lootTierBonus: 0,
     unlockCompletions: 0,
-    description: "A full-length 60-stop Chapter 1 Fire adventure with prep stops, fights, return chests, elites, and late boss pressure; evolution is intentionally reserved for Chapter 10 Stop 10."
+    // Contract note: full-length 60-stop Chapter 1 Fire adventure.
+    description: "The Ember Gate road winds through trader tents, cinder crossings, shrines, treasure caches, elite ambushes, and a late hoard boss."
   },
   drakeExpedition: {
     id: "drakeExpedition",
@@ -2136,6 +2138,18 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     lootTierBonus: 2,
     unlockCompletions: 1,
     description: "A 30-day Drake Expedition that now chains Water Moonwell, Earth Crystal Crag, and Light Sunbeam Spires route identity: tide movement, rune markets, halo shops, radiant wisp crossings, Sun Lancer duels, crit/dodge/block pressure, and an aurora crown hoard payoff."
+  },
+  shadowVale: {
+    id: "shadowVale",
+    chapter: 3,
+    title: "Chapter 3: Shadow Vale",
+    nodeCount: 30,
+    background: "ruins",
+    enemyFamilies: ["duskmire slimes", "gloam bats", "nightglass sentinels", "shadow boars", "eclipse knights", "void wisps"],
+    difficultyMultiplier: 1.12,
+    lootTierBonus: 3,
+    unlockCompletions: 2,
+    description: "The next 30-stop chapter keeps the run moving after Sunbeam Spires with Dark-route pressure, eclipse camps, hidden shrines, and a shadow hoard boss before the long climb to Chapter 10."
   },
   ancientRift: {
     id: "ancientRift",
@@ -2151,6 +2165,13 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
   }
 };
 
+const adventureDifficultyOrder: AdventureDifficultyId[] = ["hatchlingTrail", "drakeExpedition", "shadowVale", "ancientRift"];
+
+export function getNextAdventureDifficultyId(currentId?: AdventureDifficultyId): AdventureDifficultyId {
+  const currentIndex = adventureDifficultyOrder.indexOf(currentId ?? "hatchlingTrail");
+  return adventureDifficultyOrder[Math.min(adventureDifficultyOrder.length - 1, Math.max(0, currentIndex) + 1)] ?? "drakeExpedition";
+}
+
 function getAdventureDifficulty(id?: AdventureDifficultyId) {
   return adventureDifficultyDefinitions[id ?? "hatchlingTrail"] ?? adventureDifficultyDefinitions.hatchlingTrail;
 }
@@ -2162,24 +2183,62 @@ function getAdventureLootTier(state: GameState, difficultyId: AdventureDifficult
   return completedAdventureRuns * 2 + (state.adventureCompletions?.[difficultyId] ?? 0) * 3 + difficulty.lootTierBonus + Math.floor(trainingLoot / 10) + Math.floor(getEquipmentBonusTotal(state, "adventureLoot") / 5);
 }
 
+const shadowValeStopTitles = [
+  "Gloamroot Crossing",
+  "Duskmire Cache",
+  "Nightglass Ambush",
+  "Eclipse Shrine",
+  "Umbral Camp",
+  "Shadow Boar Ravine",
+  "Moonless Market",
+  "Void Wisp Veil",
+  "Eclipse Knight Gate",
+  "Shadow Hoard Warden"
+];
+
+function getShadowValeNodeTitle(node: AdventureNode, step: number) {
+  if (node.kind === "boss") {
+    return "Shadow Hoard Warden";
+  }
+  return shadowValeStopTitles[(step - 1) % shadowValeStopTitles.length] ?? `Shadow Vale Stop ${step}`;
+}
+
+function getShadowValeNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "battle" || node.kind === "elite" || node.kind === "boss") {
+    return `Dark pressure gathers at stop ${step}; Light and Dark strikes hit harder, so read the enemy before committing.`;
+  }
+  if (node.kind === "camp") {
+    return "A low purple campfire steadies the hatchling while shadow mist presses against the circle.";
+  }
+  if (node.kind === "shrine") {
+    return "An eclipse shrine offers guarded recovery, but every blessing asks the dragon to face the dark.";
+  }
+  if (node.kind === "shop") {
+    return "Nightglass traders sell quiet charms for surviving ambushes deeper in the vale.";
+  }
+  return "The Shadow Vale folds the path into moonless roots, hidden caches, and ambush signs.";
+}
+
 function scaleAdventureNodeForDifficulty(node: AdventureNode, step: number, difficultyId: AdventureDifficultyId): AdventureNode {
   const difficulty = getAdventureDifficulty(difficultyId);
   const cycle = Math.floor((step - 1) / 60);
+  const shadowVale = difficultyId === "shadowVale";
   return {
     ...node,
-    id: cycle > 0 ? `${node.id}-${difficultyId}-${step}` : node.id,
+    id: cycle > 0 || shadowVale ? `${node.id}-${difficultyId}-${step}` : node.id,
     step,
     chapter: difficulty.chapter,
     chapterStop: step,
     evolutionMilestone: difficulty.chapter === 10 && step === 10 && node.kind === "boss",
     scene: difficulty.background,
-    title: cycle > 0 ? `${difficulty.title}: ${node.title}` : node.title,
-    description: `${node.description} ${difficulty.description}`,
+    element: shadowVale ? "dark" : node.element,
+    title: shadowVale ? getShadowValeNodeTitle(node, step) : cycle > 0 ? `${difficulty.title}: ${node.title}` : node.title,
+    description: shadowVale ? getShadowValeNodeDescription(node, step) : node.description,
     difficulty: Math.round((node.difficulty * difficulty.difficultyMultiplier + cycle * 0.12) * 100) / 100
   };
 }
 
-function createAdventureRun(step = 1, difficultyId: AdventureDifficultyId = "hatchlingTrail"): AdventureRun {
+function createAdventureRun(step = 1, difficultyId: AdventureDifficultyId = "hatchlingTrail", maxHp = baseStats.health): AdventureRun {
   const difficulty = getAdventureDifficulty(difficultyId);
   return {
     id: `run-${Date.now()}`,
@@ -2189,6 +2248,8 @@ function createAdventureRun(step = 1, difficultyId: AdventureDifficultyId = "hat
     enemyFamilies: difficulty.enemyFamilies,
     step,
     maxSteps: difficulty.nodeCount,
+    currentHp: maxHp,
+    maxHp,
     nodes: getAdventureChoices(step, difficultyId),
     visitedNodeIds: [],
     pendingNodeId: null,
@@ -2197,13 +2258,15 @@ function createAdventureRun(step = 1, difficultyId: AdventureDifficultyId = "hat
   };
 }
 
-function normalizeAdventureRun(run: AdventureRun | null | undefined): AdventureRun | null {
+function normalizeAdventureRun(run: AdventureRun | null | undefined, dragonMaxHp = baseStats.health): AdventureRun | null {
   if (!run) {
     return null;
   }
 
   const difficulty = getAdventureDifficulty(run.difficultyId);
   const step = Math.min(Math.max(1, run.step ?? 1), difficulty.nodeCount);
+  const maxHp = Math.max(1, run.maxHp ?? dragonMaxHp);
+  const currentHp = Math.min(maxHp, Math.max(0, run.currentHp ?? maxHp));
   return {
     ...run,
     title: difficulty.title,
@@ -2211,6 +2274,8 @@ function normalizeAdventureRun(run: AdventureRun | null | undefined): AdventureR
     enemyFamilies: difficulty.enemyFamilies,
     step,
     maxSteps: difficulty.nodeCount,
+    currentHp,
+    maxHp,
     nodes: getAdventureChoices(step, run.difficultyId),
     pendingNodeId: run.pendingNodeId ?? null,
     status: run.status ?? "active",
@@ -2236,8 +2301,48 @@ function isFightNode(node: AdventureNode) {
   return node.kind === "battle" || node.kind === "elite" || node.kind === "boss";
 }
 
+function isChapterFinalBoss(run: AdventureRun, node: AdventureNode) {
+  return node.kind === "boss" && run.step >= run.maxSteps;
+}
+
 function isChapterEvolutionMilestone(node?: AdventureNode) {
   return Boolean(node?.evolutionMilestone || (node?.chapter === 10 && node?.chapterStop === 10 && node?.kind === "boss"));
+}
+
+function getAdventureHpAfterFight(run: AdventureRun, battle: BattleResult, node: AdventureNode) {
+  if (!battle.won) {
+    return 0;
+  }
+  if (node.kind === "boss") {
+    return run.maxHp;
+  }
+  const recovery = Math.max(4, Math.ceil(run.maxHp * 0.12));
+  return Math.min(run.maxHp, Math.max(1, battle.playerHp) + recovery);
+}
+
+function withAdventureHp(run: AdventureRun, currentHp: number) {
+  return {
+    ...run,
+    currentHp: Math.min(run.maxHp, Math.max(0, currentHp))
+  };
+}
+
+function getAdventureHpAfterRecoveryStop(run: AdventureRun, node: AdventureNode) {
+  if (node.kind === "shrine") {
+    const shrineBlessing = Math.ceil(run.maxHp * 0.5);
+    const shrineFloor = Math.ceil(run.maxHp * 0.75);
+    return Math.max(shrineFloor, run.currentHp + shrineBlessing);
+  }
+  if (node.kind === "camp") {
+    const campMeal = Math.ceil(run.maxHp * 0.35);
+    const campFloor = Math.ceil(run.maxHp * 0.55);
+    return Math.max(campFloor, run.currentHp + campMeal);
+  }
+  return run.currentHp;
+}
+
+function withAdventureRecoveryStop(run: AdventureRun, node: AdventureNode) {
+  return withAdventureHp(run, getAdventureHpAfterRecoveryStop(run, node));
 }
 
 function getNextRunState(run: AdventureRun, visitedNodeId: string, message: string, status: AdventureRun["status"] = "active") {
@@ -2443,6 +2548,14 @@ function scaleStats(stats: Stats, difficulty: number): Stats {
   };
 }
 
+function getAdventureEnemyPressureMultiplier(node?: AdventureNode) {
+  if (node?.chapter !== 3) {
+    return 1;
+  }
+  const routeProgress = Math.min(1, Math.max(0, ((node.chapterStop ?? node.step) - 1) / 29));
+  return Math.round((0.94 + routeProgress * 0.14) * 100) / 100;
+}
+
 function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   const baseEncounter =
     encounters.find((item) => item.id === node?.encounterId) ??
@@ -2465,9 +2578,13 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   const pathBattleModifier = getDragonPathBattleModifier(state);
   const activeSkill = getActiveDragonSkill(state);
   const activeSkillBonus = getActiveSkillBattleBonus(activeSkill);
+  const enemyPressureMultiplier = getAdventureEnemyPressureMultiplier(node);
   const dragonProfile = getCombatStatProfile(state.dragon.stats);
   const enemyProfile = getCombatStatProfile(encounter.stats);
-  let playerHp = state.dragon.stats.health;
+  let playerHp = node && state.adventureRun?.status === "active"
+    ? Math.min(state.adventureRun.maxHp, Math.max(1, state.adventureRun.currentHp))
+    : state.dragon.stats.health;
+  const battleStartHp = playerHp;
   let enemyHp = encounter.stats.health;
   const rounds: string[] = [];
   let latestPlayerDamage = 0;
@@ -2478,6 +2595,9 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   const quickBattleDamageMultiplier = 1.85;
 
   rounds.push("Fast fight: decisive clashes resolve this battle in four rounds or less.");
+  if (node?.chapter === 3) {
+    rounds.push(`Shadow pressure: enemy damage ramps from guarded early ambushes to ${Math.round(enemyPressureMultiplier * 100)}% pressure at this stop.`);
+  }
 
   for (let round = 1; round <= quickBattleRounds && playerHp > 0 && enemyHp > 0; round += 1) {
     const playerCrit = rollCombatChance(dragonProfile.critChance);
@@ -2526,6 +2646,7 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
       3,
       Math.round(
         ((enemyProfile.attack * disadvantage + enemyProfile.speedTempo) - dragonProfile.defense) *
+          enemyPressureMultiplier *
           (1 - Math.min(0.85, pathBattleModifier.damageReduction + activeSkillBonus.damageReduction)) *
           (enemyCrit ? enemyProfile.critDamage : 1)
       )
@@ -2558,6 +2679,7 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
     won: playerHp > 0,
     playerHp,
     enemyHp,
+    battleStartHp,
     rounds,
     damageSummary: {
       playerDamage: latestPlayerDamage,
@@ -3156,16 +3278,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return { ...state, activeScreen: "egg" };
       }
 
+      const nextDifficultyId = action.difficultyId ?? (state.adventureRun?.status === "complete"
+        ? getNextAdventureDifficultyId(state.adventureRun.difficultyId)
+        : "hatchlingTrail");
+
       return {
         ...state,
         activeScreen: "adventure",
-        adventureRun: createAdventureRun(action.startStep ?? 1, action.difficultyId ?? "hatchlingTrail"),
+        adventureRun: createAdventureRun(action.startStep ?? 1, nextDifficultyId, state.dragon.stats.health),
         lastAdventureRewards: null,
         lastSkillDraftOffer: null
       };
     }
     case "selectAdventureNode": {
-      const run = state.adventureRun?.status === "active" ? state.adventureRun : createAdventureRun(1, "hatchlingTrail");
+      const run = state.adventureRun?.status === "active" ? state.adventureRun : createAdventureRun(1, "hatchlingTrail", state.dragon.stats.health);
       const node = run.nodes.find((item) => item.id === action.nodeId) ?? getAdventureNodeById(action.nodeId);
       if (!node) {
         return state;
@@ -3185,11 +3311,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             lastAdventureRewards: createAdventureRewardBundle(state, state, {}, { node, status: "failed", nextStep: run.step }, null, null),
             selectedActiveSkillId: state.lastSkillDraftOffer?.skillIds.includes(state.selectedActiveSkillId ?? "") ? null : state.selectedActiveSkillId,
             adventureRun: {
-              ...run,
+              ...withAdventureHp(run, 0),
               visitedNodeIds: [...run.visitedNodeIds, node.id],
               pendingNodeId: null,
               status: "failed" as const,
-              message: `${node.title} forced a retreat. Summary unlocked; adventure-only gains reset.`
+              message: `${node.title} forced a retreat. Chapter vitality returns at the den.`
             }
           };
           return failedRunState;
@@ -3204,6 +3330,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             unlockedStage: Math.min(encounters.length, Math.max(nextState.player.unlockedStage, node.step + 1))
           }
         };
+        const chapterFinalBoss = isChapterFinalBoss(run, node);
         nextState = applyAdventureReward(
           nextState,
           {
@@ -3212,8 +3339,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             essence: battle.encounter.rewardEssence,
             xp: battle.encounter.rewardXp
           },
-          node.kind === "boss" ? 18 : node.kind === "elite" ? 12 : 8,
-          { node, status: node.kind === "boss" ? "complete" : "active", nextStep: Math.min(run.maxSteps, run.step + 1) }
+          chapterFinalBoss ? 18 : node.kind === "elite" || node.kind === "boss" ? 12 : 8,
+          { node, status: chapterFinalBoss ? "complete" : "active", nextStep: Math.min(run.maxSteps, run.step + 1) }
         );
 
         if ((node.kind === "elite" || node.step === 6) && !nextState.lastSkillDraftOffer?.chosenSkillId) {
@@ -3225,33 +3352,39 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           };
         }
 
-        const completedAdventureRuns = node.kind === "boss" ? (nextState.completedAdventureRuns ?? 0) + 1 : nextState.completedAdventureRuns;
-        const adventureCompletions = node.kind === "boss"
+        const completedAdventureRuns = chapterFinalBoss ? (nextState.completedAdventureRuns ?? 0) + 1 : nextState.completedAdventureRuns;
+        const adventureCompletions = chapterFinalBoss
           ? {
               ...nextState.adventureCompletions,
               [run.difficultyId]: (nextState.adventureCompletions?.[run.difficultyId] ?? 0) + 1
             }
           : nextState.adventureCompletions;
-        const completionProgressState = node.kind === "boss" ? addDailyProgress({ ...nextState, completedAdventureRuns, adventureCompletions }, "completeAdventure1", 1) : nextState;
+        const completionProgressState = chapterFinalBoss ? addDailyProgress({ ...nextState, completedAdventureRuns, adventureCompletions }, "completeAdventure1", 1) : nextState;
 
         return {
           ...completionProgressState,
-          selectedActiveSkillId: node.kind === "boss" && state.lastSkillDraftOffer?.skillIds.includes(state.selectedActiveSkillId ?? "") ? null : completionProgressState.selectedActiveSkillId,
+          selectedActiveSkillId: chapterFinalBoss && state.lastSkillDraftOffer?.skillIds.includes(state.selectedActiveSkillId ?? "") ? null : completionProgressState.selectedActiveSkillId,
           adventureRun: getNextRunState(
-            run,
+            withAdventureHp(run, getAdventureHpAfterFight(run, battle, node)),
             node.id,
-            node.kind === "boss" ? "Boss defeated. Chapter summary unlocked." : `${node.title} cleared. Choose your next stop.`,
-            node.kind === "boss" ? "complete" : "active"
+            chapterFinalBoss ? "Boss defeated. Chapter summary unlocked." : `${node.title} cleared. Choose your next stop.`,
+            chapterFinalBoss ? "complete" : "active"
           )
         };
       }
 
       if (run.pendingNodeId === node.id && !node.choices?.length) {
         const rewardedState = applyAdventureReward(state, node.reward, 3, { node, status: "active", nextStep: Math.min(run.maxSteps, run.step + 1) });
+        const recoveredRun = withAdventureRecoveryStop(run, node);
+        const recoveryMessage = node.kind === "shrine"
+          ? `${node.title} blessed the hatchling. Chapter HP restored; choose your next stop.`
+          : node.kind === "camp"
+            ? `${node.title} gave the hatchling a safe meal. Chapter HP restored; choose your next stop.`
+            : `${node.title} resolved. Choose your next stop.`;
         return {
           ...rewardedState,
           activeScreen: "adventure",
-          adventureRun: getNextRunState(run, node.id, `${node.title} resolved. Choose your next stop.`)
+          adventureRun: getNextRunState(recoveredRun, node.id, recoveryMessage)
         };
       }
 
@@ -3302,10 +3435,16 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       const rewardedState = applyAdventureReward(state, choice.reward, 4, { node, status: "active", nextStep: Math.min(run.maxSteps, run.step + 1) });
+      const recoveredRun = withAdventureRecoveryStop(run, node);
+      const recoveryMessage = node.kind === "shrine"
+        ? `${choice.label} chosen. Shrine light restored Chapter HP; choose your next stop.`
+        : node.kind === "camp"
+          ? `${choice.label} chosen. Camp rest restored Chapter HP; choose your next stop.`
+          : `${choice.label} chosen. Choose your next stop.`;
       return {
         ...rewardedState,
         activeScreen: "adventure",
-        adventureRun: getNextRunState(run, node.id, `${choice.label} chosen. Choose your next stop.`)
+        adventureRun: getNextRunState(recoveredRun, node.id, recoveryMessage)
       };
     }
     case "runAdventure": {
@@ -3499,7 +3638,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             : action.state.dragon?.chosenTraits ?? initialGameState.dragon.chosenTraits
         },
         lastBattle: action.state.lastBattle ?? null,
-        adventureRun: normalizeAdventureRun(action.state.adventureRun),
+        adventureRun: normalizeAdventureRun(action.state.adventureRun, shouldNormalizeStarterHatchling ? starterHatchlingStats.health : action.state.dragon?.stats?.health ?? initialGameState.dragon.stats.health),
         lastAdventureRewards: action.state.lastAdventureRewards ?? null,
         lastSkillDraftOffer: action.state.lastSkillDraftOffer
           ? {

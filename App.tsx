@@ -91,12 +91,14 @@ import {
   treasureOrder,
   getActiveDragonSkill,
   getActiveSkillUnlockState,
+  getElementMatchupMultiplier,
+  getNextAdventureDifficultyId,
   initialGameState
 } from "./src/game";
 import { clearGameState, loadGameState, saveGameState } from "./src/storage";
 import { HATCHLING_ART_VERSION } from "./src/artVersion";
 import { SpineFrameDragon } from "./src/components/SpineFrameDragon";
-import { fireHatchlingSpineAnimations, getFireHatchlingSpineAnimationForExchange } from "./src/data/fireHatchlingSpineAnimations";
+import { fireHatchlingSpineAnimations } from "./src/data/fireHatchlingSpineAnimations";
 import {
   evolutionPreviewElements,
   evolutionPreviewStages,
@@ -107,6 +109,7 @@ import {
 } from "./src/evolutionPreview";
 import {
   AchievementId,
+  AdventureDifficultyId,
   AdventureNode,
   AreaId,
   BattleResult,
@@ -114,6 +117,7 @@ import {
   DragonElement,
   DragonPathId,
   DragonStage,
+  Encounter,
   EquipmentItem,
   EquipmentSlot,
   EvolutionTraitId,
@@ -350,12 +354,12 @@ const eggCrackStageImages: Record<DragonElement, ImageSourcePropType[]> = {
 };
 
 const sceneImages: Record<AdventureNode["scene"], ImageSourcePropType> = {
-  forest: require("./assets/adventure/forest-path.png"),
-  ruins: require("./assets/adventure/ruins-cavern.png"),
-  cave: require("./assets/adventure/ruins-cavern.png"),
-  shrine: require("./assets/adventure/ancient-shrine.png"),
-  camp: require("./assets/adventure/dragon-camp.png"),
-  boss: require("./assets/adventure/rift-boss.png")
+  forest: require("./assets/optimized/battle/forest-path-fast.jpg"),
+  ruins: require("./assets/optimized/battle/ruins-cavern-fast.jpg"),
+  cave: require("./assets/optimized/battle/ruins-cavern-fast.jpg"),
+  shrine: require("./assets/optimized/battle/ancient-shrine-fast.jpg"),
+  camp: require("./assets/optimized/battle/dragon-camp-fast.jpg"),
+  boss: require("./assets/optimized/battle/rift-boss-fast.jpg")
 };
 
 const artValidationBackgrounds: Record<ArtValidationBackgroundKey, { label: string; source: ImageSourcePropType }> = {
@@ -382,6 +386,7 @@ const hatchlingImages: Record<DragonElement, ImageSourcePropType> = {
 };
 
 const approvedFireHatchlingSourceImage = require("./assets/dragons/fire-hatchling-canon-source/fire-hatchling-idle-no-mouth-flame-cutout-v2.png");
+const battleFireHatchlingImage = require("./assets/optimized/battle/fire-hatchling-battle-fast.png");
 
 const fireHatchlingLayerImages: Record<"body" | "head" | "wingNear" | "wingFar" | "tail", ImageSourcePropType> = {
   body: require("./assets/dragons/layers/fire-hatchling/manual/body.png"),
@@ -474,12 +479,12 @@ type JourneyObjective = {
 };
 
 const enemyImages: Record<EnemyImageKey, ImageSourcePropType> = {
-  slime: require("./assets/enemies/bouncy-slime-cutout.png"),
-  boar: require("./assets/enemies/briar-boar-cutout.png"),
-  wisp: require("./assets/enemies/willow-wisp-cutout.png"),
-  knight: require("./assets/enemies/ruin-knight-cutout.png"),
-  manta: require("./assets/enemies/sky-manta-cutout.png"),
-  chimera: require("./assets/enemies/rift-chimera-cutout.png")
+  slime: require("./assets/optimized/battle/bouncy-slime-cutout-fast.png"),
+  boar: require("./assets/optimized/battle/briar-boar-cutout-fast.png"),
+  wisp: require("./assets/optimized/battle/willow-wisp-cutout-fast.png"),
+  knight: require("./assets/optimized/battle/ruin-knight-cutout-fast.png"),
+  manta: require("./assets/optimized/battle/sky-manta-cutout-fast.png"),
+  chimera: require("./assets/optimized/battle/rift-chimera-cutout-fast.png")
 };
 
 function getAutoBattleEnemyImageKey(enemyName: string, areaId: AreaId): EnemyImageKey {
@@ -559,13 +564,22 @@ export default function App() {
   }, [state]);
 
   useEffect(() => {
-    [
+    const criticalBattleImages = [
       ...Object.values(sceneImages),
       ...Object.values(enemyImages),
+      battleFireHatchlingImage,
       approvedFireHatchlingSourceImage,
-      ...Object.values(hatchlingImages),
-      ...Object.values(fireHatchlingSpineAnimations).flatMap((animation) => animation.frames)
-    ].forEach(preloadImageSource);
+      ...Object.values(hatchlingImages)
+    ];
+    criticalBattleImages.forEach(preloadImageSource);
+
+    const heavyAnimationPreload = setTimeout(() => {
+      Object.values(fireHatchlingSpineAnimations)
+        .flatMap((animation) => animation.frames)
+        .forEach(preloadImageSource);
+    }, 2500);
+
+    return () => clearTimeout(heavyAnimationPreload);
   }, []);
 
   useEffect(() => {
@@ -5372,7 +5386,7 @@ function DenScreen({ state, dispatch }: { state: GameState; dispatch: (action: G
       <View style={styles.panel}>
         <Text style={styles.choiceNumber}>Chapter 1 • 60 stops</Text>
         <Text style={styles.panelTitle}>Ember Gate: prep → fight → chest</Text>
-        <Text style={styles.bodyText}>Chapter 1 is a full-length 60-stop adventure. Prep, fights, elites, and chests build the dragon fantasy now; true evolution waits for Chapter 10 Stop 10, where that chapter can support multiple boss gates.</Text>
+        <Text style={styles.bodyText}>Follow the Ember Gate road through prep stops, fights, elites, and chests. Build your hatchling now; true evolution waits for Chapter 10 Stop 10.</Text>
       </View>
       <View style={styles.row}>
         <PrimaryButton label="Start Chapter 1" onPress={() => dispatch({ type: "startAdventureRun", difficultyId: "hatchlingTrail", startStep: 1 })} />
@@ -5454,17 +5468,27 @@ function CapybaraAdventureBoard({
   const displayMaxSteps = run && chapterLabel === "Chapter 1" ? Math.max(run.maxSteps, 60) : run?.maxSteps;
   const progressLabel = run ? `${chapterLabel} • Stop ${run.step}/${displayMaxSteps}` : "Chapter 1 ready";
   const progress = run ? Math.min(1, Math.max(0, (run.step - 1) / (displayMaxSteps ?? run.maxSteps))) : 0;
+  const chapterHpCurrent = run?.currentHp ?? state.dragon.stats.health;
+  const chapterHpMax = run?.maxHp ?? state.dragon.stats.health;
+  const chapterHpLabel = `Chapter HP ${chapterHpCurrent}/${chapterHpMax}`;
+  const persistentChapterStats = [
+    { label: "Health", value: `${chapterHpCurrent}/${chapterHpMax}` },
+    { label: "Attack", value: `${state.dragon.stats.attack}` },
+    { label: "Defense", value: `${state.dragon.stats.defense}` }
+  ];
   const message = run?.message ?? "The Ember Gate opens. Choose a route stop and keep the hatchling moving.";
   const hasPendingSkillDraft = Boolean(state.lastSkillDraftOffer && !state.lastSkillDraftOffer.chosenSkillId && run?.status === "active");
   const isFightNode = activeNode.kind === "battle" || activeNode.kind === "elite" || activeNode.kind === "boss";
+  const nextDifficultyId: AdventureDifficultyId = run?.status === "complete" ? getNextAdventureDifficultyId(run.difficultyId) : "hatchlingTrail";
+  const nextChapterNumber = nextDifficultyId === "drakeExpedition" ? 2 : nextDifficultyId === "shadowVale" ? 3 : nextDifficultyId === "ancientRift" ? 10 : 1;
   const ctaLabel = !dispatch
     ? "Return to Den"
     : !run || run.status === "failed" || run.status === "complete"
-      ? run?.status === "complete" ? "Start Chapter 2" : "Begin Chapter 1"
+      ? run?.status === "complete" ? `Start Chapter ${nextChapterNumber}` : "Begin Chapter 1"
       : pendingNode
         ? isFightNode
           ? "Fight enemy"
-          : pendingNode.choices?.length ? "Choose" : "Claim"
+          : pendingNode.choices?.length ? "Choose" : pendingNode.kind === "shrine" ? "Pray" : pendingNode.kind === "camp" ? "Rest" : "Claim"
         : isFightNode
           ? "Fight"
           : "Enter Event";
@@ -5474,7 +5498,7 @@ function CapybaraAdventureBoard({
       return;
     }
     if (!run || run.status === "failed" || run.status === "complete") {
-      dispatch({ type: "startAdventureRun" });
+      dispatch({ type: "startAdventureRun", difficultyId: nextDifficultyId });
       return;
     }
     if (activeNode) {
@@ -5501,11 +5525,18 @@ function CapybaraAdventureBoard({
                 <Text style={styles.capybaraHudValue}>{totalTreasures}</Text>
               </View>
             </View>
+            <View style={[styles.capybaraHudCapsule, styles.capybaraHudCapsuleHp]}>
+              <Text style={styles.capybaraHudIcon}>❤️</Text>
+              <View>
+                <Text style={styles.capybaraHudLabel}>Chapter HP</Text>
+                <Text style={styles.capybaraHudValue}>{chapterHpCurrent}/{chapterHpMax}</Text>
+              </View>
+            </View>
           </>
         ) : (
           <View style={styles.capybaraFocusedMiniHud}>
             <Text style={styles.capybaraFocusedMiniHudText}>{progressLabel}</Text>
-            <Text style={[styles.capybaraFocusedMiniHudText, { color: theme.primary }]}>{theme.label}</Text>
+            <Text style={[styles.capybaraFocusedMiniHudText, { color: theme.primary }]}>{theme.label} • {chapterHpLabel}</Text>
           </View>
         )}
         {dispatch ? (
@@ -5513,6 +5544,14 @@ function CapybaraAdventureBoard({
             <Text style={styles.capybaraFocusedReturnText}>Back to Den</Text>
           </Pressable>
         ) : null}
+      </View>
+      <View style={[styles.persistentChapterStatsRow, focused && styles.persistentChapterStatsRowFocused]}>
+        {persistentChapterStats.map((stat) => (
+          <View key={stat.label} style={[styles.persistentChapterStatPill, stat.label === "Health" && styles.persistentChapterStatPillHealth]}>
+            <Text style={styles.persistentChapterStatLabel}>{stat.label}</Text>
+            <Text style={styles.persistentChapterStatValue}>{stat.value}</Text>
+          </View>
+        ))}
       </View>
 
       <ImageBackground source={sceneImages[heroScene]} style={[styles.capybaraSceneFrame, focused && styles.capybaraSceneFrameFocused]} imageStyle={styles.capybaraSceneImage}>
@@ -5652,6 +5691,7 @@ function AdventureRewardRecap({ state, focused = false, onReturnToDen }: { state
     return null;
   }
 
+  const run = state.adventureRun;
   const equipment = reward.equipmentDrop;
   const treasureName = reward.treasureDrop ? treasureDefinitions[reward.treasureDrop].name : null;
   const hoardCount = treasureOrder.reduce((total, treasureId) => total + (state.treasures[treasureId] ?? 0), 0);
@@ -5659,6 +5699,16 @@ function AdventureRewardRecap({ state, focused = false, onReturnToDen }: { state
   const evolutionLine = nextEvolutionCost
     ? `${reward.evolutionProgress} • ${Math.max(0, nextEvolutionCost - state.dragon.evolution)} evolution to next form`
     : reward.evolutionProgress;
+  const chapterMatch = run?.title.match(/Chapter (\d+)/);
+  const chapterNumber = chapterMatch ? chapterMatch[1] : "1";
+  const chapterResult = run?.status === "failed" ? "Retreat logged" : "Chapter cleared";
+  const stopsCleared = run ? Math.min(run.step, run.maxSteps) : 0;
+  const hpLine = run ? `${Math.max(0, run.currentHp)}/${run.maxHp} HP held` : "Ready for the next road";
+  const summaryStats = [
+    { label: "Road", value: run ? `${stopsCleared}/${run.maxSteps} stops` : "Route sealed" },
+    { label: "Vitality", value: hpLine },
+    { label: "Hoard", value: `${hoardCount} relics` }
+  ];
 
   if (focused) {
     return (
@@ -5666,12 +5716,12 @@ function AdventureRewardRecap({ state, focused = false, onReturnToDen }: { state
         <View style={styles.adventureRewardHeaderRow}>
           <Text style={styles.adventureRewardIcon}>🎁</Text>
           <View style={styles.adventureRewardTitleBlock}>
-            <Text style={[styles.capybaraEventKicker, styles.capybaraEventKickerFocused]}>Return Chest</Text>
+            <Text style={[styles.capybaraEventKicker, styles.capybaraEventKickerFocused]}>Chapter {chapterNumber} Summary</Text>
             <Text style={styles.adventureRewardTitle} numberOfLines={1}>{reward.lootGained.join(" • ")}</Text>
           </View>
           <Text style={styles.adventureRewardHoardCount}>Hoard {hoardCount}</Text>
         </View>
-        <Text style={styles.adventureRewardCompactLine} numberOfLines={1}>{reward.statsImproved.join(" • ")} • {evolutionLine}</Text>
+        <Text style={styles.adventureRewardCompactLine} numberOfLines={1}>{chapterResult} • {reward.statsImproved.join(" • ")} • {evolutionLine}</Text>
         {onReturnToDen ? (
           <Pressable onPress={onReturnToDen} style={styles.capybaraFocusedReturnPill}>
             <Text style={styles.capybaraFocusedReturnText}>Back to Den</Text>
@@ -5682,23 +5732,36 @@ function AdventureRewardRecap({ state, focused = false, onReturnToDen }: { state
   }
 
   return (
-    <View style={[styles.adventureRewardRecapCard, focused && styles.adventureRewardRecapCardFocused]}>
+    <View style={styles.adventureRewardRecapCard}>
       <View style={styles.adventureRewardHeaderRow}>
-        <Text style={styles.adventureRewardIcon}>🎁</Text>
+        <Text style={styles.adventureRewardIcon}>{run?.status === "failed" ? "🛡️" : "🏆"}</Text>
         <View style={styles.adventureRewardTitleBlock}>
-          <Text style={[styles.capybaraEventKicker, focused && styles.capybaraEventKickerFocused]}>Adventure Return Chest</Text>
-          <Text style={styles.adventureRewardTitle}>Loot gained</Text>
+          <Text style={styles.capybaraEventKicker}>Chapter {chapterNumber} Summary</Text>
+          <Text style={styles.adventureRewardTitle}>{chapterResult}</Text>
         </View>
         <Text style={styles.adventureRewardHoardCount}>Hoard {hoardCount}</Text>
       </View>
+      <Text style={styles.adventureRewardHeroLine}>Return chest opened: {reward.lootGained.join(" • ")}</Text>
+      <View style={styles.adventureSummaryStatRow}>
+        {summaryStats.map((item) => (
+          <View key={item.label} style={styles.adventureSummaryStatPill}>
+            <Text style={styles.adventureSummaryStatLabel}>{item.label}</Text>
+            <Text style={styles.adventureSummaryStatValue}>{item.value}</Text>
+          </View>
+        ))}
+      </View>
       <View style={styles.adventureRewardGrid}>
-        <AdventureRewardLine label="Loot gained" value={reward.lootGained.join(" • ")} />
         <AdventureRewardLine label="Stats improved" value={reward.statsImproved.join(" • ")} />
         <AdventureRewardLine label="Hoard progress" value={treasureName ? `${reward.hoardProgress} — ${treasureName}` : reward.hoardProgress} />
         <AdventureRewardLine label="Evolution progress" value={evolutionLine} />
         {equipment ? <AdventureRewardLine label="Gear drop" value={`${equipmentRarityDefinitions[equipment.rarity].label} ${equipment.name}: +${equipment.bonusPercent}% ${equipmentBonusLabels[equipment.bonusType]}`} /> : null}
-        <AdventureRewardLine label="Next recommended adventure" value={reward.nextRecommendedAdventure} />
+        <AdventureRewardLine label="Next road" value={reward.nextRecommendedAdventure} />
       </View>
+      {onReturnToDen ? (
+        <Pressable onPress={onReturnToDen} style={styles.adventureRewardDenButton}>
+          <Text style={styles.adventureRewardDenButtonText}>Back to Den</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -5758,6 +5821,11 @@ function CurrentAdventureEventCard({
   const encounter = encounters.find((item) => item.id === node.encounterId);
   const choices = node.choices?.map((choice) => choice);
   const isFightEvent = node.kind === "battle" || node.kind === "elite" || node.kind === "boss";
+  const recoveryPreview = node.kind === "shrine"
+    ? "Recovery waypoint: shrine blessing restores at least 75% Chapter HP."
+    : node.kind === "camp"
+      ? "Recovery waypoint: camp rest restores at least 55% Chapter HP."
+      : null;
   const showFocusedFightCard = focused && isPending && isFightEvent;
 
   if (showFocusedFightCard) {
@@ -5774,6 +5842,7 @@ function CurrentAdventureEventCard({
           <Text style={styles.focusedCombatStopStep}>#{node.step}</Text>
         </View>
         <Text style={styles.focusedCombatStopText} numberOfLines={2}>{encounter ? `${encounter.name} blocks node ${node.step}.` : node.description}</Text>
+        {node.chapter === 3 ? <ShadowPressureReadout focused /> : null}
         <Pressable onPress={onPrimaryPress} style={styles.focusedCombatStopCta}>
           <Text style={styles.capybaraPrimaryCtaText}>{primaryLabel}</Text>
         </Pressable>
@@ -5794,8 +5863,11 @@ function CurrentAdventureEventCard({
         <Text style={[styles.capybaraEventStep, focused && styles.capybaraEventStepFocused]}>#{node.step}</Text>
       </View>
       <Text numberOfLines={focused ? 2 : 2} style={[styles.capybaraEventText, focused && styles.capybaraEventTextFocused]}>{runStatus === "idle" ? "The Ember Gate opens under warm ashfall." : node.description}</Text>
+      {node.chapter === 3 ? <ShadowPressureReadout focused={focused} /> : null}
+      {recoveryPreview ? <Text style={[styles.capybaraEnemyHint, focused && styles.capybaraEnemyHintFocused]} numberOfLines={focused ? 1 : 2}>{recoveryPreview}</Text> : null}
       {encounter && !focused ? <Text style={styles.capybaraEnemyHint}>Enemy base: {encounter.name} • x{node.difficulty.toFixed(2)}</Text> : null}
       {focused && encounter ? <Text style={[styles.capybaraEnemyHint, styles.capybaraEnemyHintFocused]} numberOfLines={1}>Enemy: {encounter.name}</Text> : null}
+      {encounter ? <BattleTacticPreview node={node} encounter={encounter} focused={focused} /> : null}
       <FireSkillChoiceRecap node={node} focused={focused} />
       {choices?.length && (!focused || isPending) ? (
         <View style={styles.capybaraChoiceGrid}>
@@ -5815,6 +5887,43 @@ function CurrentAdventureEventCard({
       <Pressable onPress={onPrimaryPress} style={[styles.capybaraPrimaryCta, focused && styles.capybaraPrimaryCtaFocused, { backgroundColor: "#f8d987" }]}>
         <Text style={styles.capybaraPrimaryCtaText}>{primaryLabel}</Text>
       </Pressable>
+    </View>
+  );
+}
+
+function ShadowPressureReadout({ focused = false }: { focused?: boolean }) {
+  return (
+    <View style={[styles.shadowPressureReadout, focused && styles.shadowPressureReadoutFocused]}>
+      <Text style={styles.shadowPressureKicker}>Shadow pressure</Text>
+      <Text numberOfLines={focused ? 1 : 2} style={styles.shadowPressureText}>Dark foes ramp from guarded ambushes into late-route pressure. Watch Light/Dark advantage, protect Chapter HP, then strike through the veil.</Text>
+    </View>
+  );
+}
+
+function BattleTacticPreview({ node, encounter, focused = false }: { node: AdventureNode; encounter: Encounter; focused?: boolean }) {
+  const playerAdvantage = getElementMatchupMultiplier(node.element ?? "fire", encounter.element) > 1;
+  const enemyAdvantage = getElementMatchupMultiplier(encounter.element, node.element ?? "fire") > 1;
+  const shadowVale = node.chapter === 3;
+  const tacticChips = [
+    { label: "ATK", detail: playerAdvantage ? "advantage breath" : shadowVale ? "veil pierce" : "steady bite" },
+    { label: "DEF", detail: enemyAdvantage ? "brace counter" : shadowVale ? "guard HP" : "hold ground" },
+    { label: "SPD", detail: node.difficulty >= 1 ? "first swing" : "safe opener" }
+  ];
+
+  return (
+    <View style={[styles.battleTacticPreview, focused && styles.battleTacticPreviewFocused]}>
+      <Text style={styles.battleTacticKicker}>Fight readout</Text>
+      <Text numberOfLines={focused ? 1 : 2} style={styles.battleTacticTitle}>
+        {shadowVale ? "Shadow Vale: Light/Dark pressure can swing the fight." : playerAdvantage ? "Element advantage: press the breath attack." : enemyAdvantage ? "Enemy pressure: block, dodge, then counter." : "Even matchup: stats decide the exchange."}
+      </Text>
+      <View style={styles.battleTacticChipRow}>
+        {tacticChips.map((chip) => (
+          <View key={chip.label} style={styles.battleTacticChip}>
+            <Text style={styles.battleTacticChipLabel}>{chip.label}</Text>
+            <Text numberOfLines={1} style={styles.battleTacticChipText}>{chip.detail}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
@@ -6159,12 +6268,14 @@ function getAnimatedBattleHp({
   events,
   currentExchangeIndex,
   dragonMaxHp,
+  dragonStartHp,
   enemyMaxHp
 }: {
   battle: BattleResult;
   events: BattleExchangeEvent[];
   currentExchangeIndex: number;
   dragonMaxHp: number;
+  dragonStartHp: number;
   enemyMaxHp: number;
 }) {
   if (currentExchangeIndex >= events.length) {
@@ -6176,7 +6287,7 @@ function getAnimatedBattleHp({
   const enemyDamage = visibleEvents.reduce((total, event) => total + event.playerDamage, 0);
 
   return {
-    playerHp: Math.max(battle.playerHp, dragonMaxHp - playerDamage),
+    playerHp: Math.max(battle.playerHp, dragonStartHp - playerDamage),
     enemyHp: Math.max(battle.enemyHp, enemyMaxHp - enemyDamage)
   };
 }
@@ -6188,12 +6299,19 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
   const theme = elementTheme[element];
   const exchangePulse = useRef(new Animated.Value(0)).current;
   const battleEvents = useMemo(() => (battle ? getBattleExchangeEvents(battle) : []), [battle]);
-  const [currentExchangeIndex, setCurrentExchangeIndex] = useState(state.settings.reducedMotion ? battleEvents.length : -1);
+  const [battleStarted, setBattleStarted] = useState(false);
+  const [currentExchangeIndex, setCurrentExchangeIndex] = useState(-1);
   const activeExchange = currentExchangeIndex >= 0 && currentExchangeIndex < battleEvents.length ? battleEvents[currentExchangeIndex] : null;
-  const exchangeComplete = currentExchangeIndex >= battleEvents.length;
+  const exchangeComplete = battleStarted && currentExchangeIndex >= battleEvents.length;
 
   useEffect(() => {
-    if (!battle) {
+    setBattleStarted(false);
+    setCurrentExchangeIndex(-1);
+  }, [battle]);
+
+  useEffect(() => {
+    if (!battle || !battleStarted) {
+      setCurrentExchangeIndex(-1);
       return;
     }
     if (state.settings.reducedMotion) {
@@ -6212,7 +6330,7 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
     }, 850);
 
     return () => clearInterval(interval);
-  }, [battle, battleEvents, state.settings.reducedMotion]);
+  }, [battle, battleEvents, battleStarted, state.settings.reducedMotion]);
 
   useEffect(() => {
     if (!activeExchange || state.settings.reducedMotion) {
@@ -6222,16 +6340,24 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
 
     exchangePulse.setValue(0);
     Animated.sequence([
-      Animated.timing(exchangePulse, { toValue: 1, duration: 210, useNativeDriver: true }),
-      Animated.timing(exchangePulse, { toValue: 0, duration: 260, useNativeDriver: true })
+      Animated.timing(exchangePulse, { toValue: 1, duration: 720, useNativeDriver: true }),
+      Animated.timing(exchangePulse, { toValue: 0, duration: 420, useNativeDriver: true })
     ]).start();
   }, [activeExchange, exchangePulse, state.settings.reducedMotion]);
 
-  const dragonLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, 34] });
-  const enemyLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, -28] });
-  const hitFlashOpacity = exchangePulse.interpolate({ inputRange: [0, 0.55, 1], outputRange: [0, 1, 0] });
+  const dragonLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, 46] });
+  const enemyLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, -38] });
+  const battleArenaShake = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [0, 0, 10, -4, 0] });
+  const targetRecoilTranslateX = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [0, 0, 10, -4, 0] });
+  const dragonTargetRecoilTranslateX = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [0, 0, -10, 4, 0] });
+  const hitPauseScale = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [1, 1.03, 0.96, 1.02, 1] });
+  const hitFlashOpacity = exchangePulse.interpolate({ inputRange: [0, 0.18, 0.62, 0.86, 1], outputRange: [0, 1, 1, 0.7, 0] });
+  const damageFloatTranslateY = exchangePulse.interpolate({ inputRange: [0, 0.62, 1], outputRange: [12, -24, -34] });
+  const damageFloatScale = exchangePulse.interpolate({ inputRange: [0, 0.18, 0.62, 1], outputRange: [0.68, 1.18, 1.08, 0.96] });
   const dragonAttackActive = activeExchange?.actor === "dragon" || activeExchange?.actor === "skill";
   const enemyAttackActive = activeExchange?.actor === "enemy";
+  const dragonSideMotion = dragonAttackActive ? dragonLunge : enemyAttackActive ? dragonTargetRecoilTranslateX : 0;
+  const enemySideMotion = enemyAttackActive ? enemyLunge : dragonAttackActive ? targetRecoilTranslateX : 0;
 
   if (!battle) {
     return (
@@ -6243,15 +6369,20 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
   }
 
   const enemyImageKey = getAutoBattleEnemyImageKey(battle.encounter.name, state.currentArea);
+  const chapterMaxHp = state.adventureRun?.maxHp ?? state.dragon.stats.health;
+  const chapterStartHp = battle.battleStartHp ?? (state.adventureRun?.status === "active"
+    ? Math.min(chapterMaxHp, Math.max(1, state.adventureRun.currentHp))
+    : state.dragon.stats.health);
   const animatedHp = getAnimatedBattleHp({
     battle,
     events: battleEvents,
     currentExchangeIndex,
-    dragonMaxHp: state.dragon.stats.health,
+    dragonMaxHp: chapterMaxHp,
+    dragonStartHp: chapterStartHp,
     enemyMaxHp: battle.encounter.stats.health
   });
   const enemyHpPercent = `${Math.max(0, Math.min(100, Math.round((animatedHp.enemyHp / Math.max(1, battle.encounter.stats.health)) * 100)))}%`;
-  const playerHpPercent = `${Math.max(0, Math.min(100, Math.round((animatedHp.playerHp / Math.max(1, state.dragon.stats.health)) * 100)))}%`;
+  const playerHpPercent = `${Math.max(0, Math.min(100, Math.round((animatedHp.playerHp / Math.max(1, chapterMaxHp)) * 100)))}%`;
   const areaSceneMap: Record<AreaId, AdventureNode["scene"]> = {
     mysticMeadow: "forest",
     emberWoods: "camp",
@@ -6261,9 +6392,31 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
     voidNest: "boss"
   };
   const battleScene: AdventureNode["scene"] = battle.nodeKind === "boss" ? "boss" : battle.nodeKind === "elite" ? "ruins" : areaSceneMap[state.currentArea];
-  const fightCue = exchangeComplete ? (battle.won ? "Enemy staggered — press the attack" : "Your dragon is pushed back") : activeExchange?.label ?? "Fight starts — your dragon advances";
-  const useFireSpineFrameDragon = element === "fire" && state.dragon.stage === "hatchling";
-  const fireSpineAnimationId = getFireHatchlingSpineAnimationForExchange(activeExchange?.actor, activeExchange?.label ?? "");
+  const fightCue = !battleStarted
+    ? "Square up — tap Start Battle when ready"
+    : exchangeComplete
+      ? (battle.won ? "Enemy staggered — press the attack" : "Your dragon is pushed back")
+      : activeExchange?.label ?? "Fight starts — your dragon advances";
+  const useFireBattleHeroImage = element === "fire" && state.dragon.stage === "hatchling";
+  const enemyDamageBadgeText = activeExchange?.playerDamage ? `HIT -${activeExchange.playerDamage}` : null;
+  const dragonDamageBadgeText = activeExchange?.enemyDamage ? `HURT -${activeExchange.enemyDamage}` : null;
+  const dragonExchangeSummary = activeExchange?.playerDamage
+    ? `Dragon hit: -${activeExchange.playerDamage} enemy HP`
+    : dragonAttackActive
+      ? "Dragon presses forward"
+      : "Dragon ready";
+  const enemyExchangeSummary = activeExchange?.enemyDamage
+    ? `Enemy counter: -${activeExchange.enemyDamage} hatchling HP`
+    : enemyAttackActive
+      ? "Enemy counter incoming"
+      : activeExchange?.actor === "dodge"
+        ? "Counter dodged"
+        : "Enemy bracing";
+  const battlePersistentStats = [
+    { label: "Health", value: `${animatedHp.playerHp}/${chapterMaxHp}` },
+    { label: "Attack", value: `${state.dragon.stats.attack}` },
+    { label: "Defense", value: `${state.dragon.stats.defense}` }
+  ];
 
   return (
     <View style={styles.battleFullScreenArena}>
@@ -6275,57 +6428,118 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
             </View>
             <Text style={styles.battleArenaKind}>{battle.nodeKind ? getNodeKindLabel(battle.nodeKind) : "Battle"}</Text>
           </View>
+          <View style={styles.battlePersistentStatsRow}>
+            {battlePersistentStats.map((stat) => (
+              <View key={stat.label} style={[styles.battlePersistentStatPill, stat.label === "Health" && styles.battlePersistentStatPillHealth]}>
+                <Text style={styles.battlePersistentStatLabel}>{stat.label}</Text>
+                <Text style={styles.battlePersistentStatValue}>{stat.value}</Text>
+              </View>
+            ))}
+          </View>
 
-          <View style={styles.battleArenaCombatants}>
-            <Animated.View style={[styles.battleDragonSide, dragonAttackActive && { transform: [{ translateX: dragonLunge }] }]}>
+          <Animated.View style={[styles.battleArenaCombatants, !exchangeComplete && { transform: [{ translateX: battleArenaShake }] }]}>
+            <Animated.View style={[styles.battleDragonSide, !exchangeComplete && { transform: [{ translateX: dragonSideMotion }, { scale: hitPauseScale }] }]}>
               <View style={[styles.battleDragonAura, { borderColor: theme.primary, backgroundColor: `${theme.primary}33` }]} />
-              {useFireSpineFrameDragon ? (
-                <SpineFrameDragon animationId={fireSpineAnimationId} reducedMotion={state.settings.reducedMotion} style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight]} />
+              {useFireBattleHeroImage ? (
+                <SafeExpoImage source={battleFireHatchlingImage} style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight]} contentFit="contain" />
               ) : (
                 <SafeExpoImage source={getDragonStageImage(state.dragon.stage, element)} style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight]} contentFit="contain" />
               )}
-              {dragonAttackActive && !useFireSpineFrameDragon ? <Animated.View style={[styles.battleImpactSlash, styles.battleDragonProjectile, { opacity: hitFlashOpacity }]} /> : null}
+              {dragonAttackActive ? <Animated.View style={[styles.battleImpactSlash, styles.battleDragonProjectile, { opacity: hitFlashOpacity }]} /> : null}
+              {activeExchange ? <Animated.View style={[styles.battleImpactRing, styles.battleImpactRingDragon, { opacity: hitFlashOpacity, transform: [{ scale: damageFloatScale }] }]} /> : null}
+              {enemyAttackActive ? <Animated.View style={[styles.battleImpactSpark, styles.battleImpactSparkDragon, { opacity: hitFlashOpacity }]} /> : null}
+              {dragonDamageBadgeText ? (
+                <Animated.View style={[styles.battleDamageBadge, styles.battleDamageBadgeDragon, { opacity: hitFlashOpacity, transform: [{ translateY: damageFloatTranslateY }, { scale: damageFloatScale }] }]}>
+                  <Text style={styles.battleDamageBadgeText}>{dragonDamageBadgeText}</Text>
+                </Animated.View>
+              ) : null}
               <Text style={styles.battleCombatantName}>Your {state.dragon.stage}</Text>
               <View style={styles.battleHpTrack}>
                 <View style={[styles.battleHpFill, { width: playerHpPercent as any, backgroundColor: theme.primary }]} />
               </View>
-              <Text style={styles.battleHpText}>HP {animatedHp.playerHp}/{state.dragon.stats.health}</Text>
+              <Text style={styles.battleHpText}>Chapter HP {animatedHp.playerHp}/{chapterMaxHp}</Text>
             </Animated.View>
 
             <View style={styles.battleVersusBurst}>
               <Text style={styles.battleVersusText}>VS</Text>
             </View>
 
-            <Animated.View style={[styles.battleEnemySide, enemyAttackActive && { transform: [{ translateX: enemyLunge }] }]}>
+            <Animated.View style={[styles.battleEnemySide, !exchangeComplete && { transform: [{ translateX: enemySideMotion }, { scale: hitPauseScale }] }]}>
               <Image source={enemyImages[enemyImageKey]} style={styles.battleEnemyBossSprite} resizeMode="contain" />
               {enemyAttackActive ? <Animated.View style={[styles.battleImpactSlash, styles.battleEnemyProjectile, { opacity: hitFlashOpacity }]} /> : null}
+              {activeExchange ? <Animated.View style={[styles.battleImpactRing, styles.battleImpactRingEnemy, { opacity: hitFlashOpacity, transform: [{ scale: damageFloatScale }] }]} /> : null}
+              {dragonAttackActive ? <Animated.View style={[styles.battleImpactSpark, styles.battleImpactSparkEnemy, { opacity: hitFlashOpacity }]} /> : null}
+              {enemyDamageBadgeText ? (
+                <Animated.View style={[styles.battleDamageBadge, styles.battleDamageBadgeEnemy, { opacity: hitFlashOpacity, transform: [{ translateY: damageFloatTranslateY }, { scale: damageFloatScale }] }]}>
+                  <Text style={styles.battleDamageBadgeText}>{enemyDamageBadgeText}</Text>
+                </Animated.View>
+              ) : null}
               <Text style={styles.battleCombatantName}>{battle.title ?? battle.encounter.name}</Text>
               <View style={styles.battleHpTrack}>
                 <View style={[styles.battleHpFill, { width: enemyHpPercent as any, backgroundColor: "#ff5f7a" }]} />
               </View>
               <Text style={styles.battleHpText}>Enemy HP {animatedHp.enemyHp}/{battle.encounter.stats.health}</Text>
             </Animated.View>
-          </View>
+          </Animated.View>
 
-          <View style={styles.battleFightHud}>
-            <Text style={styles.battleFightCue} numberOfLines={1}>{fightCue}</Text>
-            {battle.activeSkill ? (
-              <Text style={styles.battleSkillText} numberOfLines={1}>Active skill: {battle.activeSkill.name} • {battle.activeSkill.combatEffect}</Text>
-            ) : null}
-            <Text style={styles.battleFightStats} numberOfLines={1}>ATK {state.dragon.stats.attack} • DEF {state.dragon.stats.defense} • CRIT {state.dragon.stats.critChance}% • BLOCK {state.dragon.stats.block}% • DODGE {state.dragon.stats.dodge}%</Text>
-          </View>
+          {!exchangeComplete ? (
+            <View style={styles.battleFightHud}>
+              <Text style={styles.battleFightCue} numberOfLines={1}>{fightCue}</Text>
+              <View style={styles.battleExchangeReadoutRow}>
+                <View style={[styles.battleExchangePill, dragonAttackActive && styles.battleExchangePillActiveDragon]}>
+                  <Text style={styles.battleExchangePillKicker}>Your turn</Text>
+                  <Text style={styles.battleExchangePillText} numberOfLines={1}>{dragonExchangeSummary}</Text>
+                </View>
+                <View style={[styles.battleExchangePill, enemyAttackActive && styles.battleExchangePillActiveEnemy]}>
+                  <Text style={styles.battleExchangePillKicker}>Enemy turn</Text>
+                  <Text style={styles.battleExchangePillText} numberOfLines={1}>{enemyExchangeSummary}</Text>
+                </View>
+              </View>
+              {battle.activeSkill ? (
+                <Text style={styles.battleSkillText} numberOfLines={1}>Active skill: {battle.activeSkill.name} • {battle.activeSkill.combatEffect}</Text>
+              ) : null}
+              <Text style={styles.battleFightStats} numberOfLines={1}>Health {animatedHp.playerHp}/{chapterMaxHp} • Attack {state.dragon.stats.attack} • Defense {state.dragon.stats.defense} • CRIT {state.dragon.stats.critChance}% • BLOCK {state.dragon.stats.block}% • DODGE {state.dragon.stats.dodge}%</Text>
+            </View>
+          ) : null}
 
-          <BattleFlashCalloutRail battle={battle} stats={state.dragon.stats} element={element} />
+          {exchangeComplete ? <BattleOutcomeBanner battle={battle} continueScreen={continueScreen} /> : null}
+          {exchangeComplete ? <BattleFlashCalloutRail battle={battle} stats={state.dragon.stats} element={element} /> : null}
 
           <Pressable
-            disabled={!exchangeComplete}
-            onPress={() => dispatch({ type: "setScreen", screen: continueScreen })}
-            style={[styles.battleArenaContinueButton, !exchangeComplete && styles.battleArenaContinueButtonDisabled]}
+            disabled={battleStarted && !exchangeComplete}
+            onPress={() => {
+              if (!battleStarted) {
+                setBattleStarted(true);
+                return;
+              }
+              dispatch({ type: "setScreen", screen: continueScreen });
+            }}
+            style={[styles.battleArenaContinueButton, battleStarted && !exchangeComplete && styles.battleArenaContinueButtonDisabled]}
           >
-            <Text style={styles.battleArenaContinueText}>{exchangeComplete ? (continueScreen === "den" ? "Return to Den" : "Continue Run") : "Fighting..."}</Text>
+            <Text style={styles.battleArenaContinueText}>{!battleStarted ? "Start Battle" : exchangeComplete ? (continueScreen === "den" ? "Return to Den" : "Continue Run") : "Fighting..."}</Text>
           </Pressable>
         </LinearGradient>
       </ImageBackground>
+    </View>
+  );
+}
+
+function BattleOutcomeBanner({ battle, continueScreen }: { battle: BattleResult; continueScreen: ScreenKey }) {
+  const title = battle.won ? "Victory strike" : "Forced back";
+  const rewardLine = battle.won ? battle.rewardSummary ?? "Spoils ready in the return chest" : "Regroup, train, and try the road again";
+  const nextLine = continueScreen === "den" ? "Next: return to the den" : "Next: press deeper into the chapter";
+
+  return (
+    <View style={[styles.battleOutcomeBanner, battle.won ? styles.battleOutcomeBannerWin : styles.battleOutcomeBannerLoss]}>
+      <View style={styles.battleOutcomeIconWrap}>
+        <Text style={styles.battleOutcomeIcon}>{battle.won ? "⚔️" : "🛡️"}</Text>
+      </View>
+      <View style={styles.battleOutcomeCopy}>
+        <Text style={styles.battleOutcomeKicker}>{battle.won ? "Enemy broken" : "Dragon protected"}</Text>
+        <Text style={styles.battleOutcomeTitle} numberOfLines={1}>{title}</Text>
+        <Text style={styles.battleOutcomeLine} numberOfLines={1}>{rewardLine}</Text>
+        <Text style={styles.battleOutcomeNext} numberOfLines={1}>{nextLine}</Text>
+      </View>
     </View>
   );
 }
@@ -10494,6 +10708,44 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 3
   },
+  capybaraHudCapsuleHp: {
+    borderColor: "rgba(255,95,122,0.42)"
+  },
+  persistentChapterStatsRow: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 7
+  },
+  persistentChapterStatsRowFocused: {
+    marginTop: 5
+  },
+  persistentChapterStatPill: {
+    alignItems: "center",
+    backgroundColor: "rgba(8,6,17,0.76)",
+    borderColor: "rgba(248,217,135,0.34)",
+    borderRadius: 14,
+    borderWidth: 1,
+    flex: 1,
+    minHeight: 38,
+    paddingHorizontal: 8,
+    paddingVertical: 6
+  },
+  persistentChapterStatPillHealth: {
+    borderColor: "rgba(255,95,122,0.52)"
+  },
+  persistentChapterStatLabel: {
+    color: "#f8d987",
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 0.6,
+    textTransform: "uppercase"
+  },
+  persistentChapterStatValue: {
+    color: "#fff8ef",
+    fontSize: 14,
+    fontWeight: "900",
+    marginTop: 1
+  },
   capybaraFocusedReturnPill: {
     alignItems: "center",
     backgroundColor: "#160c2f",
@@ -10931,6 +11183,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6
   },
+  adventureRewardHeroLine: {
+    backgroundColor: "rgba(248,217,135,0.12)",
+    borderColor: "rgba(248,217,135,0.24)",
+    borderRadius: 18,
+    borderWidth: 1,
+    color: "#fff8ef",
+    fontSize: 13,
+    fontWeight: "900",
+    lineHeight: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 10
+  },
+  adventureSummaryStatRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8
+  },
+  adventureSummaryStatPill: {
+    backgroundColor: "rgba(8,11,26,0.38)",
+    borderColor: "rgba(255,255,255,0.12)",
+    borderRadius: 16,
+    borderWidth: 1,
+    flexGrow: 1,
+    minWidth: 96,
+    paddingHorizontal: 10,
+    paddingVertical: 9
+  },
+  adventureSummaryStatLabel: {
+    color: "#f8d987",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.7,
+    textTransform: "uppercase"
+  },
+  adventureSummaryStatValue: {
+    color: "#fff8ef",
+    fontSize: 12,
+    fontWeight: "900",
+    marginTop: 3
+  },
   adventureRewardGrid: {
     gap: 8
   },
@@ -10954,6 +11246,18 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     lineHeight: 18,
     marginTop: 3
+  },
+  adventureRewardDenButton: {
+    alignItems: "center",
+    backgroundColor: "#f8d987",
+    borderRadius: 18,
+    marginTop: 2,
+    paddingVertical: 12
+  },
+  adventureRewardDenButtonText: {
+    color: "#2b180d",
+    fontSize: 13,
+    fontWeight: "900"
   },
   adventureRewardCompactLine: {
     color: "#d8cfef",
@@ -11155,6 +11459,83 @@ const styles = StyleSheet.create({
     gap: 7,
     marginTop: 10,
     padding: 10
+  },
+  shadowPressureReadout: {
+    backgroundColor: "rgba(139,92,246,0.14)",
+    borderColor: "rgba(217,204,255,0.28)",
+    borderRadius: 15,
+    borderWidth: 1,
+    gap: 3,
+    marginTop: 8,
+    padding: 8
+  },
+  shadowPressureReadoutFocused: {
+    marginTop: 6,
+    paddingVertical: 6
+  },
+  shadowPressureKicker: {
+    color: "#d9ccff",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    textTransform: "uppercase"
+  },
+  shadowPressureText: {
+    color: "#f3edff",
+    fontSize: 11,
+    fontWeight: "800"
+  },
+  battleTacticPreview: {
+    backgroundColor: "rgba(248,217,135,0.12)",
+    borderColor: "rgba(248,217,135,0.26)",
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 7,
+    marginTop: 9,
+    padding: 9
+  },
+  battleTacticPreviewFocused: {
+    backgroundColor: "rgba(255,255,255,0.07)",
+    gap: 5,
+    padding: 8
+  },
+  battleTacticKicker: {
+    color: "#f8d987",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    textTransform: "uppercase"
+  },
+  battleTacticTitle: {
+    color: "#fff8ef",
+    fontSize: 12,
+    fontWeight: "900"
+  },
+  battleTacticChipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6
+  },
+  battleTacticChip: {
+    backgroundColor: "rgba(255,248,239,0.08)",
+    borderColor: "rgba(248,217,135,0.18)",
+    borderRadius: 12,
+    borderWidth: 1,
+    flexBasis: "30%",
+    flexGrow: 1,
+    paddingHorizontal: 7,
+    paddingVertical: 5
+  },
+  battleTacticChipLabel: {
+    color: "#ffb347",
+    fontSize: 10,
+    fontWeight: "900"
+  },
+  battleTacticChipText: {
+    color: "#d8cfef",
+    fontSize: 10,
+    fontWeight: "800",
+    marginTop: 1
   },
   fireSkillChoiceRecapFocused: {
     backgroundColor: "rgba(255,120,79,0.1)",
@@ -11585,7 +11966,7 @@ const styles = StyleSheet.create({
   battleArenaScrim: {
     flex: 1,
     justifyContent: "space-between",
-    paddingBottom: 18,
+    paddingBottom: 14,
     paddingHorizontal: 12,
     paddingTop: 14
   },
@@ -11612,6 +11993,37 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textTransform: "uppercase"
   },
+  battlePersistentStatsRow: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 8
+  },
+  battlePersistentStatPill: {
+    alignItems: "center",
+    backgroundColor: "rgba(8,6,17,0.78)",
+    borderColor: "rgba(248,217,135,0.38)",
+    borderRadius: 14,
+    borderWidth: 1,
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 6
+  },
+  battlePersistentStatPillHealth: {
+    borderColor: "rgba(255,95,122,0.58)"
+  },
+  battlePersistentStatLabel: {
+    color: "#f8d987",
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 0.6,
+    textTransform: "uppercase"
+  },
+  battlePersistentStatValue: {
+    color: "#fff8ef",
+    fontSize: 15,
+    fontWeight: "900",
+    marginTop: 1
+  },
   battleArenaCombatants: {
     alignItems: "center",
     flex: 1,
@@ -11623,41 +12035,103 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
-    minHeight: 360
+    minHeight: 292
   },
   battleEnemySide: {
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
-    minHeight: 360
+    minHeight: 292
   },
   battleDragonAura: {
     borderRadius: 999,
     borderWidth: 3,
-    height: 230,
+    height: 188,
     opacity: 0.62,
     position: "absolute",
-    top: 42,
-    width: 230
+    top: 32,
+    width: 188
   },
   battleDragonHeroSprite: {
-    height: 286,
-    width: 230
+    height: 220,
+    width: 178
   },
   battleDragonFacingRight: {
     transform: [{ scaleX: -1 }]
   },
   battleEnemyBossSprite: {
-    height: 292,
-    width: 236
+    height: 226,
+    width: 184
   },
   battleImpactSlash: {
     borderRadius: 999,
     height: 12,
     position: "absolute",
-    top: 142,
+    top: 116,
     width: 92,
     zIndex: 4
+  },
+  battleImpactRing: {
+    borderColor: "rgba(255,248,239,0.88)",
+    borderRadius: 999,
+    borderWidth: 3,
+    height: 96,
+    position: "absolute",
+    top: 74,
+    width: 96,
+    zIndex: 5
+  },
+  battleImpactRingDragon: {
+    left: 44
+  },
+  battleImpactRingEnemy: {
+    right: 42
+  },
+  battleImpactSpark: {
+    backgroundColor: "rgba(255,248,239,0.96)",
+    borderRadius: 999,
+    height: 18,
+    position: "absolute",
+    shadowColor: "#fff8ef",
+    shadowOpacity: 0.9,
+    shadowRadius: 16,
+    top: 112,
+    width: 18,
+    zIndex: 7
+  },
+  battleImpactSparkDragon: {
+    left: 64
+  },
+  battleImpactSparkEnemy: {
+    right: 62
+  },
+  battleDamageBadge: {
+    alignItems: "center",
+    backgroundColor: "rgba(32,19,49,0.92)",
+    borderColor: "rgba(255,248,239,0.92)",
+    borderRadius: 999,
+    borderWidth: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    position: "absolute",
+    shadowColor: "#fff8ef",
+    shadowOpacity: 0.55,
+    shadowRadius: 10,
+    zIndex: 6
+  },
+  battleDamageBadgeDragon: {
+    left: 42,
+    top: 86
+  },
+  battleDamageBadgeEnemy: {
+    right: 34,
+    top: 84
+  },
+  battleDamageBadgeText: {
+    color: "#fff8ef",
+    fontSize: 14,
+    fontWeight: "900",
+    letterSpacing: 0.4
   },
   battleDragonProjectile: {
     backgroundColor: "#a7f3ff",
@@ -11725,9 +12199,10 @@ const styles = StyleSheet.create({
     borderColor: "rgba(248,217,135,0.32)",
     borderRadius: 22,
     borderWidth: 1,
-    gap: 4,
+    gap: 3,
+    marginTop: 6,
     paddingHorizontal: 12,
-    paddingVertical: 9
+    paddingVertical: 8
   },
   battleFightCue: {
     color: "#fff8ef",
@@ -11735,11 +12210,100 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textAlign: "center"
   },
+  battleExchangeReadoutRow: {
+    flexDirection: "row",
+    gap: 8
+  },
+  battleExchangePill: {
+    backgroundColor: "rgba(255,255,255,0.07)",
+    borderColor: "rgba(255,255,255,0.12)",
+    borderRadius: 14,
+    borderWidth: 1,
+    flex: 1,
+    paddingHorizontal: 9,
+    paddingVertical: 6
+  },
+  battleExchangePillActiveDragon: {
+    backgroundColor: "rgba(255,122,61,0.22)",
+    borderColor: "rgba(255,179,71,0.55)"
+  },
+  battleExchangePillActiveEnemy: {
+    backgroundColor: "rgba(255,95,122,0.2)",
+    borderColor: "rgba(255,95,122,0.55)"
+  },
+  battleExchangePillKicker: {
+    color: "#f8d987",
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 0.7,
+    textTransform: "uppercase"
+  },
+  battleExchangePillText: {
+    color: "#fff8ef",
+    fontSize: 11,
+    fontWeight: "900",
+    marginTop: 1
+  },
   battleFightStats: {
     color: "#a7f3ff",
     fontSize: 11,
     fontWeight: "900",
     textAlign: "center"
+  },
+  battleOutcomeBanner: {
+    alignItems: "center",
+    backgroundColor: "rgba(8,6,17,0.78)",
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
+  battleOutcomeBannerWin: {
+    borderColor: "rgba(143,255,210,0.48)"
+  },
+  battleOutcomeBannerLoss: {
+    borderColor: "rgba(255,120,79,0.48)"
+  },
+  battleOutcomeIconWrap: {
+    alignItems: "center",
+    backgroundColor: "rgba(255,248,239,0.12)",
+    borderRadius: 999,
+    height: 42,
+    justifyContent: "center",
+    width: 42
+  },
+  battleOutcomeIcon: {
+    fontSize: 21
+  },
+  battleOutcomeCopy: {
+    flex: 1
+  },
+  battleOutcomeKicker: {
+    color: "#f8d987",
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    textTransform: "uppercase"
+  },
+  battleOutcomeTitle: {
+    color: "#fff8ef",
+    fontSize: 16,
+    fontWeight: "900"
+  },
+  battleOutcomeLine: {
+    color: "#f7e7c0",
+    fontSize: 11,
+    fontWeight: "800",
+    marginTop: 1
+  },
+  battleOutcomeNext: {
+    color: "#8ff7ff",
+    fontSize: 10,
+    fontWeight: "900",
+    marginTop: 1
   },
   battleArenaContinueButton: {
     alignItems: "center",
