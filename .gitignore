@@ -12,20 +12,54 @@ yarn-error.*
 *.mobileprovision
 *.orig.*
 web-build/
-artifacts/test-run/
-artifacts/mission-control/latest/*.log
-artifacts/mission-control/latest/*.tmp
-artifacts/mission-control/latest/*.cache
 
-# First safe cleanup pass: cache/temp/vendor/tooling noise only.
-# Do not broaden these to src/, scripts/, docs/, curated assets, or Mission Control canonical data.
+# Build/cache noise
 __pycache__/
 *.py[cod]
 .openclaw/
 tmp_*
 expo-lan-qr.png
-memory/.dreams/
+
+# Hermes agent runtime files (never part of game source)
+AGENTS.md
+SOUL.md
+IDENTITY.md
+MEMORY.md
+HEARTBEAT.md
+TOOLS.md
+USER.md
+memory/
+workspace/
+
+# Machine-generated artifacts and proofs
+artifacts/
+project/
+
+# Agent automation launcher scripts
+scripts/run-autonomous-*.sh
+scripts/run-overnight-*.sh
+
+# Agent operational logs in docs (health reports, audits, journals)
+docs/FORGEHAND_*
+docs/AUTONOMOUS_*
+docs/OVERNIGHT_*
+docs/HERMES_*
+docs/WORKTREE_*
+docs/MISSION_CONTROL_*
+docs/DRAGONFORGE_STABILIZATION*
+docs/DRAGONFORGE_TICKET*
+docs/DRAGONFORGE_MEMORY*
+docs/DRAGONFORGE_OPERATING*
+docs/DRAGONFORGE_AGENT*
+docs/DRAGONFORGE_LAYERED*
+docs/CREW_OPERATING*
+docs/AGENT_OPERATING*
+docs/DISCORD_MISSION*
+docs/audit/
+docs/journal/
+
+# Art iteration passes (living-forge Spine/Krita experiments, not source assets)
+assets/dragons/living-forge-fire-hatchling/
+
+# Krita portable install
 tools/krita-portable/
-artifacts/autonomous-loop/*.log
-artifacts/autonomous-10h/*.log
-artifacts/mission-control/latest/*public-health*.json
