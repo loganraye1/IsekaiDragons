@@ -1,0 +1,1320 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dragon Evolution Branches, Stats, and Skills</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; padding: 18px; max-width: 820px; margin: auto; background: #110f14; color: #f6efe5; }
+h1,h2,h3,h4 { color: #ffd28a; line-height:1.2; }
+h1 { font-size: 1.9rem; } h2 { margin-top: 2rem; border-top: 1px solid #3b2b22; padding-top: 1rem; }
+strong { color: #fff4c7; } code { background:#281d24; padding:2px 5px; border-radius:4px; }
+li { margin: .35rem 0; } blockquote { border-left: 4px solid #f97316; margin-left:0; padding-left:1rem; color:#ffe0b0; }
+a { color:#8bd3ff; }
+</style></head><body><h1>Dragon Evolution Branches, Stats, and Skills</h1>
+
+<p>Date: 2026-05-11</p>
+<p>Source: Topnotch direction in Dragonforge Discord</p>
+<p>Status: Product/design proposal for implementation planning</p>
+
+<h2>Confirmed Direction</h2>
+
+<p>The game should feel like a <strong>cute hatchling growing into a mythical dragon</strong>.</p>
+
+<p>Adventure scale should evolve with the dragon:</p>
+
+<ol>
+<li><strong>Hatchling</strong> — dungeon crawling</li>
+</ol>
+<ul>
+<li>Small, cute, scrappy.</li>
+<li>Encounters feel like cave rooms, ruins, tunnels, mushroom grottos, underground shrines.</li>
+</ul>
+<ol>
+<li><strong>Drake</strong> — forest adventuring</li>
+</ol>
+<ul>
+<li>More confident and mobile.</li>
+<li>Encounters feel like wild trails, monster dens, bandit camps, ancient groves.</li>
+</ul>
+<ol>
+<li><strong>Young Dragon</strong> — raiding towns</li>
+</ol>
+<ul>
+<li>Dragon fantasy becomes more dominant.</li>
+<li>Encounters include guards, watchtowers, caravans, town squares, treasure houses.</li>
+</ul>
+<ol>
+<li><strong>Dragon</strong> — raiding cities</li>
+</ol>
+<ul>
+<li>Large-scale fantasy threat.</li>
+<li>Encounters include city gates, battlements, guild halls, royal vaults, mage towers.</li>
+</ul>
+<ol>
+<li><strong>Ancient Dragon</strong> — mythical domination</li>
+</ol>
+<ul>
+<li>Endgame identity.</li>
+<li>Encounters become kingdoms, sky citadels, divine temples, rival ancient dragons, world bosses.</li>
+</ul>
+
+<h2>Evolution Timeline Targets</h2>
+
+<p>Evolution pacing should create long-term attachment without making early progression feel stalled.</p>
+
+<ul>
+<li><strong>Hatchling → Drake:</strong> 2–4 hours</li>
+<li><strong>Drake → Young Dragon:</strong> 3–7 days</li>
+<li><strong>Young Dragon → Dragon:</strong> about 1 month</li>
+<li><strong>Dragon → Ancient Dragon:</strong> 3–6 months</li>
+</ul>
+
+<p>Design implication:</p>
+
+<ul>
+<li>Hatchling and Drake need frequent visible progress.</li>
+<li>Young Dragon is where build identity becomes serious.</li>
+<li>Dragon is the long midgame prestige goal.</li>
+<li>Ancient Dragon is aspirational/endgame and can support very rare materials, long quest chains, and seasonal progression.</li>
+</ul>
+
+<h2>Battle Screen Direction</h2>
+
+<p>Battle chapters should focus almost entirely on combat.</p>
+
+<p>Required battle screen elements:</p>
+
+<ul>
+<li>Dragon HP bar</li>
+<li>Enemy/boss HP bar</li>
+<li>Roguelike experience bar for the current chapter/run</li>
+<li>Level-up moment offering <strong>3 skill choices</strong></li>
+<li>Skill choices from both:</li>
+<li>general skill pool</li>
+<li>evolution/element-specific skill pool</li>
+<li>Info button for:</li>
+<li>current stat profile</li>
+<li>selected skills</li>
+<li>active passives/status effects</li>
+<li>evolution branch identity</li>
+</ul>
+
+<p>Recommended layout:</p>
+
+<ul>
+<li>Top: chapter/battle progress, enemy name/type, enemy HP</li>
+<li>Center: large battle scene with dragon and enemy taking most of the screen</li>
+<li>Bottom: dragon HP, roguelike XP bar, skill icons/status row</li>
+<li>Corner: compact info button, pause/settings/reduced-motion if needed</li>
+</ul>
+
+<h2>Stat Model</h2>
+
+<p>Stats should be readable, impactful, and visually expressed in battle.</p>
+
+<h3>Core Stats</h3>
+
+<ul>
+<li><strong>HP</strong> — survivability; visible as dragon health bar.</li>
+<li><strong>Attack</strong> — base damage for claws, bite, tail, and many skills.</li>
+<li><strong>Defense</strong> — flat/percent damage reduction; visible via smaller incoming numbers.</li>
+<li><strong>Speed</strong> — turn frequency, attack cadence, and some dodge/initiative checks.</li>
+</ul>
+
+<h3>Offensive Build Stats</h3>
+
+<ul>
+<li><strong>Crit Chance</strong> — chance for critical hit.</li>
+<li><strong>Crit Damage</strong> — critical damage multiplier.</li>
+<li><strong>Combo Chance</strong> — chance to add an extra hit after an attack.</li>
+<li><strong>Skill Damage</strong> — boosts active/passive skill effects.</li>
+<li><strong>Breath Damage</strong> — boosts elemental breath attacks.</li>
+<li><strong>Element Damage</strong> — boosts fire/water/earth/light/dark effects.</li>
+</ul>
+
+<h3>Defensive Build Stats</h3>
+
+<ul>
+<li><strong>Block Chance</strong> — chance to reduce incoming damage.</li>
+<li><strong>Block Power</strong> — amount reduced when block triggers.</li>
+<li><strong>Dodge Chance</strong> — chance to avoid an attack entirely.</li>
+<li><strong>Damage Reduction</strong> — general percent mitigation.</li>
+<li><strong>Shield Power</strong> — amount of temporary barrier gained from skills.</li>
+<li><strong>Healing Received</strong> — improves healing effects.</li>
+</ul>
+
+<h3>Proc / Identity Stats</h3>
+
+<ul>
+<li><strong>Burn Chance / Burn Damage</strong> — fire damage over time.</li>
+<li><strong>Soak Chance</strong> — water debuff that increases lightning/frost/impact effects if those are added later.</li>
+<li><strong>Thorn Chance / Thorn Damage</strong> — earth retaliation.</li>
+<li><strong>Radiance Chance</strong> — light-triggered heal/crit/blind effects.</li>
+<li><strong>Curse Chance</strong> — dark-triggered weakness/drain/execute effects.</li>
+<li><strong>Rage Generation</strong> — fills ultimate meter faster.</li>
+<li><strong>Loot/Hoard Bonus</strong> — gold/material/relic reward scaling.</li>
+</ul>
+
+<h2>Visual Feedback Rules</h2>
+
+<p>Every important stat should show up in battle.</p>
+
+<ul>
+<li>Crit: bigger damage number, sharp flash, hit-stop, burst.</li>
+<li>Block: scale/shield flash, reduced incoming number, “BLOCK”.</li>
+<li>Dodge: wing hop/slide, miss text, enemy whiff animation.</li>
+<li>Speed: visibly faster attack cadence or initiative ticks.</li>
+<li>Combo: rapid second claw/bite hit with “COMBO”.</li>
+<li>Counter: tail swipe after enemy hit.</li>
+<li>Lifesteal/drain: green or purple healing number returning to dragon.</li>
+<li>Shield: visible temporary barrier on HP bar.</li>
+<li>Rage: glowing meter and dramatic ultimate trigger.</li>
+<li>Element procs: persistent icons/effects on enemies.</li>
+</ul>
+
+<p>---</p>
+
+<h1>Evolution Architecture</h1>
+
+<h2>Requested Branch Shape</h2>
+
+<p>Start with <strong>5 egg elements</strong>:</p>
+
+<ol>
+<li>Fire</li>
+<li>Water</li>
+<li>Earth</li>
+<li>Light</li>
+<li>Dark</li>
+</ol>
+
+<p>Each egg evolves as:</p>
+
+<ul>
+<li>Hatchling: 1 starting element identity</li>
+<li>Drake: choose 1 of 3 paths</li>
+<li>Young Dragon: each Drake path splits into 2 paths</li>
+<li>Dragon: each Young Dragon path splits into 2 paths</li>
+<li>Ancient Dragon: each Dragon path splits into 2 final paths</li>
+</ul>
+
+<p>This creates:</p>
+
+<ul>
+<li>5 Hatchlings</li>
+<li>15 Drake paths</li>
+<li>30 Young Dragon paths</li>
+<li>60 Dragon paths</li>
+<li>120 Ancient Dragon capstones</li>
+</ul>
+
+<p>Implementation recommendation:</p>
+
+<ul>
+<li>Do <strong>not</strong> hand-build 120 fully unique systems immediately.</li>
+<li>Build a scalable tag system:</li>
+<li>egg element</li>
+<li>drake archetype</li>
+<li>young specialization</li>
+<li>dragon mastery</li>
+<li>ancient capstone</li>
+<li>Let each tier add a small number of stats, skill tags, passives, and visual traits.</li>
+<li>This makes 120 end states possible without requiring 120 bespoke combat engines.</li>
+</ul>
+
+<p>---</p>
+
+<h1>Starting Eggs</h1>
+
+<h2>Fire Egg — Ember Hatchling</h2>
+
+<p>Fantasy: playful baby fire dragon learning to control flame.</p>
+
+<p>Base stat lean:</p>
+
+<ul>
+<li>High Attack</li>
+<li>Medium HP</li>
+<li>Low Defense</li>
+<li>Medium Speed</li>
+<li>Early Burn Chance</li>
+</ul>
+
+<p>Starter skills:</p>
+
+<ul>
+<li><strong>Spark Bite:</strong> basic attack has a small chance to Burn.</li>
+<li><strong>Tiny Flame Breath:</strong> breath attack deals fire damage to one enemy.</li>
+<li><strong>Warm Scales:</strong> small resistance to damage while Burn is active on an enemy.</li>
+</ul>
+
+<p>Early feel:</p>
+
+<ul>
+<li>Aggressive, flashy, slightly fragile.</li>
+<li>Best for players who like damage, explosions, and big crits.</li>
+</ul>
+
+<h2>Water Egg — Tide Hatchling</h2>
+
+<p>Fantasy: cute slippery dragon with bubbles, mist, and healing water.</p>
+
+<p>Base stat lean:</p>
+
+<ul>
+<li>Medium Attack</li>
+<li>High HP</li>
+<li>Medium Defense</li>
+<li>Medium Speed</li>
+<li>Early Healing/Soak utility</li>
+</ul>
+
+<p>Starter skills:</p>
+
+<ul>
+<li><strong>Bubble Jet:</strong> water hit with a chance to Soak.</li>
+<li><strong>Mist Mend:</strong> small self-heal after several turns.</li>
+<li><strong>Slippery Scales:</strong> tiny Dodge boost while above half HP.</li>
+</ul>
+
+<p>Early feel:</p>
+
+<ul>
+<li>Durable, forgiving, sustain-oriented.</li>
+<li>Best for players who like healing, control, and safe progression.</li>
+</ul>
+
+<h2>Earth Egg — Moss Hatchling</h2>
+
+<p>Fantasy: stout little dragon with stone scales, roots, and stubborn defense.</p>
+
+<p>Base stat lean:</p>
+
+<ul>
+<li>Medium Attack</li>
+<li>High HP</li>
+<li>High Defense</li>
+<li>Low Speed</li>
+<li>Early Block/Thorns</li>
+</ul>
+
+<p>Starter skills:</p>
+
+<ul>
+<li><strong>Pebble Slam:</strong> earth hit with bonus damage if the dragon blocked recently.</li>
+<li><strong>Stone Snout:</strong> chance to Block incoming damage.</li>
+<li><strong>Briar Scales:</strong> blocked hits can return small thorn damage.</li>
+</ul>
+
+<p>Early feel:</p>
+
+<ul>
+<li>Tanky, steady, chunky.</li>
+<li>Best for players who like shields, defense, and retaliation.</li>
+</ul>
+
+<h2>Light Egg — Dawn Hatchling</h2>
+
+<p>Fantasy: radiant hatchling with holy sparkle, courage, and lucky bursts.</p>
+
+<p>Base stat lean:</p>
+
+<ul>
+<li>Medium Attack</li>
+<li>Medium HP</li>
+<li>Medium Defense</li>
+<li>High Crit support</li>
+<li>Light healing/blind utility</li>
+</ul>
+
+<p>Starter skills:</p>
+
+<ul>
+<li><strong>Gleam Claw:</strong> attack with increased Crit Chance.</li>
+<li><strong>Guiding Glow:</strong> small heal or shield after leveling up during a run.</li>
+<li><strong>Flashburst:</strong> chance to Blind/interrupt an enemy attack.</li>
+</ul>
+
+<p>Early feel:</p>
+
+<ul>
+<li>Heroic, lucky, clean, bursty-supportive.</li>
+<li>Best for players who like crits, clutch saves, and radiant effects.</li>
+</ul>
+
+<h2>Dark Egg — Umbral Hatchling</h2>
+
+<p>Fantasy: mischievous shadow baby dragon that drains, curses, and hides.</p>
+
+<p>Base stat lean:</p>
+
+<ul>
+<li>Medium Attack</li>
+<li>Medium HP</li>
+<li>Low Defense</li>
+<li>High Dodge/Drain potential</li>
+<li>Early Curse/Lifesteal</li>
+</ul>
+
+<p>Starter skills:</p>
+
+<ul>
+<li><strong>Shadow Nibble:</strong> small lifesteal attack.</li>
+<li><strong>Creeping Curse:</strong> chance to reduce enemy Attack.</li>
+<li><strong>Fade Step:</strong> small Dodge boost after taking damage.</li>
+</ul>
+
+<p>Early feel:</p>
+
+<ul>
+<li>Sneaky, risky, snowbally.</li>
+<li>Best for players who like drain, curses, executes, and evasive builds.</li>
+</ul>
+
+<p>---</p>
+
+<h1>Drake Paths</h1>
+
+<p>Each hatchling should choose one of three Drake paths after roughly 2–4 hours.</p>
+
+<p>Each Drake path should feel like the first real identity choice.</p>
+
+<h2>Fire → Drake Paths</h2>
+
+<h3>1. Flame Drake</h3>
+
+<p>Role: direct fire damage and Burn.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Attack +++</li>
+<li>Breath Damage ++</li>
+<li>Burn Chance ++</li>
+<li>Defense -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Kindled Hunger:</strong> Burned enemies take increased damage from bite/claw attacks.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Flame Fan:</strong> breath hits all enemies lightly.</li>
+<li><strong>Searing Bite:</strong> bite refreshes Burn duration.</li>
+<li><strong>Ash Snack:</strong> heal a little when a Burned enemy dies.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Inferno Young Dragon:</strong> Burn stacking and explosions.</li>
+<li><strong>Volcanic Young Dragon:</strong> slower, heavier fire hits with armor melt.</li>
+</ul>
+
+<h3>2. Smoke Drake</h3>
+
+<p>Role: evasion, blind, dodge-counter.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Speed ++</li>
+<li>Dodge ++</li>
+<li>Crit Chance +</li>
+<li>HP -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Smoke Veil:</strong> after dodging, next attack has bonus Crit Chance.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Cinder Dash:</strong> dodge grants a small fire counter.</li>
+<li><strong>Blinding Smoke:</strong> chance to make enemy attacks miss.</li>
+<li><strong>Backdraft:</strong> dodging can trigger a weak breath attack.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Ashen Young Dragon:</strong> dodge, blind, evasive attrition.</li>
+<li><strong>Cinderfang Young Dragon:</strong> dodge into crit/combo aggression.</li>
+</ul>
+
+<h3>3. Magma Drake</h3>
+
+<p>Role: bruiser, fire + earth durability.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>HP ++</li>
+<li>Defense ++</li>
+<li>Attack +</li>
+<li>Speed -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Molten Scales:</strong> blocked hits can Burn the attacker.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Lava Hide:</strong> gain shield when applying Burn.</li>
+<li><strong>Molten Slam:</strong> heavy attack that scales with Defense.</li>
+<li><strong>Cracked Ground:</strong> chance to slow enemy Speed.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Lava Young Dragon:</strong> tanky Burn and shields.</li>
+<li><strong>Obsidian Young Dragon:</strong> block, thorns, anti-crit armor.</li>
+</ul>
+
+<h2>Water → Drake Paths</h2>
+
+<h3>1. Tide Drake</h3>
+
+<p>Role: sustain and steady water damage.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>HP ++</li>
+<li>Healing ++</li>
+<li>Breath Damage +</li>
+<li>Crit -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Flow State:</strong> every few turns, heal a small percent of missing HP.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Tidal Breath:</strong> water breath applies Soak.</li>
+<li><strong>Renewing Mist:</strong> heal after level-up skill picks.</li>
+<li><strong>Undertow:</strong> Soaked enemies lose Speed.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>River Young Dragon:</strong> healing, cleansing, survivability.</li>
+<li><strong>Wavecrash Young Dragon:</strong> water burst and knockback-style control.</li>
+</ul>
+
+<h3>2. Frost Drake</h3>
+
+<p>Role: shields, slow, freeze control.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Defense ++</li>
+<li>Shield Power ++</li>
+<li>Control ++</li>
+<li>Speed -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Rime Guard:</strong> gain shield when slowing or freezing an enemy.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Frost Breath:</strong> chance to Slow.</li>
+<li><strong>Ice Shell:</strong> shield at battle start.</li>
+<li><strong>Shatter:</strong> crits deal bonus damage to Slowed enemies.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Glacier Young Dragon:</strong> massive shields and freeze.</li>
+<li><strong>Hailstorm Young Dragon:</strong> multi-hit frost shards and crit-shatter.</li>
+</ul>
+
+<h3>3. Mist Drake</h3>
+
+<p>Role: dodge, healing, evasive utility.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Dodge ++</li>
+<li>Speed ++</li>
+<li>Healing +</li>
+<li>Attack -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Vapor Form:</strong> first lethal hit in a run can leave the dragon at 1 HP with a mist shield. Long cooldown.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Mist Step:</strong> Dodge grants healing.</li>
+<li><strong>Fog Bank:</strong> reduce enemy accuracy.</li>
+<li><strong>Hidden Current:</strong> after dodging, next breath applies Soak.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Cloud Young Dragon:</strong> evasive support and blinds.</li>
+<li><strong>Mirage Young Dragon:</strong> dodge into counter/crit illusions.</li>
+</ul>
+
+<h2>Earth → Drake Paths</h2>
+
+<h3>1. Stone Drake</h3>
+
+<p>Role: pure defense and block.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Defense +++</li>
+<li>Block Chance ++</li>
+<li>HP ++</li>
+<li>Speed --</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Stonewall:</strong> block cannot reduce damage below a useful minimum, but always triggers a visible shield flash.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Granite Guard:</strong> increase Block Power.</li>
+<li><strong>Heavy Tail:</strong> counterattack after blocking.</li>
+<li><strong>Fortify:</strong> gain Defense each battle, capped for the run.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Mountain Young Dragon:</strong> maximum tank, shields, boss survival.</li>
+<li><strong>Ironhide Young Dragon:</strong> block/counter specialist.</li>
+</ul>
+
+<h3>2. Thorn Drake</h3>
+
+<p>Role: retaliation and bleed/poison-like nature damage.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>HP ++</li>
+<li>Thorn Damage ++</li>
+<li>Counter ++</li>
+<li>Speed -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Briar Back:</strong> enemies that hit the dragon take thorn damage.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Root Snare:</strong> chance to slow enemies after countering.</li>
+<li><strong>Bramble Armor:</strong> thorns scale with Defense.</li>
+<li><strong>Splinter Bite:</strong> attacks increase thorn damage taken by the target.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Briar Young Dragon:</strong> thorns, roots, attrition.</li>
+<li><strong>Venomroot Young Dragon:</strong> poison/debuff hybrid.</li>
+</ul>
+
+<h3>3. Crystal Drake</h3>
+
+<p>Role: defense plus crit/reflection.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Defense ++</li>
+<li>Crit Damage ++</li>
+<li>Reflect +</li>
+<li>HP +</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Prism Scales:</strong> blocked hits charge the next crit or breath.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Crystal Spike:</strong> crits pierce some Defense.</li>
+<li><strong>Prismatic Guard:</strong> shield reflects a percent of damage.</li>
+<li><strong>Shard Burst:</strong> shield break damages enemy.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Gem Young Dragon:</strong> crit/reflect hybrid.</li>
+<li><strong>Prism Young Dragon:</strong> elemental amplification and skill damage.</li>
+</ul>
+
+<h2>Light → Drake Paths</h2>
+
+<h3>1. Dawn Drake</h3>
+
+<p>Role: healing, shields, safe progression.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Healing ++</li>
+<li>Shield Power ++</li>
+<li>HP +</li>
+<li>Attack -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>First Light:</strong> once per battle, falling below 30% HP grants a shield and heal.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Sunbeam:</strong> light breath with bonus vs cursed/dark enemies.</li>
+<li><strong>Hope Spark:</strong> heal when choosing a skill.</li>
+<li><strong>Radiant Guard:</strong> shield improves Crit Chance briefly.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Solar Young Dragon:</strong> healing and radiant damage.</li>
+<li><strong>Guardian Young Dragon:</strong> shields, protection, revive-lite effects.</li>
+</ul>
+
+<h3>2. Stormlight Drake</h3>
+
+<p>Role: crit, speed, radiant lightning.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Speed ++</li>
+<li>Crit Chance ++</li>
+<li>Combo +</li>
+<li>Defense -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Flashpoint:</strong> crits can trigger a small chain-light burst.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Lightning Gleam:</strong> crits deal bonus light damage.</li>
+<li><strong>Quick Halo:</strong> Speed increases Crit Chance slightly.</li>
+<li><strong>Triple Spark:</strong> combo hits build Radiance.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Tempest Young Dragon:</strong> speed/combo/lightning.</li>
+<li><strong>Star Young Dragon:</strong> crit damage and radiant bursts.</li>
+</ul>
+
+<h3>3. Sacred Drake</h3>
+
+<p>Role: anti-dark, cleanse, boss resilience.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Defense +</li>
+<li>Healing +</li>
+<li>Skill Damage ++</li>
+<li>Crit +</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Consecration:</strong> bosses deal slightly reduced damage while Radiance is active.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Cleanse Flame:</strong> remove a debuff and heal.</li>
+<li><strong>Judgment Bite:</strong> bonus damage to elites/bosses.</li>
+<li><strong>Sacred Aura:</strong> periodic shield pulse.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Seraph Young Dragon:</strong> cleanse, revive, radiant aura.</li>
+<li><strong>Judgment Young Dragon:</strong> boss damage and execution thresholds.</li>
+</ul>
+
+<h2>Dark → Drake Paths</h2>
+
+<h3>1. Shadow Drake</h3>
+
+<p>Role: dodge, crit, stealth strikes.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Dodge ++</li>
+<li>Crit Chance ++</li>
+<li>Speed +</li>
+<li>Defense -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>From the Dark:</strong> after dodging, next hit deals bonus dark damage.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Night Slash:</strong> crits apply Curse.</li>
+<li><strong>Fade:</strong> gain Dodge after taking damage.</li>
+<li><strong>Ambush Bite:</strong> first attack in battle has high Crit Chance.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Night Young Dragon:</strong> dodge/crit assassin.</li>
+<li><strong>Voidstep Young Dragon:</strong> dodge/teleport/counter magic.</li>
+</ul>
+
+<h3>2. Blood Drake</h3>
+
+<p>Role: lifesteal, self-damage risk, drain.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Lifesteal +++</li>
+<li>Attack ++</li>
+<li>HP +</li>
+<li>Defense -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Blood Feast:</strong> overhealing can become a temporary shield.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Drain Bite:</strong> lifesteal attack.</li>
+<li><strong>Crimson Pact:</strong> spend HP for bonus damage.</li>
+<li><strong>Predator Rush:</strong> killing an enemy grants Speed briefly.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Vampiric Young Dragon:</strong> heavy lifesteal and sustain.</li>
+<li><strong>Ravager Young Dragon:</strong> high-risk self-damage burst.</li>
+</ul>
+
+<h3>3. Curse Drake</h3>
+
+<p>Role: debuffs, damage over time, execute.</p>
+
+<p>Stat lean:</p>
+
+<ul>
+<li>Skill Damage ++</li>
+<li>Curse Chance ++</li>
+<li>Boss Control +</li>
+<li>Speed -</li>
+</ul>
+
+<p>Signature passive:</p>
+
+<ul>
+<li><strong>Hex Mark:</strong> cursed enemies take increasing damage from repeated hits.</li>
+</ul>
+
+<p>Skill pool examples:</p>
+
+<ul>
+<li><strong>Weakening Hex:</strong> reduce enemy Attack.</li>
+<li><strong>Doom Whisper:</strong> low-health enemies take bonus damage.</li>
+<li><strong>Soul Tax:</strong> enemies lose HP when they buff or attack.</li>
+</ul>
+
+<p>Young Dragon split:</p>
+
+<ul>
+<li><strong>Hex Young Dragon:</strong> layered curses and debuffs.</li>
+<li><strong>Reaper Young Dragon:</strong> execute thresholds and soul gain.</li>
+</ul>
+
+<p>---</p>
+
+<h1>Young Dragon, Dragon, and Ancient Structure</h1>
+
+<p>Because the full tree reaches 120 ancient endings, use a repeatable specialization model.</p>
+
+<p>Each <strong>Drake path</strong> splits into two <strong>Young Dragon</strong> paths:</p>
+
+<ul>
+<li>One path should intensify the obvious fantasy.</li>
+<li>One path should hybridize or twist it.</li>
+</ul>
+
+<p>Each <strong>Young Dragon</strong> splits into two <strong>Dragon</strong> paths:</p>
+
+<ul>
+<li>One path should be reliable/scaling.</li>
+<li>One path should be explosive/risky/specialized.</li>
+</ul>
+
+<p>Each <strong>Dragon</strong> splits into two <strong>Ancient Dragon</strong> capstones:</p>
+
+<ul>
+<li>One path should be the majestic/mythic mastery version.</li>
+<li>One path should be the dangerous/legendary/forbidden version.</li>
+</ul>
+
+<h2>Example Full Branches</h2>
+
+<h3>Fire Example: Flame Drake → Inferno Young Dragon</h3>
+
+<p>Dragon split:</p>
+
+<ol>
+<li><strong>Wildfire Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: spreading Burn, multi-enemy fights, mob clearing.</li>
+<li>Stats: Burn Damage, Combo, Breath Damage.</li>
+<li>Skills:</li>
+<li><strong>Wildfire Spread:</strong> Burn can jump to another enemy.</li>
+<li><strong>Kindling Combo:</strong> combo hits deal bonus damage to Burning enemies.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Phoenixfire Dragon</strong></li>
+<li>Safer capstone: Burn heals the dragon slightly when enemies fall.</li>
+<li>Theme: rebirth, radiant flame, survivability.</li>
+<li><strong>Ancient Worldfire Dragon</strong></li>
+<li>Dangerous capstone: Burn can stack very high and explode, but defensive stats are lower.</li>
+<li>Theme: apocalypse flame.</li>
+</ul>
+
+<ol>
+<li><strong>Hellflare Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: huge breath attacks and boss melting.</li>
+<li>Stats: Breath Damage, Crit Damage, Rage Generation.</li>
+<li>Skills:</li>
+<li><strong>Hellflare Breath:</strong> ultimate breath consumes Burn stacks for burst damage.</li>
+<li><strong>Furnace Heart:</strong> rage fills faster while enemies are Burning.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Sun-Eater Dragon</strong></li>
+<li>Mythic mastery: massive breath, self-shield after ultimate.</li>
+<li><strong>Ancient Calamity Dragon</strong></li>
+<li>Forbidden mastery: extreme boss damage, self-overheat risk.</li>
+</ul>
+
+<h3>Water Example: Frost Drake → Glacier Young Dragon</h3>
+
+<p>Dragon split:</p>
+
+<ol>
+<li><strong>Icewall Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: shields, freeze, boss survival.</li>
+<li>Stats: Shield Power, Defense, Freeze Chance.</li>
+<li>Skills:</li>
+<li><strong>Glacier Wall:</strong> shield grows when enemy is slowed.</li>
+<li><strong>Permafrost:</strong> freeze lasts longer on elites/bosses, but at reduced strength.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Crown-Glacier Dragon</strong></li>
+<li>Mythic mastery: nearly unbreakable shield cycles.</li>
+<li><strong>Ancient Absolute-Zero Dragon</strong></li>
+<li>Forbidden mastery: freeze-control focus with lower damage.</li>
+</ul>
+
+<ol>
+<li><strong>Shatterstorm Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: frost crits and shard explosions.</li>
+<li>Stats: Crit Chance, Crit Damage, Skill Damage.</li>
+<li>Skills:</li>
+<li><strong>Shatter Crit:</strong> crits against slowed enemies burst for AoE frost damage.</li>
+<li><strong>Hail Barrage:</strong> combo hits launch frost shards.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Aurora Dragon</strong></li>
+<li>Majestic mastery: balanced crits, shields, and visual spectacle.</li>
+<li><strong>Ancient Whiteout Dragon</strong></li>
+<li>Dangerous mastery: high crit storm, lower sustain.</li>
+</ul>
+
+<h3>Earth Example: Stone Drake → Mountain Young Dragon</h3>
+
+<p>Dragon split:</p>
+
+<ol>
+<li><strong>Titanhide Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: pure tank, block, boss endurance.</li>
+<li>Stats: HP, Defense, Block Power.</li>
+<li>Skills:</li>
+<li><strong>Titanhide:</strong> damage cannot exceed a percent of max HP from normal hits.</li>
+<li><strong>Immovable:</strong> blocking charges a heavy tail counter.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Worldback Dragon</strong></li>
+<li>Majestic mastery: enormous HP/Defense and team/companion protection later.</li>
+<li><strong>Ancient Mountain-Eater Dragon</strong></li>
+<li>Dangerous mastery: converts Defense into damage, slower but devastating.</li>
+</ul>
+
+<ol>
+<li><strong>Quake Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: slow heavy hits, stun/interrupt, defense-scaling damage.</li>
+<li>Stats: Defense, Attack, Counter.</li>
+<li>Skills:</li>
+<li><strong>Quake Stomp:</strong> heavy hit can interrupt enemy action.</li>
+<li><strong>Faultline:</strong> every block increases next earth attack.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Earthshaker Dragon</strong></li>
+<li>Mythic mastery: reliable quake control.</li>
+<li><strong>Ancient Cataclysm Dragon</strong></li>
+<li>Forbidden mastery: huge delayed damage and self-slow.</li>
+</ul>
+
+<h3>Light Example: Stormlight Drake → Tempest Young Dragon</h3>
+
+<p>Dragon split:</p>
+
+<ol>
+<li><strong>Thunderhalo Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: speed, crit, chain light bursts.</li>
+<li>Stats: Speed, Crit Chance, Combo.</li>
+<li>Skills:</li>
+<li><strong>Thunderhalo:</strong> every third crit chains radiant lightning.</li>
+<li><strong>Bright Tempo:</strong> Speed increases roguelike XP gain slightly after battles.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Starstorm Dragon</strong></li>
+<li>Majestic mastery: radiant chain-lightning spectacle.</li>
+<li><strong>Ancient Heavenpiercer Dragon</strong></li>
+<li>Dangerous mastery: extreme crit burst, fragile if unlucky.</li>
+</ul>
+
+<ol>
+<li><strong>Comet Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: huge crit damage and ultimate impacts.</li>
+<li>Stats: Crit Damage, Rage Generation, Skill Damage.</li>
+<li>Skills:</li>
+<li><strong>Cometfall:</strong> ultimate deals bonus damage based on crit stats.</li>
+<li><strong>Radiant Impact:</strong> crits build ultimate charge.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Celestial Dragon</strong></li>
+<li>Mythic mastery: balanced crit/rage/heal.</li>
+<li><strong>Ancient Judgment Star Dragon</strong></li>
+<li>Forbidden mastery: boss-execution light damage.</li>
+</ul>
+
+<h3>Dark Example: Blood Drake → Vampiric Young Dragon</h3>
+
+<p>Dragon split:</p>
+
+<ol>
+<li><strong>Nightfeast Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: lifesteal sustain, kill chaining.</li>
+<li>Stats: Lifesteal, Attack, Speed.</li>
+<li>Skills:</li>
+<li><strong>Nightfeast:</strong> kills grant temporary attack speed and healing.</li>
+<li><strong>Blood Shield:</strong> overhealing becomes shield.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Crimson Moon Dragon</strong></li>
+<li>Majestic/dark mastery: sustain monster with moonlit visuals.</li>
+<li><strong>Ancient Devourer Dragon</strong></li>
+<li>Forbidden mastery: execute and consume enemies for scaling power.</li>
+</ul>
+
+<ol>
+<li><strong>Bloodrage Dragon</strong></li>
+</ol>
+<ul>
+<li>Build: self-damage, rage, burst.</li>
+<li>Stats: Attack, Rage Generation, Crit Damage.</li>
+<li>Skills:</li>
+<li><strong>Bloodrage:</strong> spending HP grants rage.</li>
+<li><strong>Ravenous Crit:</strong> crits heal more when below half HP.</li>
+</ul>
+
+<p>   Ancient split:</p>
+<ul>
+<li><strong>Ancient Sanguine Dragon</strong></li>
+<li>Mythic mastery: controlled blood magic, sustain/burst balance.</li>
+<li><strong>Ancient Abyssal Hunger Dragon</strong></li>
+<li>Dangerous mastery: extreme damage at low HP.</li>
+</ul>
+
+<p>---</p>
+
+<h1>General Roguelike Skill Pool</h1>
+
+<p>These can appear for any evolution path.</p>
+
+<h2>Common Skills</h2>
+
+<ul>
+<li><strong>Tough Scales:</strong> +Max HP.</li>
+<li><strong>Sharpened Claws:</strong> +Attack.</li>
+<li><strong>Guarded Stance:</strong> +Defense.</li>
+<li><strong>Quick Wings:</strong> +Speed.</li>
+<li><strong>Lucky Bite:</strong> +Crit Chance.</li>
+<li><strong>Heavy Fangs:</strong> +Crit Damage.</li>
+<li><strong>Second Swipe:</strong> +Combo Chance.</li>
+<li><strong>Scale Block:</strong> +Block Chance.</li>
+<li><strong>Wing Dodge:</strong> +Dodge Chance.</li>
+<li><strong>Treasure Nose:</strong> +Gold/loot from this run.</li>
+</ul>
+
+<h2>Rare Skills</h2>
+
+<ul>
+<li><strong>Rage Spark:</strong> gain more ultimate meter.</li>
+<li><strong>Battle Snack:</strong> heal after each fight.</li>
+<li><strong>Boss Grudge:</strong> bonus damage to elites/bosses.</li>
+<li><strong>Finisher:</strong> bonus damage to low-HP enemies.</li>
+<li><strong>Momentum:</strong> winning quickly grants Speed for the next battle.</li>
+<li><strong>Thick Hide:</strong> reduce all incoming damage by a small percent.</li>
+<li><strong>Veteran Instinct:</strong> first hit in each battle has increased Crit Chance.</li>
+</ul>
+
+<h2>Epic Skills</h2>
+
+<ul>
+<li><strong>Dragon Fury:</strong> unlock or enhance a temporary ultimate.</li>
+<li><strong>Hoard Fever:</strong> rewards improve, but enemies hit slightly harder.</li>
+<li><strong>Last Stand:</strong> below 30% HP, gain Attack and Defense.</li>
+<li><strong>Perfect Guard:</strong> first block each battle negates extra damage.</li>
+<li><strong>Predator Chain:</strong> defeating an enemy grants an immediate follow-up attack.</li>
+<li><strong>Elemental Awakening:</strong> increases current evolution element effects.</li>
+</ul>
+
+<p>---</p>
+
+<h1>Element Skill Pools</h1>
+
+<h2>Fire Skills</h2>
+
+<ul>
+<li><strong>Burning Breath:</strong> breath applies Burn.</li>
+<li><strong>Wildfire:</strong> Burn can spread.</li>
+<li><strong>Explosive Ash:</strong> Burned enemies explode on death.</li>
+<li><strong>Molten Claws:</strong> attacks against Burning enemies deal bonus damage.</li>
+<li><strong>Furnace Heart:</strong> Burn ticks grant rage.</li>
+</ul>
+
+<h2>Water Skills</h2>
+
+<ul>
+<li><strong>Soaking Breath:</strong> apply Soak.</li>
+<li><strong>Renewing Mist:</strong> periodic healing.</li>
+<li><strong>Tidal Pull:</strong> Soaked enemies lose Speed.</li>
+<li><strong>Bubble Shield:</strong> gain shield after water skills.</li>
+<li><strong>Deep Current:</strong> healing also boosts next attack.</li>
+</ul>
+
+<h2>Earth Skills</h2>
+
+<ul>
+<li><strong>Stone Guard:</strong> increased Block Power.</li>
+<li><strong>Briar Scales:</strong> attackers take thorn damage.</li>
+<li><strong>Root Snare:</strong> chance to slow after being hit.</li>
+<li><strong>Quake Tail:</strong> counterattacks can stun/interrupt.</li>
+<li><strong>Crystal Shell:</strong> shield reflects damage.</li>
+</ul>
+
+<h2>Light Skills</h2>
+
+<ul>
+<li><strong>Radiant Claw:</strong> increased Crit Chance.</li>
+<li><strong>Guiding Glow:</strong> heal/shield after level-up.</li>
+<li><strong>Blinding Flash:</strong> chance to make enemy miss.</li>
+<li><strong>Judgment:</strong> bonus damage to elites/bosses.</li>
+<li><strong>Halo Burst:</strong> crits create small radiant AoE.</li>
+</ul>
+
+<h2>Dark Skills</h2>
+
+<ul>
+<li><strong>Drain Bite:</strong> lifesteal.</li>
+<li><strong>Creeping Curse:</strong> reduce enemy Attack.</li>
+<li><strong>Fade Step:</strong> Dodge after taking damage.</li>
+<li><strong>Soul Mark:</strong> repeated hits increase damage taken.</li>
+<li><strong>Execute:</strong> bonus damage to low-HP enemies.</li>
+</ul>
+
+<p>---</p>
+
+<h1>Recommended First Implementation Slice</h1>
+
+<p>Do not try to implement the full tree first.</p>
+
+<p>First playable slice:</p>
+
+<ol>
+<li>Five selectable eggs:</li>
+</ol>
+<ul>
+<li>Fire, Water, Earth, Light, Dark</li>
+</ul>
+<ol>
+<li>Hatchling battle screen focus:</li>
+</ol>
+<ul>
+<li>dragon HP bar</li>
+<li>enemy HP bar</li>
+<li>roguelike XP bar</li>
+<li>level-up 3-skill pick</li>
+<li>info button for stats and selected skills</li>
+</ul>
+<ol>
+<li>One Drake choice preview per element:</li>
+</ol>
+<ul>
+<li>show the three future Drake paths, locked until evolution</li>
+</ul>
+<ol>
+<li>First dungeon-crawling chapter theme:</li>
+</ol>
+<ul>
+<li>rooms/fights/treasures/shrines/boss</li>
+</ul>
+<ol>
+<li>Implement only enough stats to prove impact:</li>
+</ol>
+<ul>
+<li>HP, Attack, Defense, Speed</li>
+<li>Crit Chance, Crit Damage</li>
+<li>Block Chance, Dodge Chance</li>
+<li>one element proc per egg</li>
+</ul>
+
+<p>Success criteria:</p>
+
+<ul>
+<li>Player understands their chosen egg identity within 2 minutes.</li>
+<li>Battles take most of the screen and feel active.</li>
+<li>Leveling during a run creates a clear 3-choice roguelike moment.</li>
+<li>Stats and skills selected are visible from the info button.</li>
+<li>The first Drake evolution preview makes the player want to keep playing.</li>
+</ul>
+
+<h2>Open Design Questions</h2>
+
+<p>These can be answered later; implementation should not block on them yet.</p>
+
+<ul>
+<li>Should players own one dragon at a time or collect multiple dragons?</li>
+<li>Can eggs/evolution branches be changed later, or are they permanent per dragon?</li>
+<li>Should Ancient Dragon be one final choice or allow prestige into a new egg cycle?</li>
+<li>Should Light/Dark be rarer unlocks or equal starter eggs? Current direction says all five are starter eggs.</li>
+<li>Should skill choices be purely random, weighted by branch tags, or include rerolls?</li>
+</ul>
+
+<h2>Implementation Guardrails</h2>
+
+<ul>
+<li>Keep first build data-driven.</li>
+<li>Use tags for skills/evolutions instead of hardcoding every branch.</li>
+<li>Add automation that verifies:</li>
+<li>five egg options exist</li>
+<li>each egg has three Drake paths</li>
+<li>battle screen exposes HP, XP, 3 skill choices, info button</li>
+<li>stat profile includes the agreed stat names</li>
+<li>skill picks are stored and visible</li>
+<li>Avoid adding monetization UI during this slice.</li>
+<li>Avoid hiding core battle behind map UI; battle is the main screen for chapters.</li>
+</ul></body></html>
