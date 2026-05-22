@@ -1,0 +1,156 @@
+{
+  "skeleton": {
+    "spine": "4.2.00",
+    "hash": "fire-hatchling-A-subtle-life-v1",
+    "images": "C:\\Users\\logan\\OneDrive\\Desktop\\Isekai Dragons\\assets\\dragons\\fire-hatchling-canon-source\\spine-preview-A-v1\\images\\"
+  },
+  "bones": [
+    {
+      "name": "root"
+    }
+  ],
+  "slots": [
+    {
+      "name": "slot_canon_base",
+      "bone": "root",
+      "attachment": "canon_base"
+    },
+    {
+      "name": "slot_eyelid_blink",
+      "bone": "root",
+      "attachment": "eyelid_blink",
+      "color": "ffffff00"
+    }
+  ],
+  "skins": [
+    {
+      "name": "default",
+      "attachments": {
+        "slot_canon_base": {
+          "canon_base": {
+            "type": "region",
+            "path": "canon_base",
+            "x": 0,
+            "y": 0,
+            "width": 1024,
+            "height": 576
+          }
+        },
+        "slot_eyelid_blink": {
+          "eyelid_blink": {
+            "type": "region",
+            "path": "eyelid_blink",
+            "x": 0,
+            "y": 0,
+            "width": 1024,
+            "height": 576
+          }
+        }
+      }
+    }
+  ],
+  "animations": {
+    "subtle_life_loop": {
+      "bones": {
+        "root": {
+          "translate": [
+            {
+              "time": 0,
+              "x": 0,
+              "y": 0
+            },
+            {
+              "time": 0.75,
+              "x": 0.3,
+              "y": -0.6,
+              "curve": "smooth"
+            },
+            {
+              "time": 1.5,
+              "x": 0,
+              "y": 0,
+              "curve": "smooth"
+            },
+            {
+              "time": 2.25,
+              "x": -0.3,
+              "y": 0.4,
+              "curve": "smooth"
+            },
+            {
+              "time": 3.0,
+              "x": 0,
+              "y": 0,
+              "curve": "smooth"
+            }
+          ],
+          "scale": [
+            {
+              "time": 0,
+              "x": 1,
+              "y": 1
+            },
+            {
+              "time": 0.75,
+              "x": 1.0018,
+              "y": 1.0028,
+              "curve": "smooth"
+            },
+            {
+              "time": 1.5,
+              "x": 1,
+              "y": 1,
+              "curve": "smooth"
+            },
+            {
+              "time": 2.25,
+              "x": 0.9988,
+              "y": 0.9988,
+              "curve": "smooth"
+            },
+            {
+              "time": 3.0,
+              "x": 1,
+              "y": 1,
+              "curve": "smooth"
+            }
+          ]
+        }
+      },
+      "slots": {
+        "slot_eyelid_blink": {
+          "rgba": [
+            {
+              "time": 0,
+              "color": "FFFFFF00"
+            },
+            {
+              "time": 1.45,
+              "color": "FFFFFF00",
+              "curve": "stepped"
+            },
+            {
+              "time": 1.55,
+              "color": "FFFFFF99",
+              "curve": "smooth"
+            },
+            {
+              "time": 1.62,
+              "color": "FFFFFFF0",
+              "curve": "smooth"
+            },
+            {
+              "time": 1.72,
+              "color": "FFFFFF00",
+              "curve": "smooth"
+            },
+            {
+              "time": 3.0,
+              "color": "FFFFFF00"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

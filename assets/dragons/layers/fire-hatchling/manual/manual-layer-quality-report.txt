@@ -1,0 +1,15 @@
+Fire hatchling manual layer quality report
+source=C:\Users\logan\OneDrive\Desktop\Isekai Dragons\assets\dragons\fire-hatchling-cutout.png
+layer_dir=C:\Users\logan\OneDrive\Desktop\Isekai Dragons\assets\dragons\layers\fire-hatchling\manual
+order=['body', 'wing-far', 'tail', 'wing-near', 'head']
+diff_bbox=(312, 57, 1202, 901)
+alpha_diff_bbox=(312, 57, 1202, 901)
+mean_rgba_diff=[14.863, 14.551, 14.188, 0.183]
+rms_rgba_diff=[18.829, 18.407, 17.99, 2.96]
+mean_alpha_diff=0.183
+rms_alpha_diff=2.96
+body_bbox=(312, 57, 1202, 942)
+wing-far_bbox=(345, 194, 902, 637)
+tail_bbox=(312, 517, 662, 902)
+wing-near_bbox=(789, 224, 1202, 802)
+head_bbox=(403, 57, 1151, 627)

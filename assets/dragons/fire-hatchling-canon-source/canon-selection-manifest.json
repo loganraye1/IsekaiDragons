@@ -1,0 +1,15 @@
+{
+  "state": "CANON_SELECTION",
+  "selection": "A_uploaded_fire_scarf_dragon",
+  "approved_by": "Topnotch",
+  "approval_note": "I say we use a as the source image for fire hatchling",
+  "canon_source_original": "/mnt/c/Users/logan/OneDrive/Desktop/Isekai Dragons/assets/dragons/fire-hatchling-canon-source/fire-hatchling-canon-source-A-approved-original.jpg",
+  "canon_source_png": "/mnt/c/Users/logan/OneDrive/Desktop/Isekai Dragons/assets/dragons/fire-hatchling-canon-source/fire-hatchling-canon-source-A-approved.png",
+  "source_sha256": "9bb40b9ac2d288d66afaf6c3f223fbfe42520db9d5e48ed65c9fe4592ac30d08",
+  "size": [
+    1024,
+    576
+  ],
+  "next_state": "MINIMAL_SEPARATION_BUILD",
+  "next_allowed_scope": "derive minimal animation-ready source from approved design; no advanced mesh/deformation complexity"
+}

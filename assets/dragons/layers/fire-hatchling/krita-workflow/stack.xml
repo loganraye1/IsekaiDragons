@@ -1,0 +1,11 @@
+<image w="1536" h="1024" version="0.0.3">
+  <stack name="root">
+      <layer name="RED seam notes / hidden-area paint needs" src="data/seam_notes_red.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+      <layer name="NEAR WING paint here" src="data/wing_near_paint_here.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+      <layer name="TAIL paint here" src="data/tail_paint_here.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+      <layer name="FAR WING paint here" src="data/wing_far_paint_here.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+      <layer name="HEAD + HORNS paint here" src="data/head_paint_here.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+      <layer name="BODY paint here" src="data/body_paint_here.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+      <layer name="Reference - approved cutout (do not edit)" src="data/reference_locked_do_not_edit.png" x="0" y="0" opacity="1.0" visibility="visible" composite-op="svg:src-over"/>
+  </stack>
+</image>
