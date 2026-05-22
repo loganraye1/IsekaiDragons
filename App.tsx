@@ -6298,11 +6298,13 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
   const element = state.dragon.element ?? "fire";
   const theme = elementTheme[element];
   const exchangePulse = useRef(new Animated.Value(0)).current;
+  const enemyDeathPulse = useRef(new Animated.Value(1)).current;
   const battleEvents = useMemo(() => (battle ? getBattleExchangeEvents(battle) : []), [battle]);
   const [battleStarted, setBattleStarted] = useState(false);
   const [currentExchangeIndex, setCurrentExchangeIndex] = useState(-1);
   const activeExchange = currentExchangeIndex >= 0 && currentExchangeIndex < battleEvents.length ? battleEvents[currentExchangeIndex] : null;
   const exchangeComplete = battleStarted && currentExchangeIndex >= battleEvents.length;
+  const previousExchangeBattleId = useRef<string | null>(null);
 
   useEffect(() => {
     setBattleStarted(false);
@@ -6327,7 +6329,7 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
       if (nextIndex > battleEvents.length) {
         clearInterval(interval);
       }
-    }, 850);
+    }, 650);
 
     return () => clearInterval(interval);
   }, [battle, battleEvents, battleStarted, state.settings.reducedMotion]);
@@ -6340,20 +6342,42 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
 
     exchangePulse.setValue(0);
     Animated.sequence([
-      Animated.timing(exchangePulse, { toValue: 1, duration: 720, useNativeDriver: true }),
-      Animated.timing(exchangePulse, { toValue: 0, duration: 420, useNativeDriver: true })
+      // Snap to impact fast, ease back with overshoot
+      Animated.timing(exchangePulse, { toValue: 1, duration: 120, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.timing(exchangePulse, { toValue: 0, duration: 380, easing: Easing.inOut(Easing.quad), useNativeDriver: true })
     ]).start();
   }, [activeExchange, exchangePulse, state.settings.reducedMotion]);
 
-  const dragonLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, 46] });
-  const enemyLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, -38] });
-  const battleArenaShake = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [0, 0, 10, -4, 0] });
-  const targetRecoilTranslateX = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [0, 0, 10, -4, 0] });
-  const dragonTargetRecoilTranslateX = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [0, 0, -10, 4, 0] });
-  const hitPauseScale = exchangePulse.interpolate({ inputRange: [0, 0.34, 0.5, 0.66, 1], outputRange: [1, 1.03, 0.96, 1.02, 1] });
-  const hitFlashOpacity = exchangePulse.interpolate({ inputRange: [0, 0.18, 0.62, 0.86, 1], outputRange: [0, 1, 1, 0.7, 0] });
-  const damageFloatTranslateY = exchangePulse.interpolate({ inputRange: [0, 0.62, 1], outputRange: [12, -24, -34] });
-  const damageFloatScale = exchangePulse.interpolate({ inputRange: [0, 0.18, 0.62, 1], outputRange: [0.68, 1.18, 1.08, 0.96] });
+  // Enemy death: slide off-screen and fade when a new enemy spawns
+  useEffect(() => {
+    if (state.settings.reducedMotion) return;
+    const battleId = battle?.encounter?.name ?? null;
+    if (previousExchangeBattleId.current !== null && previousExchangeBattleId.current !== battleId) {
+      enemyDeathPulse.setValue(1);
+    }
+    previousExchangeBattleId.current = battleId;
+  }, [battle?.encounter?.name, enemyDeathPulse, state.settings.reducedMotion]);
+
+  useEffect(() => {
+    if (!exchangeComplete || !battle?.won || state.settings.reducedMotion) return;
+    enemyDeathPulse.setValue(1);
+    Animated.sequence([
+      Animated.delay(120),
+      Animated.parallel([
+        Animated.timing(enemyDeathPulse, { toValue: 0, duration: 320, easing: Easing.in(Easing.quad), useNativeDriver: true })
+      ])
+    ]).start(() => enemyDeathPulse.setValue(1));
+  }, [exchangeComplete, battle?.won, enemyDeathPulse, state.settings.reducedMotion]);
+
+  const dragonLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, 72] });
+  const enemyLunge = exchangePulse.interpolate({ inputRange: [0, 1], outputRange: [0, -60] });
+  const battleArenaShake = exchangePulse.interpolate({ inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1], outputRange: [0, -10, 14, -8, 5, 0] });
+  const targetRecoilTranslateX = exchangePulse.interpolate({ inputRange: [0, 0.2, 0.5, 0.75, 1], outputRange: [0, 0, 22, -8, 0] });
+  const dragonTargetRecoilTranslateX = exchangePulse.interpolate({ inputRange: [0, 0.2, 0.5, 0.75, 1], outputRange: [0, 0, -18, 7, 0] });
+  const hitPauseScale = exchangePulse.interpolate({ inputRange: [0, 0.2, 0.45, 0.65, 1], outputRange: [1, 1.06, 0.88, 1.04, 1] });
+  const hitFlashOpacity = exchangePulse.interpolate({ inputRange: [0, 0.08, 0.30, 0.55, 1], outputRange: [0, 1, 0.9, 0.2, 0] });
+  const damageFloatTranslateY = exchangePulse.interpolate({ inputRange: [0, 0.62, 1], outputRange: [12, -32, -44] });
+  const damageFloatScale = exchangePulse.interpolate({ inputRange: [0, 0.12, 0.55, 1], outputRange: [0.5, 1.28, 1.08, 0.96] });
   const dragonAttackActive = activeExchange?.actor === "dragon" || activeExchange?.actor === "skill";
   const enemyAttackActive = activeExchange?.actor === "enemy";
   const dragonSideMotion = dragonAttackActive ? dragonLunge : enemyAttackActive ? dragonTargetRecoilTranslateX : 0;
@@ -6464,7 +6488,7 @@ function BattleScreen({ state, dispatch }: { state: GameState; dispatch: (action
               <Text style={styles.battleVersusText}>VS</Text>
             </View>
 
-            <Animated.View style={[styles.battleEnemySide, !exchangeComplete && { transform: [{ translateX: enemySideMotion }, { scale: hitPauseScale }] }]}>
+            <Animated.View style={[styles.battleEnemySide, !exchangeComplete && { transform: [{ translateX: enemySideMotion }, { scale: hitPauseScale }] }, { opacity: enemyDeathPulse, transform: [{ translateX: enemyDeathPulse.interpolate({ inputRange: [0, 1], outputRange: [80, 0] }) }] }]}>
               <Image source={enemyImages[enemyImageKey]} style={styles.battleEnemyBossSprite} resizeMode="contain" />
               {enemyAttackActive ? <Animated.View style={[styles.battleImpactSlash, styles.battleEnemyProjectile, { opacity: hitFlashOpacity }]} /> : null}
               {activeExchange ? <Animated.View style={[styles.battleImpactRing, styles.battleImpactRingEnemy, { opacity: hitFlashOpacity, transform: [{ scale: damageFloatScale }] }]} /> : null}
