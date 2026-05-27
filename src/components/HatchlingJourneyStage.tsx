@@ -41,6 +41,9 @@ import {
 import DragonDisplay, { type AnticipationLevel, type ReturnPresencePhase, type EvolutionMomentPhase, type DragonPathRevealAccent, type ArtValidationMode, defaultArtValidationMode } from "./DragonDisplay";
 import BattleScreen from "./BattleScreen";
 import AdventureScreen, { AdventureJourneyScene } from "./AdventureScreen";
+import QuestScreen from "./QuestScreen";
+import ShopScreen from "./ShopScreen";
+import UpgradeScreen from "./UpgradeScreen";
 import { SectionCard, PrimaryButton, StatsPanelContent, UpgradesPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
 import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, type PresenceTestOverrides } from "./Modals";
 import { BalanceDebugPanel, GuidedPlaytestOverlay, getAutoCompletedGuidedStepIds, guidedPlaytestSteps, DrakeContinuityReviewPanel, HatchlingReviewModal, DevToggleButton, PlaytestNotesPanel, createBalanceSnapshotExport, TestChecklist } from "./DevTools";
@@ -446,6 +449,12 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
               <BattleScreen state={state} dispatch={dispatch} />
             ) : state.activeScreen === "adventure" ? (
               <AdventureScreen state={state} dispatch={dispatch} />
+            ) : state.activeScreen === "quests" ? (
+              <QuestScreen state={state} dispatch={dispatch} />
+            ) : state.activeScreen === "shop" ? (
+              <ShopScreen state={state} dispatch={dispatch} />
+            ) : state.activeScreen === "upgrade" ? (
+              <UpgradeScreen state={state} dispatch={dispatch} />
             ) : (
               <AdventureJourneyScene state={state} onReturnToDen={() => dispatch({ type: "setScreen", screen: "den" })} />
             )}
@@ -484,6 +493,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         ) : null}
         {state.lastLoot && !effectiveReturnPresence?.active && shouldShowLootPopup(state.lastLoot) ? <LootPopup key={state.lastLoot.id} event={state.lastLoot} /> : null}
 
+        {state.activeScreen !== "battle" ? <TabBar active={state.activeScreen} dispatch={dispatch} /> : null}
         {state.activeScreen === "den" ? <BottomNav
           activePanel={activePanel}
           onSelect={(panel) => {
