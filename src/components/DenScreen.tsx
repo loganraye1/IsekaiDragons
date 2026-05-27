@@ -48,48 +48,12 @@ import type {
   IdleUpgradeId,
   Stats,
 } from "../types";
+import { formatGameNumber, formatStat, formatStatValue, formatReward } from "../utils/format";
 
 // ─── Local utilities ─────────────────────────────────────────────────────────
 
-function formatGameNumber(value: number | null | undefined, numberFormat: GameSettings["numberFormat"]) {
-  const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
-  if (numberFormat === "full") {
-    return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-  }
-  const absolute = Math.abs(safeValue);
-  if (absolute >= 1_000_000_000) return `${(safeValue / 1_000_000_000).toFixed(1)}B`;
-  if (absolute >= 1_000_000) return `${(safeValue / 1_000_000).toFixed(1)}M`;
-  if (absolute >= 10_000) return `${(safeValue / 1_000).toFixed(1)}K`;
-  return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-}
-
-function formatStat(stat: keyof Stats) {
-  switch (stat) {
-    case "critChance": return "Crit";
-    case "critDamage": return "Crit DMG";
-    default: return stat[0].toUpperCase() + stat.slice(1);
-  }
-}
-
-function formatStatValue(stat: keyof Stats, value: number) {
-  return stat === "critChance" || stat === "critDamage" ? `${value}%` : value;
-}
-
 function formatEquipmentBonus(item: EquipmentItem) {
   return `+${item.bonusPercent}% ${equipmentBonusLabels[item.bonusType]}`;
-}
-
-function formatReward(reward: { essence?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> }, numberFormat: GameSettings["numberFormat"] = "compact") {
-  const parts = [
-    reward.essence ? `+${formatGameNumber(reward.essence, numberFormat)} essence` : null,
-    reward.dragonSouls ? `+${formatGameNumber(reward.dragonSouls, numberFormat)} souls` : null,
-    reward.shards
-      ? (Object.entries(reward.shards) as Array<[DragonElement, number]>)
-          .map(([element, amount]) => `+${formatGameNumber(amount, numberFormat)} ${element} shard`)
-          .join(", ")
-      : null,
-  ].filter(Boolean);
-  return parts.join(" | ");
 }
 
 function getDragonPathTradeoffCopy(path: (typeof dragonPathDefinitions)[DragonPathId]) {

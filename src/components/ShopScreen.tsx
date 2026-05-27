@@ -1,23 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { shopItems } from "../content";
 import type { GameAction, GameState, Stats } from "../types";
-
-function formatStat(stat: keyof Stats) {
-  switch (stat) {
-    case "critChance":
-      return "Crit";
-    case "critDamage":
-      return "Crit DMG";
-    default:
-      return stat[0].toUpperCase() + stat.slice(1);
-  }
-}
-
-function formatBoost(boost: Partial<Stats>) {
-  return Object.entries(boost)
-    .map(([key, value]) => `+${value} ${formatStat(key as keyof Stats)}`)
-    .join(", ");
-}
+import { formatStat, formatBoost } from "../utils/format";
 
 function PrimaryButton({ label, onPress, disabled = false }: { label: string; onPress: () => void; disabled?: boolean }) {
   return (

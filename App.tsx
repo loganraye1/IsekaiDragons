@@ -110,7 +110,7 @@ import ShopScreen from "./src/components/ShopScreen";
 import UpgradeScreen from "./src/components/UpgradeScreen";
 import AdventureScreen, { AdventureJourneyScene, CapybaraAdventureBoard } from "./src/components/AdventureScreen";
 import DenScreen, { SectionCard, EmptyState, PrimaryButton, StatsPanelContent, UpgradesPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./src/components/DenScreen";
-import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, AchievementsModal, DailyGoalsModal, LootPopup, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, shouldShowLootPopup, type PresenceTestOverrides } from "./src/components/Modals";
+import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, AchievementsModal, DailyGoalsModal, LootPopup, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, type PresenceTestOverrides } from "./src/components/Modals";
 import { getAutoCompletedGuidedStepIds, GuidedPlaytestOverlay, BalanceDebugPanel, TestChecklist, createBalanceSnapshotExport, DevToggleButton, HatchlingReviewModal, DrakeContinuityReviewPanel, PlaytestNotesPanel, guidedPlaytestSteps } from "./src/components/DevTools";
 import HatchlingJourneyStage from "./src/components/HatchlingJourneyStage";
 import { SafeExpoImage, SafeLottie } from "./src/ui/SafeMedia";

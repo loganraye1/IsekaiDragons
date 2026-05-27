@@ -19,6 +19,7 @@ import type {
   GameState,
   LootEvent,
 } from "../types";
+import { formatGameNumber, formatReward, formatDailyLoginReward, capitalizeElement, formatReturnPhase, formatPresenceAwayDuration, shouldShowLootPopup } from "../utils/format";
 
 // ─── Exported type ───────────────────────────────────────────────────────────
 
@@ -28,55 +29,7 @@ export type PresenceTestOverrides = {
   returnPresence: GameState["returnPresence"] | null;
 };
 
-// ─── Local utilities ─────────────────────────────────────────────────────────
 
-function formatGameNumber(value: number | null | undefined, numberFormat: GameSettings["numberFormat"]) {
-  const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
-  if (numberFormat === "full") {
-    return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-  }
-  const absolute = Math.abs(safeValue);
-  if (absolute >= 1_000_000_000) return `${(safeValue / 1_000_000_000).toFixed(1)}B`;
-  if (absolute >= 1_000_000) return `${(safeValue / 1_000_000).toFixed(1)}M`;
-  if (absolute >= 10_000) return `${(safeValue / 1_000).toFixed(1)}K`;
-  return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-}
-
-function formatReward(reward: { essence?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> }, numberFormat: GameSettings["numberFormat"] = "compact") {
-  const parts = [
-    reward.essence ? `+${formatGameNumber(reward.essence, numberFormat)} essence` : null,
-    reward.dragonSouls ? `+${formatGameNumber(reward.dragonSouls, numberFormat)} souls` : null,
-    reward.shards
-      ? (Object.entries(reward.shards) as Array<[DragonElement, number]>)
-          .map(([element, amount]) => `+${formatGameNumber(amount, numberFormat)} ${element} shard`)
-          .join(", ")
-      : null
-  ].filter(Boolean);
-  return parts.join(" | ");
-}
-
-function formatDailyLoginReward(day: number, reward: { essence?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> }, numberFormat: GameSettings["numberFormat"]) {
-  if (day === 3) return "Random treasure";
-  return formatReward(reward, numberFormat);
-}
-
-function capitalizeElement(element: DragonElement) {
-  return `${element[0].toUpperCase()}${element.slice(1)}`;
-}
-
-function formatReturnPhase(phase: ReturnPresencePhase | "complete") {
-  return phase === "sleeping" ? "resting" : phase;
-}
-
-function formatPresenceAwayDuration(awayDurationMs: number) {
-  return awayDurationMs >= 60 * 60 * 1000 ? "1 hour" : `${Math.round(awayDurationMs / 60000)} min`;
-}
-
-// ─── Exported utility ────────────────────────────────────────────────────────
-
-export function shouldShowLootPopup(_event: LootEvent | null | undefined) {
-  return false;
-}
 
 // ─── Components ──────────────────────────────────────────────────────────────
 

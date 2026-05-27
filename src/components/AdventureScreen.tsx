@@ -26,41 +26,7 @@ import { uiTheme } from "../constants/theme";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import { getAutoBattleEnemyImageKey, BattleTacticPreview } from "./BattleScreen";
 import type { AdventureDifficultyId, AdventureNode, AreaId, GameAction, GameSettings, GameState, Stats } from "../types";
-
-function formatGameNumber(value: number | null | undefined, numberFormat: GameSettings["numberFormat"]) {
-  const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
-  if (numberFormat === "full") {
-    return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-  }
-  const absolute = Math.abs(safeValue);
-  if (absolute >= 1_000_000_000) {
-    return `${(safeValue / 1_000_000_000).toFixed(1)}B`;
-  }
-  if (absolute >= 1_000_000) {
-    return `${(safeValue / 1_000_000).toFixed(1)}M`;
-  }
-  if (absolute >= 10_000) {
-    return `${(safeValue / 1_000).toFixed(1)}K`;
-  }
-  return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-}
-
-function formatStat(stat: keyof Stats) {
-  switch (stat) {
-    case "critChance":
-      return "Crit";
-    case "critDamage":
-      return "Crit DMG";
-    default:
-      return stat[0].toUpperCase() + stat.slice(1);
-  }
-}
-
-function formatBoost(boost: Partial<Stats>) {
-  return Object.entries(boost)
-    .map(([key, value]) => `+${value} ${formatStat(key as keyof Stats)}`)
-    .join(", ");
-}
+import { formatGameNumber, formatStat, formatBoost } from "../utils/format";
 
 function formatAdventureReward(reward: {
   gold?: number;

@@ -42,25 +42,17 @@ import DragonDisplay, { type AnticipationLevel, type ReturnPresencePhase, type E
 import BattleScreen from "./BattleScreen";
 import AdventureScreen, { AdventureJourneyScene } from "./AdventureScreen";
 import { SectionCard, PrimaryButton, StatsPanelContent, UpgradesPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
-import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, shouldShowLootPopup, type PresenceTestOverrides } from "./Modals";
+import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, type PresenceTestOverrides } from "./Modals";
 import { BalanceDebugPanel, GuidedPlaytestOverlay, getAutoCompletedGuidedStepIds, guidedPlaytestSteps, DrakeContinuityReviewPanel, HatchlingReviewModal, DevToggleButton, PlaytestNotesPanel, createBalanceSnapshotExport, TestChecklist } from "./DevTools";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import ParticleField from "../ui/ParticleField";
 import type { DragonElement, DragonPathId, DragonStage, EvolutionTraitId, GameAction, GameSettings, GameState, IdleUpgradeId, ScreenKey } from "../types";
+import { formatGameNumber, formatMultiplier, formatPercent, getTodayKeyForUi, isValidBackupState, getLeadingEggElement, shouldShowLootPopup } from "../utils/format";
 
 type GameSoundEvent = "tap" | "criticalTap" | "upgrade" | "evolve" | "treasureDrop" | "gearDrop" | "reincarnate" | "dailyReward";
 
 function playGameSound(_event: GameSoundEvent) {
   // Sound-ready hook: wire Expo AV or another audio layer here when assets exist.
-}
-
-function getLeadingEggElement(state: GameState): DragonElement {
-  const scores: Record<DragonElement, number> = { fire: 0, water: 0, earth: 0, light: 0, dark: 0 };
-  Object.values(state.eggAnswers).forEach((element) => {
-    scores[element] += 1;
-  });
-  const [leader] = (Object.entries(scores) as Array<[DragonElement, number]>).sort((a, b) => b[1] - a[1]);
-  return leader?.[1] > 0 ? leader[0] : "fire";
 }
 
 export function getDragonPathTradeoffCopy(path: (typeof dragonPathDefinitions)[DragonPathId]) {
@@ -1155,44 +1147,6 @@ export function SettingToggle({
       </Pressable>
     </View>
   );
-}
-
-function isValidBackupState(value: unknown): value is GameState {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-  const candidate = value as Partial<GameState>;
-  return Boolean(candidate.dragon && candidate.player && candidate.idleUpgrades && candidate.treasures && candidate.elementalShards);
-}
-
-function formatGameNumber(value: number | null | undefined, numberFormat: GameSettings["numberFormat"]) {
-  const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
-  if (numberFormat === "full") {
-    return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-  }
-  const absolute = Math.abs(safeValue);
-  if (absolute >= 1_000_000_000) {
-    return `${(safeValue / 1_000_000_000).toFixed(1)}B`;
-  }
-  if (absolute >= 1_000_000) {
-    return `${(safeValue / 1_000_000).toFixed(1)}M`;
-  }
-  if (absolute >= 10_000) {
-    return `${(safeValue / 1_000).toFixed(1)}K`;
-  }
-  return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-}
-
-function formatMultiplier(value: number) {
-  return `${value.toFixed(2)}x`;
-}
-
-function formatPercent(value: number) {
-  return `${Math.round(value * 1000) / 10}%`;
-}
-
-function getTodayKeyForUi() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 export function TabBar({ active, dispatch }: { active: ScreenKey; dispatch: (action: GameAction) => void }) {

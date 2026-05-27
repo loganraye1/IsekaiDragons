@@ -24,6 +24,7 @@ import { HATCHLING_ART_VERSION } from "../artVersion";
 import DragonDisplay, { type ArtValidationMode, defaultArtValidationMode, type EvolutionMomentPhase } from "./DragonDisplay";
 import { SectionCard, EmptyState } from "./DenScreen";
 import type { DragonElement, DragonStage, GameAction, GameSettings, GameState } from "../types";
+import { formatGameNumber, formatMultiplier, formatPercent } from "../utils/format";
 
 // ─── Exported constant ───────────────────────────────────────────────────────
 
@@ -94,26 +95,6 @@ async function fetchJsonWithTimeout<T>(url: string, init: RequestInit, timeoutMs
   } finally {
     clearTimeout(timeout);
   }
-}
-
-function formatGameNumber(value: number | null | undefined, numberFormat: GameSettings["numberFormat"]) {
-  const safeValue = typeof value === "number" && Number.isFinite(value) ? value : 0;
-  if (numberFormat === "full") {
-    return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-  }
-  const absolute = Math.abs(safeValue);
-  if (absolute >= 1_000_000_000) return `${(safeValue / 1_000_000_000).toFixed(1)}B`;
-  if (absolute >= 1_000_000) return `${(safeValue / 1_000_000).toFixed(1)}M`;
-  if (absolute >= 10_000) return `${(safeValue / 1_000).toFixed(1)}K`;
-  return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
-}
-
-function formatMultiplier(value: number) {
-  return `${value.toFixed(2)}x`;
-}
-
-function formatPercent(value: number) {
-  return `${Math.round(value * 1000) / 10}%`;
 }
 
 // ─── Components ──────────────────────────────────────────────────────────────

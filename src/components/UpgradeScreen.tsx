@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { dragonSkillDrafts, getActiveDragonSkill, getActiveSkillUnlockState, getUpgradeCost } from "../game";
 import type { GameAction, GameState, Stats } from "../types";
+import { formatStat, formatStatValue } from "../utils/format";
 
 const combatStatTips: Record<keyof Stats, string> = {
   attack: "Bigger hits",
@@ -12,21 +13,6 @@ const combatStatTips: Record<keyof Stats, string> = {
   critChance: "CRIT frequency",
   critDamage: "Crit DMG burst"
 };
-
-function formatStat(stat: keyof Stats) {
-  switch (stat) {
-    case "critChance":
-      return "Crit";
-    case "critDamage":
-      return "Crit DMG";
-    default:
-      return stat[0].toUpperCase() + stat.slice(1);
-  }
-}
-
-function formatStatValue(stat: keyof Stats, value: number) {
-  return stat === "critChance" || stat === "critDamage" ? `${value}%` : value;
-}
 
 function PrimaryButton({ label, onPress, disabled = false }: { label: string; onPress: () => void; disabled?: boolean }) {
   return (
