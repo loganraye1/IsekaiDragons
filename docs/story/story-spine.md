@@ -233,6 +233,128 @@ These locations should be treated as persistent places that can be referenced ac
 
 ---
 
+## Bloodline Prestige System
+
+Bloodlines unlock at Chapter 150 — the point where the dragon has completed at least one full Memory Cycle and the world has reorganized itself around the Wyrm's destiny choice. A bloodline is not a class or a build. It is the ancestral weight of what the dragon has become across lives — a category of legacy the world recognizes even when the dragon is reborn small.
+
+**Content rule:** Bloodlines are how the world narrates permanence. A dragon with the Ember Sovereign bloodline isn't just a fire dragon — they carry something ancient about what fire was before the Rift. Bloodline flavor text should feel like being recognized by something that knew you before you did.
+
+---
+
+### The Five Bloodlines
+
+#### Ember Sovereign
+*"Fire remembers every throne it ever burned."*
+
+**Theme:** Dominion through creation. The Ember Sovereign is the archetype of the living forge — fire that builds, anneals, and commands rather than simply destroys. Associated with the Elder Wyrm's original power signature. The world remembers Ember Sovereigns as the dragons who held the Meadow before the Rift.
+
+**Passive Bonus:** All essence generation and gold income scale upward based on total reincarnation count. Each run starts with a portion of the previous run's forge output already primed.
+
+**Stacking (per 150-chapter milestone):**
+- Milestone 1 (Ch. 150): +15% essence per tap, forge breath applies lingering burn damage in combat
+- Milestone 2 (Ch. 300): +25% gold income, idle EPS multiplier extends into early drake stage on new runs
+- Milestone 3 (Ch. 450+): Ember aura passively damages Shadow Minion scouts — they take damage before combat begins
+
+**Path alignment:** Neutral-Hero. Ember Sovereigns can follow either path, but Hero destiny Wyrms gain an additional 10% at each milestone. Demon Lord Wyrms with the Ember Sovereign bloodline are rare and unsettling — the Void reads them as something it once knew and isn't sure how to classify.
+
+---
+
+#### Void Touched
+*"The Rift tried to hollow us. We used the hole."*
+
+**Theme:** Resilience through absorbed corruption. Void Touched dragons have passed through the Rift's influence and emerged with partial immunity — their elemental core was scarred, not replaced. They can process Void energy that would destroy other dragons. Associated with survivors of deep Rift exposure who came back changed but intact.
+
+**Passive Bonus:** Shadow Minion encounters always drop bonus elemental shards. Dark elemental resonance passives apply regardless of the dragon's own element. Combat damage from Void-corrupted enemies is reduced baseline.
+
+**Stacking (per 150-chapter milestone):**
+- Milestone 1 (Ch. 150): +20% shard drops from Shadow Minion combat, Void resistance reduces corruption damage by 15%
+- Milestone 2 (Ch. 300): Nightmare Wyrm fights yield double Dragon Soul fragments; Rift Herald encounters no longer trigger suppression patrol escalation
+- Milestone 3 (Ch. 450+): Shadow Minion scouts in early chapters no longer aggro — the Rift recognizes the bloodline and holds its scouts back, uncertain
+
+**Path alignment:** Neutral-Demon Lord. Void Touched bloodlines trend toward the Demon Lord path because command over the Rift comes naturally. Hero destiny Wyrms with this bloodline are extraordinary — they understand what they're sealing from the inside.
+
+---
+
+#### Ancient Lineage
+*"We were here before the first Rift. We will be here after the last seal."*
+
+**Theme:** Memory made permanent. Ancient Lineage dragons retain more from each reincarnation than any other bloodline — their Dragon Souls carry cleaner impressions of past lives, and the world treats them with an instinctive deference that even enemies sometimes feel. Associated with the oldest pre-Rift dragon families. The Elder Wyrm may have been one.
+
+**Passive Bonus:** Dragon Soul permanence increases — more multiplier carries across each reincarnation. Journey Event NPCs recognize the bloodline and offer upgraded choice options. Shrines restore more HP.
+
+**Stacking (per 150-chapter milestone):**
+- Milestone 1 (Ch. 150): +1 Dragon Soul fragment per reincarnation, all shrine encounters restore an additional 20% HP
+- Milestone 2 (Ch. 300): Journey Event choice rewards scaled up 30%; NPC dialogue gains unique "Ancient" recognition lines
+- Milestone 3 (Ch. 450+): One additional Elite Skill Draft offered per run — the bloodline's memory depth lets the dragon pull forward a skill that would normally require more progression
+
+**Path alignment:** Truly neutral. Ancient Lineage serves either destiny with equal weight. The oldest dragons predate the Hero/Demon Lord framing entirely. Both factions treat Ancient Lineage Wyrms as allies they cannot afford to push.
+
+---
+
+#### Storm Herald
+*"The sky changed when we moved through it."*
+
+**Theme:** Force through inevitability. Storm Heralds are the dragons the world changes around — their element doesn't adapt to the environment, the environment adapts to it. Associated with the Sky Ruins' defenders before the Rift converted them. Cloud Harpies and Storm Sentinels remember Storm Heralds, faintly, the way corrupted things remember what they protected.
+
+**Passive Bonus:** Battle speed and critical strike chance scale with chapter progress and carry forward across reincarnations. Adventure run steps extend before exhaustion. Storm Heralds have a higher chance of rare encounter triggers.
+
+**Stacking (per 150-chapter milestone):**
+- Milestone 1 (Ch. 150): +10% critical strike chance baseline, adventure runs gain +2 bonus steps before completion
+- Milestone 2 (Ch. 300): Rare encounters (Journey Events, treasure goblins, wandering merchants) trigger 25% more often; critical damage multiplier increased
+- Milestone 3 (Ch. 450+): Sky Ruins encounters never trigger Storm Sentinel aggro — they recognize the bloodline; Cloud Harpies occasionally drop Aether Drake loot without combat
+
+**Path alignment:** Neutral-Hero. Storm Heralds were built around protection. They bend toward the Hero destiny the way a weathervane bends toward wind — not by choice, but by design. Demon Lord Wyrms with this bloodline are the ones who decided that the sky should have a direction and they should be it.
+
+---
+
+#### Iron Warden
+*"We held. Everything else moved."*
+
+**Theme:** Permanence through endurance. Iron Wardens are the dragons who outlast everything — their defense and HP scaling across reincarnations means each new life starts more durable than the last. Associated with the Stoneback Hills garrison dragons who held Stoneback Crossing against the Rift's second push. They didn't win. They just didn't lose in time.
+
+**Passive Bonus:** Maximum HP and defense stats carry a percentage forward across reincarnations. Equipment items have higher sell values. Battle losses in adventure runs don't fully reset dungeon progress — Iron Wardens hold ground.
+
+**Stacking (per 150-chapter milestone):**
+- Milestone 1 (Ch. 150): +10% max HP carryforward, equipment sell values +20%, first battle loss per adventure run doesn't count as a defeat
+- Milestone 2 (Ch. 300): +20% defense carryforward; Stone Golems and Basalt Rams in Stoneback Hills have a 20% chance to yield garrison loot (rare drops)
+- Milestone 3 (Ch. 450+): Stoneback Hills boss treats the Iron Warden as garrison commander — boss HP reduced 15% and first attack is deferred one round (the boss recognizes lineage before it charges)
+
+**Path alignment:** Guardian-role focused, destiny-neutral. Iron Wardens align with the Guardian path naturally, but Raider and Mystic Iron Wardens exist and are respected differently — the Raider who holds ground until the right moment to strike, the Mystic who endures long enough to understand. Both factions want Iron Wardens. They are the walls either army needs.
+
+---
+
+### How Bloodline Stacking Works
+
+Bloodline milestones trigger at every 150-chapter threshold achieved across all runs — they are not reset per reincarnation. The player's cumulative chapter total across the entire account determines which milestone tier is active.
+
+| Cumulative Chapters | Milestone Active | What Happens |
+|---|---|---|
+| 1–149 | None | Bloodlines are not yet visible. The world doesn't recognize the pattern yet. |
+| 150–299 | Milestone 1 | The first bloodline passive activates. A journal entry acknowledges that something has crystallized in the dragon's lineage — even between lives. |
+| 300–449 | Milestone 2 | Milestone 1 passives are enhanced. The world reacts: NPCs comment, faction envoys mention the lineage by name. |
+| 450+ | Milestone 3 | The bloodline is at full expression. Enemies hesitate, allies defer, and the environment itself reflects the bloodline's theme. |
+
+**Bloodline selection** is permanent per account. Players choose their bloodline at the first Chapter 150 unlock. A second bloodline slot opens at Milestone 2 (Chapter 300) — it can be a different bloodline, allowing passive stacking from two lineages simultaneously. The two bloodlines do not need to share path alignment; hybrid combinations have distinct flavor text noting the rarity of the pairing.
+
+---
+
+### Carrying Bloodline Traits Across Runs
+
+When the Wyrm reincarnates after Chapter 150, bloodline passives survive the Memory Cycle as a "dormant echo" — a reduced imprint that reactivates as the new hatchling reaches the equivalent early-game tier.
+
+**Dormant echo reactivation thresholds:**
+- Milestone 1 passives reactivate when the new run reaches Chapter 15 (one-tenth of the original unlock)
+- Milestone 2 passives reactivate when the new run reaches Chapter 30
+- Milestone 3 passives reactivate when the new run reaches Chapter 45
+
+A post-Chapter-150 reincarnation plays noticeably differently from the first run even in the hatchling stage — the bloodline's echo shapes early chapters in ways the world registers as unusual for a newly hatched dragon.
+
+**Narrative framing:** In-world, dormant echoes are described as the dragon's body already knowing things its current mind hasn't learned yet. An Ember Sovereign echo hatchling runs warmer than it should. An Iron Warden echo hatchling doesn't flinch at things that should scare it. A Void Touched echo hatchling makes Shadow Minion scouts pause before they charge. The flavor text should carry a slightly-off quality — competence that arrived before the experience did.
+
+**Content rule:** Bloodline echo flavor text at hatchling and drake stages should feel like déjà vu made physical. The dragon is doing things correctly before it knows why. NPCs who notice don't know what to make of it.
+
+---
+
 ## Standing Rules for Content Writers
 
 1. **Reincarnation is never death.** Always frame it as the Memory Cycle — a chosen reset, not a failure.
