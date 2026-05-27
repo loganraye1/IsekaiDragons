@@ -1196,6 +1196,7 @@ export const initialGameState: GameState = {
   },
   player: {
     gold: 80,
+    gems: 0,
     essence: 10,
     inventory: [],
     unlockedStage: 1,
@@ -2470,6 +2471,7 @@ function applyAdventureReward(state: GameState, reward: AdventureReward, fallbac
     player: {
       ...state.player,
       gold: state.player.gold + (permanentReward.gold ?? 0),
+      gems: state.player.gems + (permanentReward.gems ?? 0),
       essence: state.player.essence + (permanentReward.essence ?? 0)
     }
   };

@@ -437,14 +437,17 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         {!state.settings.reducedMotion && (!__DEV__ || !artValidationMode.enabled || !artValidationMode.disableAura) ? <ParticleField color={theme.secondary} count={10} /> : null}
         {state.activeScreen === "den" && (!__DEV__ || !artValidationMode.enabled || artValidationMode.hudVisible) ? (
           <HudBar
-            essence={formatGameNumber(state.player.essence, numberFormat)}
-            souls={formatGameNumber(state.dragonSouls, numberFormat)}
+            gold={formatGameNumber(state.player.gold, numberFormat)}
+            gems={formatGameNumber(state.player.gems, numberFormat)}
             onLongPress={__DEV__ ? () => setShowDebugPanel(true) : undefined}
           />
         ) : null}
 
         {state.activeScreen !== "den" ? (
           <View style={styles.mainAdventurePathOverlay}>
+            {state.activeScreen === "quests" || state.activeScreen === "shop" || state.activeScreen === "upgrade" ? (
+              <TabBar active={state.activeScreen} dispatch={dispatch} />
+            ) : null}
             {state.activeScreen === "battle" ? (
               <BattleScreen state={state} dispatch={dispatch} />
             ) : state.activeScreen === "adventure" ? (
@@ -493,7 +496,6 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         ) : null}
         {state.lastLoot && !effectiveReturnPresence?.active && shouldShowLootPopup(state.lastLoot) ? <LootPopup key={state.lastLoot.id} event={state.lastLoot} /> : null}
 
-        {state.activeScreen !== "battle" ? <TabBar active={state.activeScreen} dispatch={dispatch} /> : null}
         {state.activeScreen === "den" ? <BottomNav
           activePanel={activePanel}
           onSelect={(panel) => {
@@ -611,11 +613,11 @@ export function getPanelTitle(panel: IdlePanelKey | null) {
 }
 
 
-export function HudBar({ essence, souls, onLongPress }: { essence: string; souls: string; onLongPress?: () => void }) {
+export function HudBar({ gold, gems, onLongPress }: { gold: string; gems: string; onLongPress?: () => void }) {
   return (
     <Pressable style={styles.hudBar} onLongPress={onLongPress} delayLongPress={850}>
-      <StatPill icon="✦" label="Essence" value={essence} large />
-      <StatPill icon="◆" label="Souls" value={souls} />
+      <StatPill icon="✦" label="Gold" value={gold} large />
+      <StatPill icon="💎" label="Gems" value={gems} />
     </Pressable>
   );
 }

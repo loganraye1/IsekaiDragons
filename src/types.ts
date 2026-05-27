@@ -216,6 +216,7 @@ export type Encounter = {
 
 export type AdventureReward = {
   gold?: number;
+  gems?: number;
   essence?: number;
   xp?: number;
   evolution?: number;
@@ -278,6 +279,7 @@ export type DragonState = {
 
 export type PlayerState = {
   gold: number;
+  gems: number;
   essence: number;
   inventory: string[];
   unlockedStage: number;
