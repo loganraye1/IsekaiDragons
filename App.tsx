@@ -96,6 +96,35 @@ import {
   initialGameState
 } from "./src/game";
 import { clearGameState, loadGameState, saveGameState } from "./src/storage";
+import { APP_VERSION, tabs, uiTheme } from "./src/constants/theme";
+import GameStage from "./src/components/GameStage";
+import ResourceBar from "./src/components/ResourceBar";
+import CrackOverlay from "./src/ui/CrackOverlay";
+import EggHatchBurst from "./src/ui/EggHatchBurst";
+import FloatingLayer from "./src/ui/FloatingLayer";
+import GlowPulse from "./src/ui/GlowPulse";
+import ParallaxBackground from "./src/ui/ParallaxBackground";
+import ParticleField from "./src/ui/ParticleField";
+import {
+  type ArtValidationBackgroundKey,
+  type EnemyImageKey,
+  approvedFireHatchlingSourceImage,
+  artValidationBackgrounds,
+  auraEffects,
+  battleFireHatchlingImage,
+  drakeConceptImages,
+  drakeImages,
+  dragonStageImages,
+  eggCrackStageImages,
+  eggImages,
+  elementDenBackgrounds,
+  enemyImages,
+  evolutionBurstEffect,
+  fireHatchlingLayerImages,
+  getDragonStageImage,
+  hatchlingImages,
+  sceneImages
+} from "./src/constants/assets";
 import { HATCHLING_ART_VERSION } from "./src/artVersion";
 import { SpineFrameDragon } from "./src/components/SpineFrameDragon";
 import { fireHatchlingSpineAnimations } from "./src/data/fireHatchlingSpineAnimations";
@@ -170,53 +199,7 @@ async function fetchJsonWithTimeout<T>(url: string, init: RequestInit, timeoutMs
   }
 }
 
-const uiTheme = {
-  colors: {
-    ink: "#080611",
-    panel: "#120b26",
-    panelRaised: "rgba(255,255,255,0.09)",
-    panelStrong: "rgba(10,7,21,0.92)",
-    border: "rgba(255,255,255,0.14)",
-    borderStrong: "rgba(248,217,135,0.36)",
-    text: "#fff8ef",
-    muted: "#b9aee3",
-    faint: "#7f73ad",
-    gold: "#f8d987",
-    goldDark: "#1e1235",
-    green: "#8fffd2",
-    info: "#8ff7ff",
-    danger: "#ff784f"
-  },
-  radius: {
-    sm: 14,
-    md: 18,
-    lg: 22,
-    xl: 30
-  },
-  shadow: {
-    shadowColor: "#000",
-    shadowOpacity: 0.28,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 8
-  }
-};
 
-const tabs: Array<{ key: ScreenKey; label: string }> = [
-  { key: "den", label: "Den" },
-  { key: "adventure", label: "Adventure" },
-  { key: "upgrade", label: "Upgrade" },
-  { key: "quests", label: "Quests" },
-  { key: "shop", label: "Shop" }
-];
-
-const eggImages: Record<DragonElement, ImageSourcePropType> = {
-  fire: require("./assets/eggs/optimized/fire-dragon-egg-cutout.png"),
-  water: require("./assets/eggs/optimized/water-dragon-egg-cutout.png"),
-  earth: require("./assets/eggs/optimized/earth-dragon-egg-cutout.png"),
-  light: require("./assets/eggs/optimized/light-dragon-egg-cutout.png"),
-  dark: require("./assets/eggs/optimized/storm-dragon-egg-cutout.png")
-};
 
 type EggSelectorOption = {
   id: string;
@@ -320,122 +303,7 @@ const eggSelectorOptions: EggSelectorOption[] = [
   }
 ];
 
-const eggCrackStageImages: Record<DragonElement, ImageSourcePropType[]> = {
-  fire: [
-    eggImages.fire,
-    require("./assets/eggs/optimized/fire-dragon-egg-crack-1.png"),
-    require("./assets/eggs/optimized/fire-dragon-egg-crack-2.png"),
-    require("./assets/eggs/optimized/fire-dragon-egg-crack-3.png")
-  ],
-  water: [
-    eggImages.water,
-    require("./assets/eggs/optimized/water-dragon-egg-crack-1.png"),
-    require("./assets/eggs/optimized/water-dragon-egg-crack-2.png"),
-    require("./assets/eggs/optimized/water-dragon-egg-crack-3.png")
-  ],
-  earth: [
-    eggImages.earth,
-    require("./assets/eggs/optimized/earth-dragon-egg-crack-1.png"),
-    require("./assets/eggs/optimized/earth-dragon-egg-crack-2.png"),
-    require("./assets/eggs/optimized/earth-dragon-egg-crack-3.png")
-  ],
-  light: [
-    eggImages.light,
-    require("./assets/eggs/optimized/light-dragon-egg-crack-1.png"),
-    require("./assets/eggs/optimized/light-dragon-egg-crack-2.png"),
-    require("./assets/eggs/optimized/light-dragon-egg-crack-3.png")
-  ],
-  dark: [
-    eggImages.dark,
-    eggImages.dark,
-    eggImages.dark,
-    eggImages.dark
-  ]
-};
 
-const sceneImages: Record<AdventureNode["scene"], ImageSourcePropType> = {
-  forest: require("./assets/optimized/battle/forest-path-fast.jpg"),
-  ruins: require("./assets/optimized/battle/ruins-cavern-fast.jpg"),
-  cave: require("./assets/optimized/battle/ruins-cavern-fast.jpg"),
-  shrine: require("./assets/optimized/battle/ancient-shrine-fast.jpg"),
-  camp: require("./assets/optimized/battle/dragon-camp-fast.jpg"),
-  boss: require("./assets/optimized/battle/rift-boss-fast.jpg")
-};
-
-const artValidationBackgrounds: Record<ArtValidationBackgroundKey, { label: string; source: ImageSourcePropType }> = {
-  mysticMeadow: { label: "Mystic Meadow", source: sceneImages.forest },
-  emberWoods: { label: "Ember Woods", source: sceneImages.camp },
-  tideCavern: { label: "Tide Cavern", source: sceneImages.cave },
-  stonebackHills: { label: "Stoneback Hills", source: sceneImages.ruins }
-};
-
-const elementDenBackgrounds: Record<DragonElement, ImageSourcePropType> = {
-  fire: require("./assets/den/fire-hatchling-den-v1.png"),
-  water: sceneImages.cave,
-  earth: sceneImages.cave,
-  light: sceneImages.cave,
-  dark: sceneImages.cave
-};
-
-const hatchlingImages: Record<DragonElement, ImageSourcePropType> = {
-  fire: require("./assets/dragons/fire-hatchling-canon-source/fire-hatchling-idle-no-mouth-flame-cutout-v2.png"),
-  water: require("./assets/dragons/water-hatchling-cutout.png"),
-  earth: require("./assets/dragons/earth-hatchling-cutout.png"),
-  light: require("./assets/dragons/fire-hatchling-cutout.png"),
-  dark: require("./assets/dragons/fire-hatchling-cutout.png")
-};
-
-const approvedFireHatchlingSourceImage = require("./assets/dragons/fire-hatchling-canon-source/fire-hatchling-idle-no-mouth-flame-cutout-v2.png");
-const battleFireHatchlingImage = require("./assets/optimized/battle/fire-hatchling-battle-fast.png");
-
-const fireHatchlingLayerImages: Record<"body" | "head" | "wingNear" | "wingFar" | "tail", ImageSourcePropType> = {
-  body: require("./assets/dragons/layers/fire-hatchling/manual/body.png"),
-  head: require("./assets/dragons/layers/fire-hatchling/manual/head.png"),
-  wingNear: require("./assets/dragons/layers/fire-hatchling/manual/wing-near.png"),
-  wingFar: require("./assets/dragons/layers/fire-hatchling/manual/wing-far.png"),
-  tail: require("./assets/dragons/layers/fire-hatchling/manual/tail.png")
-};
-
-const drakeImages: Record<DragonElement, ImageSourcePropType> = {
-  fire: require("./assets/dragons/fire-drake-cutout.png"),
-  water: require("./assets/dragons/water-drake-cutout.png"),
-  earth: require("./assets/dragons/earth-drake-cutout.png"),
-  light: require("./assets/dragons/fire-drake-cutout.png"),
-  dark: require("./assets/dragons/fire-drake-cutout.png")
-};
-
-const dragonStageImages: Record<DragonStage, Record<DragonElement, ImageSourcePropType>> = {
-  egg: eggImages,
-  hatchling: hatchlingImages,
-  drake: drakeImages,
-  // Placeholder later paths: replace these with dragon/wyrm cutouts as art lands.
-  dragon: hatchlingImages,
-  wyrm: hatchlingImages
-};
-
-function getDragonStageImage(stage: DragonStage, element: DragonElement) {
-  return dragonStageImages[stage]?.[element] ?? hatchlingImages[element];
-}
-
-const drakeConceptImages: Record<DragonElement, ImageSourcePropType> = {
-  fire: require("./assets/dragons/concepts/fire_drake_concept.png"),
-  water: require("./assets/dragons/concepts/water_drake_concept.png"),
-  earth: require("./assets/dragons/concepts/earth_drake_concept.png"),
-  light: require("./assets/dragons/concepts/fire_drake_concept.png"),
-  dark: require("./assets/dragons/concepts/fire_drake_concept.png")
-};
-
-const auraEffects: Record<DragonElement, any> = {
-  fire: require("./assets/effects/fire_aura.json"),
-  water: require("./assets/effects/water_aura.json"),
-  earth: require("./assets/effects/earth_aura.json"),
-  light: require("./assets/effects/fire_aura.json"),
-  dark: require("./assets/effects/fire_aura.json")
-};
-
-const evolutionBurstEffect = require("./assets/effects/evolution_burst.json");
-
-const APP_VERSION = "0.1.0-alpha";
 
 type GameSoundEvent = "tap" | "criticalTap" | "upgrade" | "evolve" | "treasureDrop" | "gearDrop" | "reincarnate" | "dailyReward";
 type ReturnPresencePhase = "sleeping" | "waking" | "greeting" | "rewards";
@@ -448,7 +316,6 @@ type DragonPathRevealAccent = {
   powerLabel: string;
   guardLabel: string;
 };
-type ArtValidationBackgroundKey = "mysticMeadow" | "emberWoods" | "tideCavern" | "stonebackHills";
 type ArtValidationMode = {
   enabled: boolean;
   sizeMode: "normal" | "thumbnail";
@@ -469,8 +336,6 @@ function playGameSound(_event: GameSoundEvent) {
   // Sound-ready hook: wire Expo AV or another audio layer here when assets exist.
 }
 
-type EnemyImageKey = "slime" | "boar" | "wisp" | "knight" | "manta" | "chimera";
-
 type JourneyObjective = {
   title: string;
   description: string;
@@ -478,14 +343,6 @@ type JourneyObjective = {
   enemy?: EnemyImageKey;
 };
 
-const enemyImages: Record<EnemyImageKey, ImageSourcePropType> = {
-  slime: require("./assets/optimized/battle/bouncy-slime-cutout-fast.png"),
-  boar: require("./assets/optimized/battle/briar-boar-cutout-fast.png"),
-  wisp: require("./assets/optimized/battle/willow-wisp-cutout-fast.png"),
-  knight: require("./assets/optimized/battle/ruin-knight-cutout-fast.png"),
-  manta: require("./assets/optimized/battle/sky-manta-cutout-fast.png"),
-  chimera: require("./assets/optimized/battle/rift-chimera-cutout-fast.png")
-};
 
 function getAutoBattleEnemyImageKey(enemyName: string, areaId: AreaId): EnemyImageKey {
   const normalizedName = enemyName.toLowerCase();
@@ -664,37 +521,12 @@ export default function App() {
             </Pressable>
           </View>
         ) : null}
-        <GameStage state={state} dispatch={dispatch} />
+        <GameStage state={state} dispatch={dispatch} JourneyStage={HatchlingJourneyStage} AwakeningStage={EggAwakeningStage} />
       </SafeAreaView>
     </LinearGradient>
   );
 }
 
-function ResourceBar({ state }: { state: GameState }) {
-  const xpNeeded = getXpToLevel(state.dragon.level);
-  return (
-    <View style={styles.resourceBar}>
-      <Resource label="Gold" value={state.player.gold} />
-      <Resource label="Essence" value={state.player.essence} />
-      <Resource label="Level" value={state.dragon.level} />
-      <Resource label="XP" value={`${state.dragon.xp}/${xpNeeded}`} />
-    </View>
-  );
-}
-
-function GameStage({
-  state,
-  dispatch
-}: {
-  state: GameState;
-  dispatch: (action: GameAction) => void;
-}) {
-  if (state.phase === "journey") {
-    return <HatchlingJourneyStage state={state} dispatch={dispatch} />;
-  }
-
-  return <EggAwakeningStage state={state} dispatch={dispatch} />;
-}
 
 function EggAwakeningStage({
   state,
@@ -1022,100 +854,7 @@ function EggAwakeningStage({
 }
 
 
-const hatchBurstParticles = [
-  { x: -58, y: -46, size: 5, delay: 0.04, rotate: "-24deg" },
-  { x: 58, y: -48, size: 5, delay: 0.1, rotate: "24deg" },
-  { x: -44, y: 50, size: 4, delay: 0.18, rotate: "-12deg" },
-  { x: 44, y: 52, size: 4, delay: 0.22, rotate: "14deg" }
-];
 
-const hatchBurstRays = [
-  { rotate: "-42deg", delay: 0.04 },
-  { rotate: "0deg", delay: 0.1 },
-  { rotate: "42deg", delay: 0.16 }
-];
-
-function EggHatchBurst({ progress, color, accentColor }: { progress: Animated.Value; color: string; accentColor: string }) {
-  const bloomOpacity = progress.interpolate({ inputRange: [0, 0.14, 0.56, 1], outputRange: [0, 0.42, 0.16, 0], extrapolate: "clamp" });
-  const bloomScale = progress.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1.75], extrapolate: "clamp" });
-  const ringOpacity = progress.interpolate({ inputRange: [0, 0.2, 0.72, 1], outputRange: [0, 0.48, 0.14, 0], extrapolate: "clamp" });
-  const ringScale = progress.interpolate({ inputRange: [0, 1], outputRange: [0.78, 1.45], extrapolate: "clamp" });
-
-  return (
-    <View pointerEvents="none" style={styles.hatchBurstLayer}>
-      <Animated.View style={[styles.hatchBloom, { backgroundColor: color, opacity: bloomOpacity, transform: [{ scale: bloomScale }] }]} />
-      <Animated.View style={[styles.hatchShockRing, { borderColor: color, opacity: ringOpacity, transform: [{ scale: ringScale }] }]} />
-      {hatchBurstRays.map((ray) => {
-        const rayOpacity = progress.interpolate({ inputRange: [ray.delay, ray.delay + 0.16, 0.74, 1], outputRange: [0, 0.32, 0.08, 0], extrapolate: "clamp" });
-        const rayScaleY = progress.interpolate({ inputRange: [ray.delay, ray.delay + 0.34, 1], outputRange: [0.18, 0.82, 0.48], extrapolate: "clamp" });
-        return (
-          <Animated.View key={ray.rotate} style={[styles.hatchLightRay, { backgroundColor: accentColor, opacity: rayOpacity, transform: [{ rotate: ray.rotate }, { scaleY: rayScaleY }] }]} />
-        );
-      })}
-      {hatchBurstParticles.map((particle, index) => {
-        const particleOpacity = progress.interpolate({ inputRange: [particle.delay, particle.delay + 0.14, 0.78, 1], outputRange: [0, 0.62, 0.36, 0], extrapolate: "clamp" });
-        const translateX = progress.interpolate({ inputRange: [particle.delay, 1], outputRange: [0, particle.x], extrapolate: "clamp" });
-        const translateY = progress.interpolate({ inputRange: [particle.delay, 1], outputRange: [0, particle.y], extrapolate: "clamp" });
-        const particleScale = progress.interpolate({ inputRange: [particle.delay, particle.delay + 0.18, 1], outputRange: [0.25, 0.88, 0.48], extrapolate: "clamp" });
-        return (
-          <Animated.View
-            key={`${particle.x}-${particle.y}-${index}`}
-            style={[
-              styles.hatchShellSpark,
-              {
-                backgroundColor: index % 2 === 0 ? color : accentColor,
-                height: particle.size,
-                opacity: particleOpacity,
-                transform: [{ translateX }, { translateY }, { rotate: particle.rotate }, { scale: particleScale }],
-                width: particle.size
-              }
-            ]}
-          />
-        );
-      })}
-    </View>
-  );
-}
-
-function CrackOverlay({ breaking }: { breaking: Animated.Value }) {
-  const openingOpacity = breaking.interpolate({ inputRange: [0, 0.32, 0.58, 1], outputRange: [0, 0, 0.48, 0.12] });
-  const openingScale = breaking.interpolate({ inputRange: [0, 0.58, 1], outputRange: [0.5, 1, 1.35] });
-
-  return (
-    <View pointerEvents="none" style={styles.crackLayer}>
-      <Animated.View
-        style={[
-          styles.missingShellGap,
-          styles.missingShellGapTop,
-          {
-            opacity: openingOpacity,
-            transform: [{ rotate: "-18deg" }, { scale: openingScale }]
-          }
-        ]}
-      />
-      <Animated.View
-        style={[
-          styles.missingShellGap,
-          styles.missingShellGapLeft,
-          {
-            opacity: openingOpacity,
-            transform: [{ rotate: "32deg" }, { scale: openingScale }]
-          }
-        ]}
-      />
-      <Animated.View
-        style={[
-          styles.missingShellGap,
-          styles.missingShellGapRight,
-          {
-            opacity: openingOpacity,
-            transform: [{ rotate: "-36deg" }, { scale: openingScale }]
-          }
-        ]}
-      />
-    </View>
-  );
-}
 
 function EnergyMeters({ scores }: { scores: Record<DragonElement, number> }) {
   return (
@@ -1137,121 +876,6 @@ function EnergyMeters({ scores }: { scores: Record<DragonElement, number> }) {
   );
 }
 
-function FloatingLayer({
-  children,
-  distance = 8,
-  scale = 1.03,
-  sway = 0,
-  duration = 1600,
-  delay = 0,
-  style
-}: {
-  children: ReactNode;
-  distance?: number;
-  scale?: number;
-  sway?: number;
-  duration?: number;
-  delay?: number;
-  style?: object;
-}) {
-  const progress = useSharedValue(0);
-
-  useEffect(() => {
-    progress.value = withDelay(
-      delay,
-      withRepeat(withTiming(1, { duration, easing: Easing.inOut(Easing.quad) }), -1, true)
-    );
-  }, [delay, duration, progress]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: -distance * progress.value },
-      { rotate: `${-sway + progress.value * sway * 2}deg` },
-      { scale: 1 + (scale - 1) * progress.value }
-    ]
-  }));
-
-  return <Reanimated.View style={[style, animatedStyle]}>{children}</Reanimated.View>;
-}
-
-function GlowPulse({
-  color,
-  style,
-  duration = 1400,
-  minOpacity = 0.12,
-  maxOpacity = 0.28
-}: {
-  color: string;
-  style?: any;
-  duration?: number;
-  minOpacity?: number;
-  maxOpacity?: number;
-}) {
-  const progress = useSharedValue(0);
-
-  useEffect(() => {
-    progress.value = withRepeat(withTiming(1, { duration, easing: Easing.inOut(Easing.quad) }), -1, true);
-  }, [duration, progress]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: color,
-    opacity: minOpacity + progress.value * (maxOpacity - minOpacity),
-    transform: [{ scale: 0.96 + progress.value * 0.12 }]
-  }));
-
-  return <Reanimated.View pointerEvents="none" style={[styles.glowPulse, style, animatedStyle]} />;
-}
-
-function ParallaxBackground({ source, opacity = 0.28 }: { source: ImageSourcePropType; opacity?: number }) {
-  const progress = useSharedValue(0);
-
-  useEffect(() => {
-    progress.value = withRepeat(withTiming(1, { duration: 9000, easing: Easing.inOut(Easing.quad) }), -1, true);
-  }, [progress]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity,
-    transform: [{ scale: 1.1 }, { translateX: -12 + progress.value * 24 }, { translateY: -8 + progress.value * 16 }]
-  }));
-
-  return <Reanimated.Image source={source} resizeMode="cover" style={[styles.parallaxLayer, animatedStyle]} />;
-}
-
-function ParticleField({ color, count = 8 }: { color: string; count?: number }) {
-  return (
-    <View pointerEvents="none" style={styles.particleField}>
-      {Array.from({ length: count }).map((_, index) => (
-        <ParticleDot key={index} color={color} index={index} />
-      ))}
-    </View>
-  );
-}
-
-function ParticleDot({ color, index }: { color: string; index: number }) {
-  const progress = useSharedValue(0);
-  const left = 12 + ((index * 29) % 78);
-  const top = 18 + ((index * 43) % 72);
-  const size = 5 + (index % 3) * 2;
-
-  useEffect(() => {
-    progress.value = withDelay(
-      index * 120,
-      withRepeat(withSequence(withTiming(1, { duration: 1900 }), withTiming(0, { duration: 1900 })), -1)
-    );
-  }, [index, progress]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: color,
-    height: size,
-    left: `${left}%`,
-    opacity: 0.18 + progress.value * 0.58,
-    top: `${top}%`,
-    transform: [{ translateY: -28 * progress.value }, { scale: 0.65 + progress.value * 0.55 }],
-    width: size
-  }));
-
-  return <Reanimated.View style={[styles.particleDot, animatedStyle]} />;
-}
 
 function DragonDisplay({
   element,
@@ -5278,14 +4902,6 @@ function formatPresenceAwayDuration(awayDurationMs: number) {
   return awayDurationMs >= 60 * 60 * 1000 ? "1 hour" : `${Math.round(awayDurationMs / 60000)} min`;
 }
 
-function Resource({ label, value }: { label: string; value: number | string }) {
-  return (
-    <View style={styles.resource}>
-      <Text style={styles.resourceLabel}>{label}</Text>
-      <Text style={styles.resourceValue}>{value}</Text>
-    </View>
-  );
-}
 
 function TabBar({ active, dispatch }: { active: ScreenKey; dispatch: (action: GameAction) => void }) {
   return (
