@@ -83,7 +83,7 @@ export function getTodayKeyForUi() {
 export function isValidBackupState(value: unknown): value is GameState {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<GameState>;
-  return Boolean(candidate.dragon && candidate.player && candidate.idleUpgrades && candidate.treasures && candidate.elementalShards);
+  return Boolean(candidate.dragon && candidate.player && candidate.treasures && candidate.elementalShards);
 }
 
 export function getLeadingEggElement(state: GameState): DragonElement {

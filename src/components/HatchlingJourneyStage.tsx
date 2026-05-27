@@ -21,8 +21,6 @@ import {
   getEvolutionProgressRatio,
   isNearEvolutionExcitement,
   getDragonForm,
-  getIdleUpgradeCost,
-  isIdleUpgradeCapped,
   getOfflineGoldReward
 } from "../game";
 import { clearGameState } from "../storage";
@@ -44,12 +42,12 @@ import AdventureScreen, { AdventureJourneyScene } from "./AdventureScreen";
 import QuestScreen from "./QuestScreen";
 import ShopScreen from "./ShopScreen";
 import UpgradeScreen from "./UpgradeScreen";
-import { SectionCard, PrimaryButton, StatsPanelContent, UpgradesPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
+import { SectionCard, PrimaryButton, StatsPanelContent, EvolutionPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
 import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, type PresenceTestOverrides } from "./Modals";
 import { BalanceDebugPanel, GuidedPlaytestOverlay, getAutoCompletedGuidedStepIds, guidedPlaytestSteps, DrakeContinuityReviewPanel, HatchlingReviewModal, DevToggleButton, PlaytestNotesPanel, createBalanceSnapshotExport, TestChecklist } from "./DevTools";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import ParticleField from "../ui/ParticleField";
-import type { DragonElement, DragonPathId, DragonStage, EvolutionTraitId, GameAction, GameSettings, GameState, IdleUpgradeId, ScreenKey } from "../types";
+import type { DragonElement, DragonPathId, DragonStage, EvolutionTraitId, GameAction, GameSettings, GameState, ScreenKey } from "../types";
 import { formatGameNumber, formatMultiplier, formatPercent, getTodayKeyForUi, isValidBackupState, getLeadingEggElement, shouldShowLootPopup } from "../utils/format";
 
 type GameSoundEvent = "tap" | "criticalTap" | "upgrade" | "evolve" | "treasureDrop" | "gearDrop" | "reincarnate" | "dailyReward";
@@ -123,7 +121,6 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
   const nearEvolutionExcitement = isNearEvolutionExcitement(state);
   const [floatingReward, setFloatingReward] = useState<{ id: number; text: string } | null>(null);
   const [burstKey, setBurstKey] = useState(0);
-  const [sparkleUpgrade, setSparkleUpgrade] = useState<IdleUpgradeId | null>(null);
   const [showEvolutionChoices, setShowEvolutionChoices] = useState(false);
   const [showReincarnationConfirm, setShowReincarnationConfirm] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
@@ -246,19 +243,6 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
 
     return () => clearInterval(timer);
   }, [effectiveAnticipationLevel, effectiveReturnPresence?.active]);
-
-  const buyIdleUpgrade = (upgradeId: IdleUpgradeId) => {
-    const cost = getIdleUpgradeCost(state, upgradeId);
-    if (state.player.gold < cost || isIdleUpgradeCapped(state, upgradeId)) {
-      return;
-    }
-
-    runHaptic(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium));
-    playGameSound("upgrade");
-    dispatch({ type: "buyIdleUpgrade", upgradeId });
-    setSparkleUpgrade(upgradeId);
-    setTimeout(() => setSparkleUpgrade(null), 650);
-  };
 
   const playEvolutionFeedback = () => {
     if (!state.settings.reducedMotion) {
@@ -386,7 +370,6 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
     state.guidedPlaytest.completedStepIds,
     state.dailyGoals.completeAdventure1?.progress ?? 0,
     state.dailyGoals.completeQuest5?.progress ?? 0,
-    state.idleUpgrades,
     state.dragon.element,
     state.dragon.stage,
     state.selectedEvolutionTraits,
@@ -516,13 +499,11 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         <PanelSheet title={getPanelTitle(activePanel)} visible={activePanel !== null} onClose={() => setActivePanel(null)}>
           {activePanel === "stats" ? <StatsPanelContent state={state} /> : null}
           {activePanel === "upgrades" ? (
-            <UpgradesPanelContent
+            <EvolutionPanelContent
               state={state}
               canEvolve={canEvolve}
               evolutionCost={evolutionCost}
-              sparkleUpgrade={sparkleUpgrade}
               onEvolve={evolveDragon}
-              onBuyUpgrade={buyIdleUpgrade}
             />
           ) : null}
           {activePanel === "adventure" ? (
@@ -596,7 +577,7 @@ export function getPanelTitle(panel: IdlePanelKey | null) {
     case "stats":
       return "Stats";
     case "upgrades":
-      return "Upgrades";
+      return "Evolve";
     case "adventure":
       return "Adventure";
     case "evolution":
@@ -634,7 +615,7 @@ export function StatPill({ icon, label, value, large = false }: { icon?: string;
 export function BottomNav({ activePanel, onSelect }: { activePanel: IdlePanelKey | null; onSelect: (panel: IdlePanelKey) => void }) {
   const items: Array<{ key: IdlePanelKey; label: string; icon: string }> = [
     { key: "stats", label: "Stats", icon: "▣" },
-    { key: "upgrades", label: "Train", icon: "⬆" },
+    { key: "upgrades", label: "Evolve", icon: "⬆" },
     { key: "adventure", label: "Path", icon: "⚔" },
     { key: "evolution", label: "Evo", icon: "🐉" },
     { key: "goals", label: "Goals", icon: "★" },

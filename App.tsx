@@ -53,8 +53,6 @@ import {
   getDragonForm,
   getEvolutionProgressRatio,
   getLeadingElement,
-  getIdleUpgradeCost,
-  getIdleUpgradeCap,
   getNextEvolutionCost,
   getPendingDailyLoginRewardDay,
   getOfflineGoldReward,
@@ -72,7 +70,6 @@ import {
   getNodeKindLabel,
   getQuestProgress,
   getUpgradeCost,
-  isIdleUpgradeCapped,
   getXpToLevel,
   areaDefinitions,
   elementBonusDefinitions,
@@ -80,8 +77,6 @@ import {
   getSelectedEvolutionTrait,
   idleQuestDefinitions,
   idleQuestOrder,
-  idleUpgradeDefinitions,
-  idleUpgradeOrder,
   journeyEventDefinitions,
   treasureDefinitions,
   treasureRarityDefinitions,
@@ -106,7 +101,7 @@ import DragonDisplay, { type AnticipationLevel, type ReturnPresencePhase, type E
 import EggAwakeningStage from "./src/components/EggAwakeningStage";
 import BattleScreen, { getAutoBattleEnemyImageKey, BattleTacticPreview } from "./src/components/BattleScreen";
 import AdventureScreen, { AdventureJourneyScene, CapybaraAdventureBoard } from "./src/components/AdventureScreen";
-import DenScreen, { SectionCard, EmptyState, PrimaryButton, StatsPanelContent, UpgradesPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./src/components/DenScreen";
+import DenScreen, { SectionCard, EmptyState, PrimaryButton, StatsPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./src/components/DenScreen";
 import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, AchievementsModal, DailyGoalsModal, LootPopup, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, type PresenceTestOverrides } from "./src/components/Modals";
 import { getAutoCompletedGuidedStepIds, GuidedPlaytestOverlay, BalanceDebugPanel, TestChecklist, createBalanceSnapshotExport, DevToggleButton, HatchlingReviewModal, DrakeContinuityReviewPanel, PlaytestNotesPanel, guidedPlaytestSteps } from "./src/components/DevTools";
 import HatchlingJourneyStage from "./src/components/HatchlingJourneyStage";
@@ -159,7 +154,6 @@ import {
   GameAction,
   GameSettings,
   GameState,
-  IdleUpgradeId,
   LootEvent,
   ScreenKey,
   Stats
@@ -1650,18 +1644,6 @@ const styles = StyleSheet.create({
     top: 92,
     zIndex: 9
   },
-  idleUpgradePanel: {
-    backgroundColor: "rgba(10,7,21,0.9)",
-    borderColor: "rgba(255,255,255,0.14)",
-    borderRadius: 28,
-    borderWidth: 1,
-    bottom: 14,
-    left: 14,
-    padding: 12,
-    position: "absolute",
-    right: 14,
-    zIndex: 12
-  },
   autoBattlePanel: {
     backgroundColor: "rgba(10,7,21,0.84)",
     borderColor: "rgba(255,120,79,0.24)",
@@ -2743,43 +2725,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8
   },
-  upgradeCardWrap: {
-    flex: 1
-  },
-  idleUpgradeCard: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderColor: "rgba(255,255,255,0.16)",
-    borderRadius: 18,
-    borderWidth: 1,
-    minHeight: 118,
-    overflow: "hidden",
-    padding: 10
-  },
   disabledUpgradeCard: {
     opacity: 0.48
-  },
-  idleUpgradeName: {
-    color: "#fff8ef",
-    fontSize: 13,
-    fontWeight: "900"
-  },
-  idleUpgradeLevel: {
-    color: "#b9aee3",
-    fontSize: 12,
-    fontWeight: "800",
-    marginTop: 5
-  },
-  idleUpgradeBonus: {
-    color: "#8fffd2",
-    fontSize: 12,
-    fontWeight: "900",
-    marginTop: 8
-  },
-  idleUpgradeCost: {
-    color: "#f8d987",
-    fontSize: 11,
-    fontWeight: "900",
-    marginTop: 6
   },
   upgradeSparkle: {
     height: 90,

@@ -30,7 +30,6 @@ import {
   GameSettings,
   GameState,
   IdleQuestId,
-  IdleUpgradeId,
   JourneyEventEffect,
   JourneyEventEffectType,
   JourneyEventId,
@@ -975,29 +974,6 @@ function normalizeDailyGoals(goals: Partial<Record<DailyGoalId, Partial<DailyGoa
   };
 }
 
-export const idleUpgradeDefinitions: Record<IdleUpgradeId, { name: string; baseCost: number; costGrowth: number; adventureLootBonus: number }> = {
-  manaSprout: {
-    name: "Mana Sprout",
-    baseCost: BALANCE.upgrades.idle.manaSprout.baseCost,
-    costGrowth: BALANCE.upgrades.idle.manaSprout.costGrowth,
-    adventureLootBonus: 1
-  },
-  crystalNest: {
-    name: "Crystal Nest",
-    baseCost: BALANCE.upgrades.idle.crystalNest.baseCost,
-    costGrowth: BALANCE.upgrades.idle.crystalNest.costGrowth,
-    adventureLootBonus: 5
-  },
-  ancientRoot: {
-    name: "Ancient Root",
-    baseCost: BALANCE.upgrades.idle.ancientRoot.baseCost,
-    costGrowth: BALANCE.upgrades.idle.ancientRoot.costGrowth,
-    adventureLootBonus: 25
-  }
-};
-
-export const idleUpgradeOrder: IdleUpgradeId[] = ["manaSprout", "crystalNest", "ancientRoot"];
-
 export const areaDefinitions: Record<AreaId, { name: string; rewardMultiplier: number; unlockDefeats: number }> = {
   mysticMeadow: { name: "Mystic Meadow", rewardMultiplier: BALANCE.questRewardScaling.areaMultipliers.mysticMeadow, unlockDefeats: 0 },
   emberWoods: { name: "Ember Woods", rewardMultiplier: BALANCE.questRewardScaling.areaMultipliers.emberWoods, unlockDefeats: 8 },
@@ -1204,11 +1180,6 @@ export const initialGameState: GameState = {
     stagesCleared: 0,
     claimedQuests: []
   },
-  idleUpgrades: {
-    manaSprout: 0,
-    crystalNest: 0,
-    ancientRoot: 0
-  },
   currentArea: "mysticMeadow",
   idleQuestProgress: {
     defeatSlimes: 0,
@@ -1325,12 +1296,6 @@ export function getUpgradeCost(state: GameState, stat: keyof Stats) {
   );
 }
 
-export function getIdleUpgradeCost(state: GameState, upgradeId: IdleUpgradeId) {
-  const upgrade = idleUpgradeDefinitions[upgradeId];
-  const level = state.idleUpgrades[upgradeId] ?? 0;
-  return applyUpgradeCostBonus(state, Math.floor(upgrade.baseCost * Math.pow(upgrade.costGrowth, level)));
-}
-
 function getJourneyEventDelayMs() {
   return journeyEventMinDelayMs + Math.floor(Math.random() * (journeyEventMaxDelayMs - journeyEventMinDelayMs));
 }
@@ -1385,20 +1350,8 @@ function removeExpiredJourneyEffects(state: GameState, now = Date.now()) {
       };
 }
 
-export function getIdleUpgradeCap(state: GameState, upgradeId: IdleUpgradeId) {
-  return BALANCE.upgrades.idleCapsByStage[state.dragon.stage]?.[upgradeId] ?? 0;
-}
-
-export function isIdleUpgradeCapped(state: GameState, upgradeId: IdleUpgradeId) {
-  const cap = getIdleUpgradeCap(state, upgradeId);
-  return cap > 0 && (state.idleUpgrades[upgradeId] ?? 0) >= cap;
-}
-
 export function getGoldPerSecond(state: GameState) {
-  const base = idleUpgradeOrder.reduce((total, upgradeId) => {
-    const level = state.idleUpgrades[upgradeId] ?? 0;
-    return total + level * idleUpgradeDefinitions[upgradeId].adventureLootBonus;
-  }, 0);
+  const base = 0;
   const treasureMultiplier = 1 + (state.treasures.glowingScale ?? 0) * 0.05 + (state.treasures.manaPearl ?? 0) * 0.04;
   const elementMultiplier = state.dragon.element === "water" ? 1.15 : 1;
   const traitMultiplier = hasEvolutionTrait(state, "tideheartDrake") ? 1.2 : 1;
@@ -2175,8 +2128,7 @@ function getAdventureDifficulty(id?: AdventureDifficultyId) {
 function getAdventureLootTier(state: GameState, difficultyId: AdventureDifficultyId = "drakeExpedition") {
   const completedAdventureRuns = state.completedAdventureRuns ?? 0;
   const difficulty = getAdventureDifficulty(difficultyId);
-  const trainingLoot = idleUpgradeOrder.reduce((total, upgradeId) => total + (state.idleUpgrades[upgradeId] ?? 0) * idleUpgradeDefinitions[upgradeId].adventureLootBonus, 0);
-  return completedAdventureRuns * 2 + (state.adventureCompletions?.[difficultyId] ?? 0) * 3 + difficulty.lootTierBonus + Math.floor(trainingLoot / 10) + Math.floor(getEquipmentBonusTotal(state, "adventureLoot") / 5);
+  return completedAdventureRuns * 2 + (state.adventureCompletions?.[difficultyId] ?? 0) * 3 + difficulty.lootTierBonus + Math.floor(getEquipmentBonusTotal(state, "adventureLoot") / 5);
 }
 
 const shadowValeStopTitles = [
@@ -2872,25 +2824,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       };
     }
-    case "buyIdleUpgrade": {
-      const cost = getIdleUpgradeCost(state, action.upgradeId);
-      if (state.player.gold < cost || isIdleUpgradeCapped(state, action.upgradeId)) {
-        return state;
-      }
-
-      return addDailyProgress({
-        ...state,
-        idleUpgrades: {
-          ...state.idleUpgrades,
-          [action.upgradeId]: (state.idleUpgrades[action.upgradeId] ?? 0) + 1
-        },
-        player: {
-          ...state.player,
-          gold: state.player.gold - cost,
-          upgradesBought: state.player.upgradesBought + 1
-        }
-      }, "buyUpgrade3", 1);
-    }
     case "evolveDragon": {
       const cost = getNextEvolutionCost(state.dragon.stage);
       if (cost === null || state.player.gold < cost) {
@@ -3474,7 +3407,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const boost: Partial<Stats> =
         action.stat === "health" ? { health: 16 } : action.stat === "speed" ? { speed: 1 } : { [action.stat]: 3 };
 
-      return {
+      return addDailyProgress({
         ...state,
         dragon: {
           ...state.dragon,
@@ -3486,7 +3419,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           gold: state.player.gold - cost,
           upgradesBought: state.player.upgradesBought + 1
         }
-      };
+      }, "buyUpgrade3", 1);
     }
     case "claimQuest": {
       const quest = quests.find((item) => item.id === action.questId);
@@ -3550,10 +3483,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         player: {
           ...initialGameState.player,
           ...action.state.player
-        },
-        idleUpgrades: {
-          ...initialGameState.idleUpgrades,
-          ...(action.state.idleUpgrades ?? {})
         },
         idleQuestProgress: {
           ...initialGameState.idleQuestProgress,

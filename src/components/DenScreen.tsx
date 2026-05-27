@@ -18,12 +18,8 @@ import {
   getDragonForm,
   getDragonPower,
   getDragonSoulMultiplier,
-  getIdleUpgradeCap,
-  getIdleUpgradeCost,
   getReincarnationSoulsGained,
   getSelectedEvolutionTrait,
-  idleUpgradeDefinitions,
-  idleUpgradeOrder,
   supportingSystemRecommendations,
   treasureDefinitions,
   treasureOrder,
@@ -45,7 +41,6 @@ import type {
   GameAction,
   GameSettings,
   GameState,
-  IdleUpgradeId,
   Stats,
 } from "../types";
 import { formatGameNumber, formatStat, formatStatValue, formatReward } from "../utils/format";
@@ -366,57 +361,6 @@ export function EquipmentRow({
 
 // ─── Upgrade cards ────────────────────────────────────────────────────────────
 
-export function IdleUpgradeCard({
-  upgradeId,
-  state,
-  activeSparkle,
-  onBuy,
-}: {
-  upgradeId: IdleUpgradeId;
-  state: GameState;
-  activeSparkle: boolean;
-  onBuy: () => void;
-}) {
-  const press = useRef(new Animated.Value(0)).current;
-  const upgrade = idleUpgradeDefinitions[upgradeId];
-  const level = state.idleUpgrades[upgradeId] ?? 0;
-  const cap = getIdleUpgradeCap(state, upgradeId);
-  const safeCap = Number.isFinite(cap) ? cap : 0;
-  const capped = safeCap > 0 && level >= safeCap;
-  const cost = getIdleUpgradeCost(state, upgradeId);
-  const safeCost = Number.isFinite(cost) ? cost : 0;
-  const lootBonus = Number.isFinite(upgrade?.adventureLootBonus) ? upgrade.adventureLootBonus : 0;
-  const disabled = state.player.gold < safeCost || capped;
-
-  const buy = () => {
-    if (disabled) return;
-    if (!state.settings.reducedMotion) {
-      press.setValue(0);
-      Animated.sequence([
-        Animated.timing(press, { toValue: 1, duration: 110, useNativeDriver: true }),
-        Animated.timing(press, { toValue: 0, duration: 170, useNativeDriver: true }),
-      ]).start();
-    }
-    onBuy();
-  };
-
-  const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 1.045] });
-
-  return (
-    <Animated.View style={[styles.upgradeCardWrap, { transform: [{ scale }] }]}>
-      {activeSparkle && !state.settings.reducedMotion ? <SafeLottie source={evolutionBurstEffect} autoPlay loop={false} style={styles.upgradeSparkle} /> : null}
-      <Pressable onPress={buy} disabled={disabled} style={[styles.idleUpgradeCard, disabled && styles.disabledUpgradeCard]}>
-        <Text style={styles.idleUpgradeName}>{upgrade?.name ?? "Training Upgrade"}</Text>
-        <Text style={styles.idleUpgradeLevel}>
-          Level {formatGameNumber(level, state.settings.numberFormat)}/{formatGameNumber(safeCap, state.settings.numberFormat)}
-        </Text>
-        <Text style={styles.idleUpgradeBonus}>+{formatGameNumber(lootBonus, state.settings.numberFormat)} loot score</Text>
-        <Text style={styles.idleUpgradeCost}>{capped ? "Evolve to unlock more levels" : `${formatGameNumber(safeCost, state.settings.numberFormat)} Essence`}</Text>
-      </Pressable>
-    </Animated.View>
-  );
-}
-
 export function ElementBonusCard({ element, questIntervalMs }: { element: DragonElement; questIntervalMs: number }) {
   const theme = elementTheme[element];
   const bonus = elementBonusDefinitions[element];
@@ -597,20 +541,16 @@ export function StatsPanelContent({ state }: { state: GameState }) {
   );
 }
 
-export function UpgradesPanelContent({
+export function EvolutionPanelContent({
   state,
   canEvolve,
   evolutionCost,
-  sparkleUpgrade,
   onEvolve,
-  onBuyUpgrade,
 }: {
   state: GameState;
   canEvolve: boolean;
   evolutionCost: number | null;
-  sparkleUpgrade: IdleUpgradeId | null;
   onEvolve: () => void;
-  onBuyUpgrade: (upgradeId: IdleUpgradeId) => void;
 }) {
   const element = state.dragon.element ?? "fire";
   const theme = elementTheme[element];
@@ -635,19 +575,6 @@ export function UpgradesPanelContent({
       </SectionCard>
       <SectionCard title="Evolution Trait" subtitle={trait ? trait.name : "Choose a Drake path"}>
         <Text style={styles.panelMutedText}>{trait ? trait.bonus : "Your first branch unlocks when evolving from Hatchling to Drake."}</Text>
-      </SectionCard>
-      <SectionCard title="Upgrade Cards">
-        <View style={styles.panelUpgradeGrid}>
-          {idleUpgradeOrder.map((upgradeId) => (
-            <IdleUpgradeCard
-              key={upgradeId}
-              upgradeId={upgradeId}
-              state={state}
-              activeSparkle={sparkleUpgrade === upgradeId}
-              onBuy={() => onBuyUpgrade(upgradeId)}
-            />
-          ))}
-        </View>
       </SectionCard>
     </>
   );
@@ -1125,41 +1052,6 @@ const styles = StyleSheet.create({
     color: "#d8cfef",
     fontSize: 10,
     fontWeight: "900",
-  },
-  upgradeCardWrap: {
-    flex: 1,
-  },
-  idleUpgradeCard: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderColor: "rgba(255,255,255,0.16)",
-    borderRadius: 18,
-    borderWidth: 1,
-    minHeight: 118,
-    overflow: "hidden",
-    padding: 10,
-  },
-  idleUpgradeName: {
-    color: "#fff8ef",
-    fontSize: 13,
-    fontWeight: "900",
-  },
-  idleUpgradeLevel: {
-    color: "#b9aee3",
-    fontSize: 12,
-    fontWeight: "800",
-    marginTop: 5,
-  },
-  idleUpgradeBonus: {
-    color: "#8fffd2",
-    fontSize: 12,
-    fontWeight: "900",
-    marginTop: 8,
-  },
-  idleUpgradeCost: {
-    color: "#f8d987",
-    fontSize: 11,
-    fontWeight: "900",
-    marginTop: 6,
   },
   upgradeSparkle: {
     height: 90,

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Alert, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, type ImageSourcePropType, useWindowDimensions, View } from "react-native";
 import {
-  idleUpgradeOrder,
   treasureOrder,
   idleQuestOrder,
   areaDefinitions,
@@ -101,15 +100,11 @@ async function fetchJsonWithTimeout<T>(url: string, init: RequestInit, timeoutMs
 
 export function getAutoCompletedGuidedStepIds(state: GameState) {
   const completed: string[] = ["freshSave"];
-  const totalIdleUpgrades = idleUpgradeOrder.reduce((total, upgradeId) => total + (state.idleUpgrades[upgradeId] ?? 0), 0);
   const totalTreasures = treasureOrder.reduce((total, treasureId) => total + (state.treasures[treasureId] ?? 0), 0);
   const reachedDrake = state.dragon.stage === "drake" || state.dragon.stage === "dragon" || state.dragon.stage === "wyrm";
 
   if ((state.dailyGoals.completeAdventure1?.progress ?? 0) >= 1) {
     completed.push("completeAdventure");
-  }
-  if (totalIdleUpgrades > 0) {
-    completed.push("buyFirstUpgrade");
   }
   if (state.dragon.element) {
     completed.push("chooseElement");
@@ -245,7 +240,6 @@ export function TestChecklist() {
 }
 
 export function createBalanceSnapshotExport(state: GameState) {
-  const totalIdleUpgradeLevels = idleUpgradeOrder.reduce((total, upgradeId) => total + (state.idleUpgrades[upgradeId] ?? 0), 0);
   const totalTreasures = treasureOrder.reduce((total, treasureId) => total + (state.treasures[treasureId] ?? 0), 0);
   const equippedItems = Object.values(state.equippedItems).filter(Boolean);
   const completedGuidedSteps = new Set(state.guidedPlaytest.completedStepIds);
@@ -268,7 +262,6 @@ export function createBalanceSnapshotExport(state: GameState) {
       currentEnemy: state.autoBattle.enemyName,
       enemyHp: state.autoBattle.enemyHp,
       enemyMaxHp: state.autoBattle.enemyMaxHp,
-      totalIdleUpgradeLevels,
       totalTreasures,
       equipmentInventoryCount: state.equipmentInventory.length,
       equippedItemCount: equippedItems.length,

@@ -93,8 +93,6 @@ export type GamePhase = "egg" | "question" | "hatching" | "journey";
 
 export type NumberFormat = "compact" | "full";
 
-export type IdleUpgradeId = "manaSprout" | "crystalNest" | "ancientRoot";
-
 export type AreaId = "mysticMeadow" | "emberWoods" | "tideCavern" | "stonebackHills" | "skyRuins" | "voidNest";
 
 export type IdleQuestId = "defeatSlimes" | "gatherCrystals" | "findScale";
@@ -397,7 +395,6 @@ export type ReturnPresenceState = {
 export type GameState = {
   dragon: DragonState;
   player: PlayerState;
-  idleUpgrades: Record<IdleUpgradeId, number>;
   currentArea: AreaId;
   idleQuestProgress: Record<IdleQuestId, number>;
   treasures: Record<TreasureId, number>;
@@ -446,7 +443,6 @@ export type GameAction =
   | { type: "selectDragonPath"; pathId: DragonPathId }
   | { type: "selectActiveSkill"; skillId: string }
   | { type: "advanceJourney" }
-  | { type: "buyIdleUpgrade"; upgradeId: IdleUpgradeId }
   | { type: "evolveDragon"; traitId?: EvolutionTraitId }
   | { type: "autoQuestAction" }
   | { type: "reincarnate" }
