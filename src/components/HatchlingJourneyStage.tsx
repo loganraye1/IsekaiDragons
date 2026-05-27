@@ -18,6 +18,7 @@ import {
   dragonPathDefinitions,
   getQuestIntervalMs,
   getEvolutionChapterRequirement,
+  canEvolveToNextStage,
   getEvolutionProgressRatio,
   isNearEvolutionExcitement,
   getDragonForm,
@@ -115,7 +116,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
   const numberFormat = state.settings.numberFormat;
   const questIntervalMs = getQuestIntervalMs(state);
   const evolutionChapterTarget = getEvolutionChapterRequirement(state.dragon.stage);
-  const canEvolve = evolutionChapterTarget !== null && (state.completedAdventureRuns ?? 0) >= evolutionChapterTarget;
+  const canEvolve = canEvolveToNextStage(state);
   const evolutionProgress = getEvolutionProgressRatio(state);
   const anticipationLevel: AnticipationLevel = evolutionProgress >= BALANCE.softProgressionAssist.excitementThreshold ? "excited" : evolutionProgress >= BALANCE.softProgressionAssist.rewardAssistThreshold ? "alert" : "calm";
   const nearEvolutionExcitement = isNearEvolutionExcitement(state);

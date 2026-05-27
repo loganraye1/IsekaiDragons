@@ -1551,7 +1551,18 @@ export function getQuestRewardMultiplier(state: GameState) {
   );
 }
 
+export function canEvolveToNextStage(state: GameState): boolean {
+  if (state.dragon.stage === "hatchling") {
+    return (state.adventureCompletions?.ancientRift ?? 0) >= 1;
+  }
+  const requirement = getEvolutionChapterRequirement(state.dragon.stage);
+  return requirement !== null && (state.completedAdventureRuns ?? 0) >= requirement;
+}
+
 export function getEvolutionProgressRatio(state: GameState) {
+  if (state.dragon.stage === "hatchling") {
+    return (state.adventureCompletions?.ancientRift ?? 0) >= 1 ? 1 : Math.min(0.95, (state.completedAdventureRuns ?? 0) / 10);
+  }
   const requirement = getEvolutionChapterRequirement(state.dragon.stage);
   if (!requirement) return 0;
   return Math.min(1, (state.completedAdventureRuns ?? 0) / requirement);
@@ -2207,21 +2218,30 @@ function getShadowValeNodeDescription(node: AdventureNode, step: number) {
   return "The Shadow Vale folds the path into moonless roots, hidden caches, and creatures that remember — faintly — what it felt like to be something else.";
 }
 
+const SHADOW_DEMON_LORD_TITLE = "Shadow of the First Demon Lord";
+const SHADOW_DEMON_LORD_DESCRIPTION =
+  "A memory the Rift could not dissolve — the echo of the last soul who tried to command the Void before it consumed them. It does not fight out of hatred. It fights because it must know whether you are worthy of what comes next. Prove your power here, and the seal that has held back your drake form will finally crack. Fall here, and the Rift takes you instead.";
+
 function scaleAdventureNodeForDifficulty(node: AdventureNode, step: number, difficultyId: AdventureDifficultyId): AdventureNode {
   const difficulty = getAdventureDifficulty(difficultyId);
   const cycle = Math.floor((step - 1) / 60);
   const shadowVale = difficultyId === "shadowVale";
+  const isAncientRiftFinalBoss = difficultyId === "ancientRift" && step === difficulty.nodeCount && node.kind === "boss";
   return {
     ...node,
     id: cycle > 0 || shadowVale ? `${node.id}-${difficultyId}-${step}` : node.id,
     step,
     chapter: difficulty.chapter,
     chapterStop: step,
-    evolutionMilestone: difficulty.chapter === 10 && step === 10 && node.kind === "boss",
+    evolutionMilestone: isAncientRiftFinalBoss,
     scene: difficulty.background,
     element: shadowVale ? "dark" : node.element,
-    title: shadowVale ? getShadowValeNodeTitle(node, step) : cycle > 0 ? `${difficulty.title}: ${node.title}` : node.title,
-    description: shadowVale ? getShadowValeNodeDescription(node, step) : node.description,
+    title: isAncientRiftFinalBoss
+      ? SHADOW_DEMON_LORD_TITLE
+      : shadowVale ? getShadowValeNodeTitle(node, step) : cycle > 0 ? `${difficulty.title}: ${node.title}` : node.title,
+    description: isAncientRiftFinalBoss
+      ? SHADOW_DEMON_LORD_DESCRIPTION
+      : shadowVale ? getShadowValeNodeDescription(node, step) : node.description,
     difficulty: Math.round((node.difficulty * difficulty.difficultyMultiplier + cycle * 0.12) * 100) / 100
   };
 }
@@ -2242,7 +2262,9 @@ function createAdventureRun(step = 1, difficultyId: AdventureDifficultyId = "hat
     visitedNodeIds: [],
     pendingNodeId: null,
     status: "active",
-    message: `${difficulty.title}: clear ${difficulty.nodeCount} chapter stops. Prep rewards and fights build toward bosses; evolution waits for Chapter 10 Stop 10.`
+    message: difficultyId === "ancientRift"
+      ? `${difficulty.title}: clear all ${difficulty.nodeCount} stops. The Shadow of the First Demon Lord waits at stop ${difficulty.nodeCount} — defeat it to unlock the drake evolution.`
+      : `${difficulty.title}: clear ${difficulty.nodeCount} chapter stops. Prep rewards and fights build toward the final boss.`
   };
 }
 
@@ -2294,7 +2316,7 @@ function isChapterFinalBoss(run: AdventureRun, node: AdventureNode) {
 }
 
 function isChapterEvolutionMilestone(node?: AdventureNode) {
-  return Boolean(node?.evolutionMilestone || (node?.chapter === 10 && node?.chapterStop === 10 && node?.kind === "boss"));
+  return Boolean(node?.evolutionMilestone);
 }
 
 function getAdventureHpAfterFight(run: AdventureRun, battle: BattleResult, node: AdventureNode) {
@@ -2412,13 +2434,21 @@ function createAdventureRewardBundle(
   const beforeHoard = getTreasureTotal(before);
   const afterHoard = getTreasureTotal(after);
   const runMaxSteps = after.adventureRun?.maxSteps ?? 30;
+  const runDifficultyId = after.adventureRun?.difficultyId ?? "hatchlingTrail";
   const nextStep = context.status === "complete" ? 1 : Math.min(runMaxSteps, context.nextStep ?? after.adventureRun?.step ?? 1);
+  const isEvolutionBoss = isChapterEvolutionMilestone(context.node);
   const nextRecommendedAdventure = context.status === "complete"
-    ? "Return to the den, equip new loot, then start the next chapter."
-    : `Push to stop ${nextStep}/${runMaxSteps}; evolution is reserved for Chapter 10 Stop 10.`;
-  const evolutionProgress = isChapterEvolutionMilestone(context.node)
-    ? `${before.dragon.evolution}% → ${after.dragon.evolution}% evolution`
-    : "Locked until Chapter 10 Stop 10 evolution boss";
+    ? isEvolutionBoss
+      ? "The seal is broken. Return to your Den and choose your Drake path."
+      : "Return to the den, equip new loot, then start the next chapter."
+    : runDifficultyId === "ancientRift"
+      ? `Push to stop ${nextStep}/${runMaxSteps} — the Shadow of the First Demon Lord waits at stop ${runMaxSteps}.`
+      : `Push to stop ${nextStep}/${runMaxSteps}.`;
+  const evolutionProgress = isEvolutionBoss
+    ? "The seal of the First Demon Lord is broken — drake evolution is now available"
+    : runDifficultyId === "ancientRift"
+      ? `Locked — defeat the Shadow of the First Demon Lord at stop ${runMaxSteps}`
+      : "Complete the Ancient Rift to unlock drake evolution";
 
   return {
     lootGained: lootGained.length > 0 ? lootGained : ["Route knowledge gained"],
@@ -2859,8 +2889,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
     case "evolveDragon": {
-      const chapterRequirement = getEvolutionChapterRequirement(state.dragon.stage);
-      if (chapterRequirement === null || (state.completedAdventureRuns ?? 0) < chapterRequirement) {
+      if (!canEvolveToNextStage(state)) {
         return state;
       }
       if (state.dragon.stage === "hatchling" && (!state.dragon.path || !action.traitId)) {
@@ -3326,13 +3355,23 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           : nextState.adventureCompletions;
         const completionProgressState = chapterFinalBoss ? addDailyProgress({ ...nextState, completedAdventureRuns, adventureCompletions }, "completeAdventure1", 1) : nextState;
 
+        const ancientRiftFinalBossWon = chapterFinalBoss && run.difficultyId === "ancientRift";
+        const finalBossMessage = ancientRiftFinalBossWon
+          ? "The Shadow of the First Demon Lord is broken. The seal cracks. Return to your Den — the drake form now awaits."
+          : "Boss defeated. Chapter summary unlocked.";
         return {
           ...completionProgressState,
           selectedActiveSkillId: chapterFinalBoss && state.lastSkillDraftOffer?.skillIds.includes(state.selectedActiveSkillId ?? "") ? null : completionProgressState.selectedActiveSkillId,
+          lastLoot: ancientRiftFinalBossWon
+            ? {
+                id: Date.now(),
+                message: "The Seal of the First Demon Lord is broken. Drake evolution is now available — open the Evolve panel in your Den."
+              }
+            : completionProgressState.lastLoot,
           adventureRun: getNextRunState(
             withAdventureHp(run, getAdventureHpAfterFight(run, battle, node)),
             node.id,
-            chapterFinalBoss ? "Boss defeated. Chapter summary unlocked." : `${node.title} cleared. Choose your next stop.`,
+            chapterFinalBoss ? finalBossMessage : `${node.title} cleared. Choose your next stop.`,
             chapterFinalBoss ? "complete" : "active"
           )
         };

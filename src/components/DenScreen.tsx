@@ -558,13 +558,20 @@ export function EvolutionPanelContent({
   const elementBonus = elementBonusDefinitions[element];
   const trait = getSelectedEvolutionTrait(state);
   const chapters = state.completedAdventureRuns ?? 0;
+  const ancientRiftClears = state.adventureCompletions?.ancientRift ?? 0;
 
   const evolutionSubtitle =
     evolutionChapterTarget === null
       ? "Your dragon is fully evolved."
-      : canEvolve
-        ? `Chapter ${evolutionChapterTarget}/${evolutionChapterTarget} reached — Evolve now!`
-        : `Chapter ${chapters}/${evolutionChapterTarget} — Keep adventuring!`;
+      : state.dragon.stage === "hatchling"
+        ? canEvolve
+          ? "Seal broken — choose your Drake path and evolve!"
+          : ancientRiftClears === 0
+            ? "Defeat the Shadow of the First Demon Lord in the Ancient Rift to evolve."
+            : "Seal broken — choose your Drake path and evolve!"
+        : canEvolve
+          ? `Chapter ${evolutionChapterTarget}/${evolutionChapterTarget} reached — Evolve now!`
+          : `Chapter ${chapters}/${evolutionChapterTarget} — Keep adventuring!`;
 
   return (
     <>
