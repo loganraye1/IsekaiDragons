@@ -57,14 +57,14 @@ import {
   getIdleUpgradeCap,
   getNextEvolutionCost,
   getPendingDailyLoginRewardDay,
-  getOfflineEssenceReward,
+  getOfflineGoldReward,
   getOfflineRewardMultiplier,
   getQuestRewardMultiplier,
   getQuestIntervalMs,
   getDragonSoulMultiplier,
   getTreasureDropChance,
   getBattleDamage,
-  getBattleRewardEssence,
+  getBattleRewardGold,
   getDragonPower,
   getReincarnationSoulsGained,
   isNearEvolutionExcitement,
@@ -208,19 +208,19 @@ const journeyObjectives: JourneyObjective[] = [
   {
     title: "Sniff out a treasure cache",
     description: "A briar boar guards a buried pouch of dragon coins.",
-    reward: "+28 gold, +5 essence",
+    reward: "+28 gold, +5 gold",
     enemy: "boar"
   },
   {
     title: "Reach the first dragon shrine",
     description: "A willow wisp tests whether the hatchling can focus its breath.",
-    reward: "+10 essence, +8% evolution",
+    reward: "+10 gold, +8% evolution",
     enemy: "wisp"
   },
   {
     title: "Challenge the rift path",
     description: "The rift chimera appears as the first true boss objective.",
-    reward: "+50 XP, +25 essence",
+    reward: "+50 XP, +25 gold",
     enemy: "chimera"
   }
 ];
@@ -294,7 +294,7 @@ export default function App() {
 
       if (previousAppState.match(/inactive|background/) && nextAppState === "active" && backgroundedAtRef.current) {
         const awayDurationMs = Date.now() - backgroundedAtRef.current;
-        const offlineReward = getOfflineEssenceReward(stateRef.current, awayDurationMs);
+        const offlineReward = getOfflineGoldReward(stateRef.current, awayDurationMs);
         if (__DEV__) {
           console.log("[ReturnPresence]", {
             awayDurationMs,

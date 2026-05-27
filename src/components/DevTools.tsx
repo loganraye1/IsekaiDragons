@@ -12,7 +12,7 @@ import {
   getOfflineRewardMultiplier,
   getEvolutionProgressRatio,
   getNextEvolutionCost,
-  getBattleRewardEssence,
+  getBattleRewardGold,
   getDragonPower,
   getReincarnationSoulsGained,
 } from "../game";
@@ -259,8 +259,7 @@ export function createBalanceSnapshotExport(state: GameState) {
       stage: state.dragon.stage,
       element: state.dragon.element,
       level: state.dragon.level,
-      essence: state.player.essence,
-      lifetimeEssence: state.lifetimeEssence,
+      gold: state.player.gold,
       dragonSouls: state.dragonSouls,
       totalReincarnations: state.totalReincarnations,
       currentArea: state.currentArea,
@@ -282,7 +281,7 @@ export function createBalanceSnapshotExport(state: GameState) {
       adventureCompletions: state.adventureCompletions,
       questRewardMultiplier: getQuestRewardMultiplier(state),
       battleDamage: getBattleDamage(state),
-      battleRewardEssence: getBattleRewardEssence(state),
+      battleRewardGold: getBattleRewardGold(state),
       dragonPower: getDragonPower(state),
       treasureDropChance: getTreasureDropChance(state),
       upgradeCostMultiplier: getUpgradeCostMultiplier(state),
@@ -700,7 +699,7 @@ export function PlaytestNotesPanel({ state, dispatch }: { state: GameState; disp
             <View key={note.id} style={styles.playtestNoteRow}>
               <Text style={styles.traitTitle}>{note.text}</Text>
               <Text style={styles.traitText}>
-                {new Date(note.timestamp).toLocaleString()} | {note.element ?? "none"} {note.stage} | {formatGameNumber(note.essence, state.settings.numberFormat)} essence
+                {new Date(note.timestamp).toLocaleString()} | {note.element ?? "none"} {note.stage} | {formatGameNumber(note.essence, state.settings.numberFormat)} gold
               </Text>
               <Text style={styles.traitText}>
                 {areaDefinitions[note.area]?.name ?? note.area} | Defeated {formatGameNumber(note.defeatedCount, state.settings.numberFormat)}

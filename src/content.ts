@@ -357,7 +357,6 @@ export const encounters: Encounter[] = [
     element: "water",
     stats: { attack: 8, health: 42, defense: 2, speed: 4, block: 3, dodge: 3, critChance: 4, critDamage: 135 },
     rewardGold: 18,
-    rewardEssence: 4,
     rewardXp: 16
   },
   {
@@ -367,7 +366,6 @@ export const encounters: Encounter[] = [
     element: "earth",
     stats: { attack: 13, health: 62, defense: 5, speed: 3, block: 8, dodge: 2, critChance: 5, critDamage: 140 },
     rewardGold: 28,
-    rewardEssence: 7,
     rewardXp: 24
   },
   {
@@ -377,7 +375,6 @@ export const encounters: Encounter[] = [
     element: "fire",
     stats: { attack: 18, health: 74, defense: 4, speed: 8, block: 4, dodge: 9, critChance: 9, critDamage: 155 },
     rewardGold: 42,
-    rewardEssence: 10,
     rewardXp: 36
   },
   {
@@ -387,7 +384,6 @@ export const encounters: Encounter[] = [
     element: "earth",
     stats: { attack: 25, health: 116, defense: 9, speed: 5, block: 12, dodge: 4, critChance: 7, critDamage: 150 },
     rewardGold: 70,
-    rewardEssence: 16,
     rewardXp: 58
   },
   {
@@ -397,7 +393,6 @@ export const encounters: Encounter[] = [
     element: "water",
     stats: { attack: 32, health: 142, defense: 10, speed: 10, block: 10, dodge: 10, critChance: 12, critDamage: 165 },
     rewardGold: 95,
-    rewardEssence: 24,
     rewardXp: 82
   },
   {
@@ -407,7 +402,6 @@ export const encounters: Encounter[] = [
     element: "light",
     stats: { attack: 36, health: 156, defense: 9, speed: 12, block: 8, dodge: 12, critChance: 14, critDamage: 172 },
     rewardGold: 112,
-    rewardEssence: 28,
     rewardXp: 92
   }
 ];
@@ -425,7 +419,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "boar",
     difficulty: 1.05,
-    reward: { gold: 32, essence: 7, xp: 16 }
+    reward: { gold: 32, xp: 16 }
   },
   {
     id: "chapter-one-stop-42",
@@ -441,7 +435,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-42-power", label: "Search the old ashes", description: "Something in the cold hearth sparks a hotter stance for what's ahead.", reward: { statBoost: { attack: 2 }, xp: 18 } },
-      { id: "chapter-one-stop-42-survive", label: "Reinforce before moving up", description: "The lean-to's shelter steadies the hatchling's scales before the path gets worse.", reward: { statBoost: { health: 12, defense: 1 }, essence: 8 } }
+      { id: "chapter-one-stop-42-survive", label: "Reinforce before moving up", description: "The lean-to's shelter steadies the hatchling's scales before the path gets worse.", reward: { statBoost: { health: 12, defense: 1 }, gold: 8 } }
     ]
   },
   {
@@ -455,7 +449,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     scene: "cave",
     element: "fire",
     difficulty: 1.08,
-    reward: { gold: 40, essence: 9, xp: 20 }
+    reward: { gold: 40, xp: 20 }
   },
   {
     id: "chapter-one-stop-44",
@@ -471,7 +465,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-44-power", label: "Make the flame oath", description: "Swear to hit first and harder. The shrine accepts the bargain.", reward: { statBoost: { attack: 2 }, xp: 22 } },
-      { id: "chapter-one-stop-44-survive", label: "Make the scale oath", description: "Swear to endure. The shrine seals the promise in fireproof resolve.", reward: { statBoost: { health: 12, defense: 1 }, essence: 10 } }
+      { id: "chapter-one-stop-44-survive", label: "Make the scale oath", description: "Swear to endure. The shrine seals the promise in fireproof resolve.", reward: { statBoost: { health: 12, defense: 1 }, gold: 10 } }
     ]
   },
   {
@@ -486,7 +480,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "ruin-knight",
     difficulty: 1.11,
-    reward: { gold: 48, essence: 11, xp: 24, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 48, xp: 24, statBoost: { attack: 2, defense: 1 } }
   },
   {
     id: "chapter-one-stop-46",
@@ -502,7 +496,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-46-power", label: "Buy a heat-strike charm", description: "A heat charm sharpens the next few strikes with focused ember edge.", reward: { statBoost: { attack: 2 }, xp: 26 } },
-      { id: "chapter-one-stop-46-survive", label: "Buy a shell-plate brace", description: "Reinforced plating makes the climb above more survivable.", reward: { statBoost: { health: 12, defense: 1 }, essence: 12 } }
+      { id: "chapter-one-stop-46-survive", label: "Buy a shell-plate brace", description: "Reinforced plating makes the climb above more survivable.", reward: { statBoost: { health: 12, defense: 1 }, gold: 12 } }
     ]
   },
   {
@@ -517,7 +511,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "sky-manta",
     difficulty: 1.14,
-    reward: { gold: 56, essence: 13, xp: 28 }
+    reward: { gold: 56, xp: 28 }
   },
   {
     id: "chapter-one-stop-48",
@@ -530,7 +524,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     scene: "cave",
     element: "fire",
     difficulty: 1.16,
-    reward: { gold: 60, essence: 14, xp: 30 }
+    reward: { gold: 60, xp: 30 }
   },
   {
     id: "chapter-one-stop-49",
@@ -546,7 +540,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-49-power", label: "Eat the spiced moss", description: "The sparkmoss burns going down and comes back as attack edge.", reward: { statBoost: { attack: 2 }, xp: 32 } },
-      { id: "chapter-one-stop-49-survive", label: "Eat the plain moss", description: "Plain sparkmoss is slow fuel — it settles into defense and patience.", reward: { statBoost: { health: 12, defense: 1 }, essence: 15 } }
+      { id: "chapter-one-stop-49-survive", label: "Eat the plain moss", description: "Plain sparkmoss is slow fuel — it settles into defense and patience.", reward: { statBoost: { health: 12, defense: 1 }, gold: 15 } }
     ]
   },
   {
@@ -561,7 +555,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "ruin-knight",
     difficulty: 1.19,
-    reward: { gold: 68, essence: 16, xp: 34, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 68, xp: 34, statBoost: { attack: 2, defense: 1 } }
   },
   {
     id: "chapter-one-stop-51",
@@ -577,7 +571,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-51-power", label: "Let the flame read your strike", description: "The flame mirrors back a sharper version of what the hatchling showed it.", reward: { statBoost: { attack: 2 }, xp: 36 } },
-      { id: "chapter-one-stop-51-survive", label: "Let the flame read your guard", description: "The flame mirrors back a more durable version of what the hatchling showed it.", reward: { statBoost: { health: 12, defense: 1 }, essence: 17 } }
+      { id: "chapter-one-stop-51-survive", label: "Let the flame read your guard", description: "The flame mirrors back a more durable version of what the hatchling showed it.", reward: { statBoost: { health: 12, defense: 1 }, gold: 17 } }
     ]
   },
   {
@@ -592,7 +586,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "slime",
     difficulty: 1.22,
-    reward: { gold: 76, essence: 18, xp: 38 }
+    reward: { gold: 76, xp: 38 }
   },
   {
     id: "chapter-one-stop-53",
@@ -608,7 +602,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-53-power", label: "Buy a claw-edge charm", description: "Charcoal-ground edges sharpen strikes for the stretch above.", reward: { statBoost: { attack: 2 }, xp: 40 } },
-      { id: "chapter-one-stop-53-survive", label: "Buy a smoke-ward charm", description: "A smoke ward diffuses incoming attacks before they fully land.", reward: { statBoost: { health: 12, defense: 1 }, essence: 19 } }
+      { id: "chapter-one-stop-53-survive", label: "Buy a smoke-ward charm", description: "A smoke ward diffuses incoming attacks before they fully land.", reward: { statBoost: { health: 12, defense: 1 }, gold: 19 } }
     ]
   },
   {
@@ -623,7 +617,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "willow-wisp",
     difficulty: 1.25,
-    reward: { gold: 84, essence: 20, xp: 42, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 84, xp: 42, statBoost: { attack: 2, defense: 1 } }
   },
   {
     id: "chapter-one-stop-55",
@@ -636,7 +630,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     scene: "cave",
     element: "fire",
     difficulty: 1.26,
-    reward: { gold: 88, essence: 21, xp: 44 }
+    reward: { gold: 88, xp: 44 }
   },
   {
     id: "chapter-one-stop-56",
@@ -652,7 +646,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-56-power", label: "Train in the canopy heat", description: "Heat training under red leaves builds attack edge for what waits above.", reward: { statBoost: { attack: 2 }, xp: 46 } },
-      { id: "chapter-one-stop-56-survive", label: "Rest in the canopy shade", description: "Rest conserves strength and sharpens scale defense for the harder path ahead.", reward: { statBoost: { health: 12, defense: 1 }, essence: 22 } }
+      { id: "chapter-one-stop-56-survive", label: "Rest in the canopy shade", description: "Rest conserves strength and sharpens scale defense for the harder path ahead.", reward: { statBoost: { health: 12, defense: 1 }, gold: 22 } }
     ]
   },
   {
@@ -667,7 +661,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "boar",
     difficulty: 1.29,
-    reward: { gold: 96, essence: 23, xp: 48 }
+    reward: { gold: 96, xp: 48 }
   },
   {
     id: "chapter-one-stop-58",
@@ -683,7 +677,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "chapter-one-stop-58-power", label: "Claim the striker crown", description: "The ash marks seal a promise of sharper, faster strikes for what's ahead.", reward: { statBoost: { attack: 2 }, xp: 50 } },
-      { id: "chapter-one-stop-58-survive", label: "Claim the warden crown", description: "The ash marks seal a promise to endure what the path above delivers.", reward: { statBoost: { health: 12, defense: 1 }, essence: 24 } }
+      { id: "chapter-one-stop-58-survive", label: "Claim the warden crown", description: "The ash marks seal a promise to endure what the path above delivers.", reward: { statBoost: { health: 12, defense: 1 }, gold: 24 } }
     ]
   },
   {
@@ -698,7 +692,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "ruin-knight",
     difficulty: 1.32,
-    reward: { gold: 104, essence: 25, xp: 52, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 104, xp: 52, statBoost: { attack: 2, defense: 1 } }
   },
   {
     id: "chapter-one-stop-60",
@@ -712,7 +706,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     element: "fire",
     encounterId: "ruin-knight",
     difficulty: 1.33,
-    reward: { gold: 108, essence: 26, xp: 54, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 108, xp: 54, statBoost: { attack: 2, defense: 1 } }
   }
 ];
 
@@ -743,7 +737,7 @@ export const adventureNodes: AdventureNode[] = [
     difficulty: 1,
     reward: {},
     choices: [
-      { id: "drink-calm-water", label: "Bank the hearth ember", description: "A steady ember hardens the heart for future fights.", reward: { statBoost: { health: 12 }, essence: 6 } },
+      { id: "drink-calm-water", label: "Bank the hearth ember", description: "A steady ember hardens the heart for future fights.", reward: { statBoost: { health: 12 }, gold: 6 } },
       { id: "trace-runes", label: "Trace the flame runes", description: "Ancient heat tugs the hatchling toward drake evolution.", reward: { evolution: 8, xp: 12 } }
     ]
   },
@@ -757,7 +751,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "fire",
     encounterId: "slime",
     difficulty: 0.92,
-    reward: { gold: 10, essence: 3, xp: 8, evolution: 4 }
+    reward: { gold: 10, xp: 8, evolution: 4 }
   },
   {
     id: "ember-cache",
@@ -768,7 +762,7 @@ export const adventureNodes: AdventureNode[] = [
     scene: "forest",
     element: "fire",
     difficulty: 1,
-    reward: { gold: 36, essence: 6, evolution: 3 }
+    reward: { gold: 36, evolution: 3 }
   },
   {
     id: "root-rest-camp",
@@ -795,7 +789,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "fire",
     encounterId: "boar",
     difficulty: 1.02,
-    reward: { gold: 14, essence: 4, xp: 10, evolution: 5 }
+    reward: { gold: 14, xp: 10, evolution: 5 }
   },
   {
     id: "mossy-peddler",
@@ -808,7 +802,7 @@ export const adventureNodes: AdventureNode[] = [
     difficulty: 1,
     reward: {},
     choices: [
-      { id: "buy-ironroot", label: "Buy emberroot chew", description: "A bitter chew reinforces scales for the elite gate ahead.", reward: { statBoost: { defense: 2 }, essence: 5 } },
+      { id: "buy-ironroot", label: "Buy emberroot chew", description: "A bitter chew reinforces scales for the elite gate ahead.", reward: { statBoost: { defense: 2 }, gold: 5 } },
       { id: "swap-stories", label: "Swap campfire stories", description: "The peddler pays for a good hatchling tale.", reward: { gold: 32, xp: 8 } }
     ]
   },
@@ -824,7 +818,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "bathe-wings", label: "Bathe wings in sparks", description: "The dragon moves with cleaner rhythm and learns to slip attacks.", reward: { statBoost: { speed: 1, dodge: 2 }, xp: 16 } },
-      { id: "offer-spark", label: "Offer a breath spark", description: "The font returns the spark as essence.", reward: { essence: 20, evolution: 5 } }
+      { id: "offer-spark", label: "Offer a breath spark", description: "The font returns the spark as gold.", reward: { gold: 20, evolution: 5 } }
     ]
   },
   {
@@ -837,7 +831,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "fire",
     encounterId: "willow-wisp",
     difficulty: 1.03,
-    reward: { gold: 18, essence: 6, xp: 14, evolution: 6 }
+    reward: { gold: 18, xp: 14, evolution: 6 }
   },
   {
     id: "ruin-knight-gate",
@@ -849,7 +843,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "fire",
     encounterId: "ruin-knight",
     difficulty: 1.12,
-    reward: { gold: 62, essence: 14, xp: 28, evolution: 10, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 62, xp: 28, evolution: 10, statBoost: { attack: 2, defense: 1 } }
   },
   {
     id: "moonwell-kelp-camp",
@@ -876,7 +870,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "water",
     encounterId: "slime",
     difficulty: 0.9,
-    reward: { gold: 54, essence: 14, xp: 26, evolution: 10, statBoost: { dodge: 2, defense: 1 } }
+    reward: { gold: 54, xp: 26, evolution: 10, statBoost: { dodge: 2, defense: 1 } }
   },
   {
     id: "pearlflow-trader",
@@ -890,7 +884,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "buy-pearl-guard", label: "Buy pearl guard charm", description: "A shell charm adds defense and block for Guardian-style water builds.", reward: { statBoost: { defense: 2, block: 2 }, evolution: 4 } },
-      { id: "trade-ripple-map", label: "Trade for a ripple map", description: "The trader marks safe currents and pays in route loot.", reward: { gold: 48, essence: 8 } }
+      { id: "trade-ripple-map", label: "Trade for a ripple map", description: "The trader marks safe currents and pays in route loot.", reward: { gold: 48 } }
     ]
   },
   {
@@ -905,7 +899,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "vow-calm-current", label: "Vow calm current", description: "Calm water hardens into reliable mitigation.", reward: { statBoost: { health: 16, defense: 2 }, evolution: 7 } },
-      { id: "vow-moon-dash", label: "Vow moon dash", description: "Moonlit speed sets up crit windows and future skill synergy.", reward: { statBoost: { speed: 1, critChance: 2 }, xp: 34, essence: 10 } }
+      { id: "vow-moon-dash", label: "Vow moon dash", description: "Moonlit speed sets up crit windows and future skill synergy.", reward: { statBoost: { speed: 1, critChance: 2 }, xp: 34, gold: 10 } }
     ]
   },
   {
@@ -918,7 +912,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "water",
     encounterId: "sky-manta",
     difficulty: 0.84,
-    reward: { gold: 24, essence: 8, xp: 18, evolution: 8 }
+    reward: { gold: 24, xp: 18, evolution: 8 }
   },
   {
     id: "moon-pearl-cache",
@@ -929,7 +923,7 @@ export const adventureNodes: AdventureNode[] = [
     scene: "cave",
     element: "water",
     difficulty: 1,
-    reward: { gold: 44, essence: 16, evolution: 7 }
+    reward: { gold: 44, evolution: 7 }
   },
   {
     id: "tideglass-lantern-shop",
@@ -943,7 +937,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "buy-tideglass-lantern", label: "Buy tideglass lantern", description: "The lantern flashes when hidden pearls are near.", reward: { gold: 40, evolution: 5 } },
-      { id: "sip-reef-tonic", label: "Sip reef tonic", description: "A bright tonic sharpens attack without losing flow.", reward: { statBoost: { attack: 2, speed: 1 }, essence: 6 } }
+      { id: "sip-reef-tonic", label: "Sip reef tonic", description: "A bright tonic sharpens attack without losing flow.", reward: { statBoost: { attack: 2, speed: 1 }, gold: 6 } }
     ]
   },
   {
@@ -956,7 +950,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "water",
     encounterId: "sky-manta",
     difficulty: 1.18,
-    reward: { gold: 32, essence: 10, xp: 24, evolution: 9 }
+    reward: { gold: 32, xp: 24, evolution: 9 }
   },
   {
     id: "quiet-spring-mastery",
@@ -970,7 +964,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "patient-tide-breath", label: "Patient tide breath", description: "Slow breathing makes the dragon harder to hurt and harder to pin down.", reward: { statBoost: { health: 18, dodge: 2 }, evolution: 4 } },
-      { id: "crescent-roar", label: "Crescent roar", description: "The shrine echoes back as experience and prepares the next skill draft.", reward: { xp: 42, essence: 12 } }
+      { id: "crescent-roar", label: "Crescent roar", description: "The shrine echoes back as experience and prepares the next skill draft.", reward: { xp: 42, gold: 12 } }
     ]
   },
   {
@@ -982,7 +976,7 @@ export const adventureNodes: AdventureNode[] = [
     scene: "cave",
     element: "water",
     difficulty: 1,
-    reward: { gold: 84, essence: 12, evolution: 5 }
+    reward: { gold: 84, evolution: 5 }
   },
   {
     id: "crystal-crag-basecamp",
@@ -994,7 +988,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "earth",
     encounterId: "boar",
     difficulty: 1.06,
-    reward: { gold: 42, essence: 12, xp: 32, evolution: 10, statBoost: { defense: 1, block: 2 } }
+    reward: { gold: 42, xp: 32, evolution: 10, statBoost: { defense: 1, block: 2 } }
   },
   {
     id: "gemhide-boar-charge",
@@ -1023,7 +1017,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "buy-bulwark-rune", label: "Buy bulwark rune", description: "A square rune settles into the scales for sturdy Guardian pressure.", reward: { statBoost: { defense: 3, block: 2 }, evolution: 5 } },
-      { id: "buy-shatter-rune", label: "Buy shatter rune", description: "A jagged rune sharpens claws for Crystal Break raider bursts.", reward: { statBoost: { attack: 3, critDamage: 12 }, essence: 10 } }
+      { id: "buy-shatter-rune", label: "Buy shatter rune", description: "A jagged rune sharpens claws for Crystal Break raider bursts.", reward: { statBoost: { attack: 3, critDamage: 12 }, gold: 10 } }
     ]
   },
   {
@@ -1036,7 +1030,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "earth",
     encounterId: "boar",
     difficulty: 1.14,
-    reward: { gold: 74, essence: 18, xp: 46, evolution: 12, statBoost: { attack: 1, defense: 2 } }
+    reward: { gold: 74, xp: 46, evolution: 12, statBoost: { attack: 1, defense: 2 } }
   },
   {
     id: "basalt-ram-bulwark",
@@ -1062,7 +1056,7 @@ export const adventureNodes: AdventureNode[] = [
     scene: "cave",
     element: "earth",
     difficulty: 1,
-    reward: { gold: 68, essence: 18, evolution: 7 }
+    reward: { gold: 68, evolution: 7 }
   },
   {
     id: "crystal-golem-gate",
@@ -1074,7 +1068,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "earth",
     encounterId: "ruin-knight",
     difficulty: 1.22,
-    reward: { gold: 86, essence: 22, xp: 56, evolution: 12, statBoost: { attack: 2, defense: 1 } }
+    reward: { gold: 86, xp: 56, evolution: 12, statBoost: { attack: 2, defense: 1 } }
   },
   {
     id: "rootbound-miner-shop",
@@ -1088,7 +1082,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "buy-pick-charm", label: "Buy pick charm", description: "A tiny pickaxe charm improves hoard discovery and armor piercing.", reward: { gold: 54, statBoost: { attack: 2 } } },
-      { id: "drink-root-tonic", label: "Drink root tonic", description: "A bitter tonic plants the hatchling's stance for blocks and counterattacks.", reward: { statBoost: { health: 16, block: 2 }, essence: 8 } }
+      { id: "drink-root-tonic", label: "Drink root tonic", description: "A bitter tonic plants the hatchling's stance for blocks and counterattacks.", reward: { statBoost: { health: 16, block: 2 }, gold: 8 } }
     ]
   },
   {
@@ -1103,7 +1097,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "bind-worldroot-scales", label: "Bind worldroot scales", description: "Root marks make the dragon harder to move and harder to kill.", reward: { statBoost: { health: 22, defense: 2 }, evolution: 6 } },
-      { id: "sharpen-prism-horns", label: "Sharpen prism horns", description: "Prism edges push decisive crit damage for the boss gate.", reward: { statBoost: { attack: 2, critDamage: 14 }, xp: 38, essence: 12 } }
+      { id: "sharpen-prism-horns", label: "Sharpen prism horns", description: "Prism edges push decisive crit damage for the boss gate.", reward: { statBoost: { attack: 2, critDamage: 14 }, xp: 38, gold: 12 } }
     ]
   },
   {
@@ -1116,7 +1110,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "earth",
     encounterId: "ruin-knight",
     difficulty: 1.28,
-    reward: { gold: 170, essence: 42, xp: 92, evolution: 18, statBoost: { attack: 3, defense: 3, block: 2 } }
+    reward: { gold: 170, xp: 92, evolution: 18, statBoost: { attack: 3, defense: 3, block: 2 } }
   },
   {
     id: "sunbeam-spires-arrival",
@@ -1145,7 +1139,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "buy-halo-ward", label: "Buy halo ward", description: "A circular charm improves block and makes protection visible around the hatchling.", reward: { statBoost: { block: 2, defense: 2 }, evolution: 5 } },
-      { id: "buy-sun-lens", label: "Buy sun lens", description: "A focusing lens sharpens the next Sunbeam Lancing crit window.", reward: { statBoost: { attack: 2, critChance: 3 }, essence: 12 } }
+      { id: "buy-sun-lens", label: "Buy sun lens", description: "A focusing lens sharpens the next Sunbeam Lancing crit window.", reward: { statBoost: { attack: 2, critChance: 3 }, gold: 12 } }
     ]
   },
   {
@@ -1158,7 +1152,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "light",
     encounterId: "willow-wisp",
     difficulty: 1.16,
-    reward: { gold: 78, essence: 20, xp: 52, evolution: 10, statBoost: { speed: 1, critChance: 2 } }
+    reward: { gold: 78, xp: 52, evolution: 10, statBoost: { speed: 1, critChance: 2 } }
   },
   {
     id: "dawn-vow-shrine",
@@ -1184,7 +1178,7 @@ export const adventureNodes: AdventureNode[] = [
     scene: "cave",
     element: "light",
     difficulty: 1,
-    reward: { gold: 92, essence: 22, evolution: 8 }
+    reward: { gold: 92, evolution: 8 }
   },
   {
     id: "sun-lancer-duel",
@@ -1196,7 +1190,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "light",
     encounterId: "sun-lancer",
     difficulty: 1.24,
-    reward: { gold: 104, essence: 28, xp: 66, evolution: 12, statBoost: { attack: 2, speed: 1 } }
+    reward: { gold: 104, xp: 66, evolution: 12, statBoost: { attack: 2, speed: 1 } }
   },
   {
     id: "suncloth-sky-camp",
@@ -1210,7 +1204,7 @@ export const adventureNodes: AdventureNode[] = [
     reward: {},
     choices: [
       { id: "nap-in-suncloth", label: "Nap in suncloth", description: "A warm recovery beat pushes Mystic sustain and max health.", reward: { statBoost: { health: 24 }, evolution: 6 } },
-      { id: "practice-ray-steps", label: "Practice ray steps", description: "Footwork through light strips improves speed and dodge readability.", reward: { statBoost: { speed: 2, dodge: 2 }, essence: 10 } }
+      { id: "practice-ray-steps", label: "Practice ray steps", description: "Footwork through light strips improves speed and dodge readability.", reward: { statBoost: { speed: 2, dodge: 2 }, gold: 10 } }
     ]
   },
   {
@@ -1224,7 +1218,7 @@ export const adventureNodes: AdventureNode[] = [
     difficulty: 1,
     reward: {},
     choices: [
-      { id: "buy-aurora-sigil", label: "Buy aurora sigil", description: "Aurora marks improve sustain and make recovery effects feel magical.", reward: { statBoost: { health: 14, defense: 1 }, essence: 14 } },
+      { id: "buy-aurora-sigil", label: "Buy aurora sigil", description: "Aurora marks improve sustain and make recovery effects feel magical.", reward: { statBoost: { health: 14, defense: 1 }, gold: 14 } },
       { id: "buy-prism-edge", label: "Buy prism edge", description: "Prism edges sharpen decisive crit hits before the boss spire.", reward: { statBoost: { attack: 2, critDamage: 14 }, xp: 40 } }
     ]
   },
@@ -1238,7 +1232,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "light",
     encounterId: "sun-lancer",
     difficulty: 1.3,
-    reward: { gold: 128, essence: 34, xp: 78, evolution: 13, statBoost: { critChance: 2, critDamage: 10 } }
+    reward: { gold: 128, xp: 78, evolution: 13, statBoost: { critChance: 2, critDamage: 10 } }
   },
   {
     id: "aurora-crown-hoard",
@@ -1250,7 +1244,7 @@ export const adventureNodes: AdventureNode[] = [
     element: "light",
     encounterId: "sun-lancer",
     difficulty: 1.38,
-    reward: { gold: 196, essence: 50, xp: 108, evolution: 20, statBoost: { attack: 3, speed: 2, critChance: 2 } }
+    reward: { gold: 196, xp: 108, evolution: 20, statBoost: { attack: 3, speed: 2, critChance: 2 } }
   }
   ,...chapterOneExtendedStops
 ];
@@ -1261,7 +1255,6 @@ export const quests: Quest[] = [
     description: "Win your first adventure battle.",
     target: 1,
     rewardGold: 60,
-    rewardEssence: 12,
     metric: "battlesWon"
   },
   {
@@ -1270,7 +1263,6 @@ export const quests: Quest[] = [
     description: "Buy three upgrades for your growing dragon.",
     target: 3,
     rewardGold: 90,
-    rewardEssence: 18,
     metric: "upgradesBought"
   },
   {
@@ -1279,7 +1271,6 @@ export const quests: Quest[] = [
     description: "Clear three adventure stages.",
     target: 3,
     rewardGold: 140,
-    rewardEssence: 28,
     metric: "stagesCleared"
   }
 ];

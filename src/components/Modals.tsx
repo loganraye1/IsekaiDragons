@@ -118,8 +118,8 @@ export function JourneyEventModal({ state, dispatch }: { state: GameState; dispa
           <Text style={styles.bodyText}>{event.description}</Text>
           <View style={styles.journeyEventChoices}>
             {event.choices.map((choice) => {
-              const disabled = Boolean(choice.costEssence && state.player.essence < choice.costEssence);
-              const costText = choice.costEssence ? ` Cost: ${formatGameNumber(choice.costEssence, numberFormat)} essence.` : "";
+              const disabled = Boolean(choice.costGold && state.player.gold < choice.costGold);
+              const costText = choice.costGold ? ` Cost: ${formatGameNumber(choice.costGold, numberFormat)} gold.` : "";
               const elementText = choice.requiredElement ? ` ${choice.requiredElement.toUpperCase()} bonus.` : "";
               return (
                 <Pressable

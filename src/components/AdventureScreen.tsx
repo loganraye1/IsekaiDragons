@@ -30,14 +30,12 @@ import { formatGameNumber, formatStat, formatBoost } from "../utils/format";
 
 function formatAdventureReward(reward: {
   gold?: number;
-  essence?: number;
   xp?: number;
   evolution?: number;
   statBoost?: Partial<Stats>;
 }) {
   const parts = [
     reward.gold ? `${reward.gold}g` : null,
-    reward.essence ? `${reward.essence} essence` : null,
     reward.xp ? `${reward.xp} XP` : null,
     reward.evolution && reward.evolution >= 10 ? "major boss reward" : null,
     reward.statBoost ? formatBoost(reward.statBoost) : null

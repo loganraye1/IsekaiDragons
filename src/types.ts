@@ -210,14 +210,12 @@ export type Encounter = {
   element: DragonElement;
   stats: Stats;
   rewardGold: number;
-  rewardEssence: number;
   rewardXp: number;
 };
 
 export type AdventureReward = {
   gold?: number;
   gems?: number;
-  essence?: number;
   xp?: number;
   evolution?: number;
   statBoost?: Partial<Stats>;
@@ -253,7 +251,6 @@ export type Quest = {
   description: string;
   target: number;
   rewardGold: number;
-  rewardEssence: number;
   metric: "battlesWon" | "upgradesBought" | "stagesCleared";
 };
 
@@ -280,7 +277,6 @@ export type DragonState = {
 export type PlayerState = {
   gold: number;
   gems: number;
-  essence: number;
   inventory: string[];
   unlockedStage: number;
   battlesWon: number;
@@ -410,7 +406,6 @@ export type GameState = {
   elementalShards: Record<DragonElement, number>;
   selectedEvolutionTraits: Partial<Record<DragonStage, EvolutionTraitId>>;
   selectedActiveSkillId: string | null;
-  lifetimeEssence: number;
   dragonSouls: number;
   totalReincarnations: number;
   unlockedAchievements: AchievementId[];

@@ -40,11 +40,11 @@ export function formatStatValue(stat: keyof Stats, value: number) {
 }
 
 export function formatReward(
-  reward: { essence?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> },
+  reward: { gold?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> },
   numberFormat: GameSettings["numberFormat"] = "compact"
 ) {
   const parts = [
-    reward.essence ? `+${formatGameNumber(reward.essence, numberFormat)} essence` : null,
+    reward.gold ? `+${formatGameNumber(reward.gold, numberFormat)} gold` : null,
     reward.dragonSouls ? `+${formatGameNumber(reward.dragonSouls, numberFormat)} souls` : null,
     reward.shards
       ? (Object.entries(reward.shards) as Array<[DragonElement, number]>)
@@ -57,7 +57,7 @@ export function formatReward(
 
 export function formatDailyLoginReward(
   day: number,
-  reward: { essence?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> },
+  reward: { gold?: number; dragonSouls?: number; shards?: Partial<Record<DragonElement, number>> },
   numberFormat: GameSettings["numberFormat"]
 ) {
   if (day === 3) return "Random treasure";

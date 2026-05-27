@@ -14,7 +14,7 @@ import {
   equipmentSlots,
   evolutionTraitDefinitions,
   getBattleDamage,
-  getBattleRewardEssence,
+  getBattleRewardGold,
   getDragonForm,
   getDragonPower,
   getDragonSoulMultiplier,
@@ -183,7 +183,7 @@ export function RewardRow({
 
 export function AutoBattleSummary({ state }: { state: GameState }) {
   const hpPercent = `${Math.round((state.autoBattle.enemyHp / state.autoBattle.enemyMaxHp) * 100)}%`;
-  const rewardEssence = getBattleRewardEssence(state);
+  const rewardGold = getBattleRewardGold(state);
   const damage = getBattleDamage(state);
   const power = getDragonPower(state);
   const numberFormat = state.settings.numberFormat;
@@ -198,7 +198,7 @@ export function AutoBattleSummary({ state }: { state: GameState }) {
         <View style={[styles.enemyHpFill, { width: hpPercent as any }]} />
       </View>
       <Text style={styles.panelMutedText}>
-        HP {formatGameNumber(state.autoBattle.enemyHp, numberFormat)}/{formatGameNumber(state.autoBattle.enemyMaxHp, numberFormat)} | Hit {formatGameNumber(damage, numberFormat)} | Reward +{formatGameNumber(rewardEssence, numberFormat)} essence
+        HP {formatGameNumber(state.autoBattle.enemyHp, numberFormat)}/{formatGameNumber(state.autoBattle.enemyMaxHp, numberFormat)} | Hit {formatGameNumber(damage, numberFormat)} | Reward +{formatGameNumber(rewardGold, numberFormat)} gold
       </Text>
     </View>
   );
@@ -206,7 +206,7 @@ export function AutoBattleSummary({ state }: { state: GameState }) {
 
 export function AutoBattlePanel({ state }: { state: GameState }) {
   const hpPercent = `${Math.round((state.autoBattle.enemyHp / state.autoBattle.enemyMaxHp) * 100)}%`;
-  const rewardEssence = getBattleRewardEssence(state);
+  const rewardGold = getBattleRewardGold(state);
   const damage = getBattleDamage(state);
   const power = getDragonPower(state);
   const flavor =
@@ -214,7 +214,7 @@ export function AutoBattlePanel({ state }: { state: GameState }) {
       ? "Fire damage +15%"
       : state.dragon.element === "water"
         ? "Victories restore a calm ward"
-        : "Battle essence rewards +10%";
+        : "Battle gold rewards +10%";
 
   return (
     <View style={styles.autoBattlePanel}>
@@ -232,7 +232,7 @@ export function AutoBattlePanel({ state }: { state: GameState }) {
         <Text style={styles.autoBattleText}>
           HP {state.autoBattle.enemyHp}/{state.autoBattle.enemyMaxHp} | Defeated {state.autoBattle.defeatedCount}
         </Text>
-        <Text style={styles.autoBattleText}>Hit {damage} | Reward +{rewardEssence} essence</Text>
+        <Text style={styles.autoBattleText}>Hit {damage} | Reward +{rewardGold} gold</Text>
       </View>
       <Text style={styles.autoBattleFlavor}>{flavor}</Text>
     </View>
@@ -386,7 +386,7 @@ export function IdleUpgradeCard({
   const cost = getIdleUpgradeCost(state, upgradeId);
   const safeCost = Number.isFinite(cost) ? cost : 0;
   const lootBonus = Number.isFinite(upgrade?.adventureLootBonus) ? upgrade.adventureLootBonus : 0;
-  const disabled = state.player.essence < safeCost || capped;
+  const disabled = state.player.gold < safeCost || capped;
 
   const buy = () => {
     if (disabled) return;
@@ -510,7 +510,7 @@ export function ReincarnationConfirmModal({
           <Text style={styles.choiceNumber}>Confirm Reincarnation</Text>
           <Text style={styles.modalTitle}>Begin Again Stronger?</Text>
           <Text style={styles.bodyText}>
-            This resets essence, stage, element, upgrades, area progress, quest progress, and evolution trait. Treasures stay.
+            This resets gold, stage, element, upgrades, area progress, quest progress, and evolution trait. Treasures stay.
           </Text>
           <Text style={styles.reincarnationModalReward}>Gain {soulsGained} Dragon Souls</Text>
           <View style={styles.modalButtonRow}>
@@ -538,7 +538,7 @@ export function ReincarnationPanel({ state, onPress }: { state: GameState; onPre
       <View>
         <Text style={styles.choiceNumber}>Reincarnation</Text>
         <Text style={styles.reincarnationTitle}>{state.dragonSouls} Dragon Souls</Text>
-        <Text style={styles.traitText}>Permanent essence bonus: +{bonusPercent}%</Text>
+        <Text style={styles.traitText}>Permanent gold bonus: +{bonusPercent}%</Text>
       </View>
       <View style={styles.reincarnationAction}>
         <Text style={styles.reincarnationGain}>{unlocked ? `+${soulsGained} souls now` : "Reach Wyrm to unlock Rebirth"}</Text>
@@ -622,7 +622,7 @@ export function UpgradesPanelContent({
     <>
       <SectionCard
         title="Evolution"
-        subtitle={evolutionCost === null ? "Your dragon is fully evolved." : `${formatGameNumber(Math.floor(state.player.essence), numberFormat)} / ${formatGameNumber(evolutionCost, numberFormat)} essence`}
+        subtitle={evolutionCost === null ? "Your dragon is fully evolved." : `${formatGameNumber(Math.floor(state.player.gold), numberFormat)} / ${formatGameNumber(evolutionCost, numberFormat)} gold`}
       >
         {evolutionCost !== null ? (
           <Pressable onPress={onEvolve} disabled={!canEvolve} style={[styles.primaryPanelButton, !canEvolve && styles.disabledUpgradeCard]}>
@@ -751,14 +751,13 @@ export function RebirthPanelContent({ state, onReincarnate }: { state: GameState
 
   return (
     <>
-      <SectionCard title="Dragon Souls" subtitle={`${state.dragonSouls} souls | +${bonusPercent}% all essence`}>
+      <SectionCard title="Dragon Souls" subtitle={`${state.dragonSouls} souls | +${bonusPercent}% all gold`}>
         <View style={styles.panelStatsRow}>
-          <StatPill icon="✦" label="Lifetime" value={formatGameNumber(Math.floor(state.lifetimeEssence), numberFormat)} />
           <StatPill icon="◆" label="Souls" value={formatGameNumber(state.totalReincarnations, numberFormat)} />
         </View>
       </SectionCard>
       <SectionCard title="Reincarnation" subtitle={unlocked ? `Gain ${soulsGained} Dragon Souls now` : "Reach Wyrm to unlock Rebirth"}>
-        <Text style={styles.panelMutedText}>Resets essence, stage, element, upgrades, area progress, quest progress, and evolution trait. Treasures stay.</Text>
+        <Text style={styles.panelMutedText}>Resets gold, stage, element, upgrades, area progress, quest progress, and evolution trait. Treasures stay.</Text>
         <Pressable onPress={onReincarnate} disabled={!unlocked} style={[styles.primaryPanelButton, !unlocked && styles.disabledUpgradeCard]}>
           <Text style={styles.primaryPanelButtonText}>{unlocked ? "Reincarnate" : "Reach Wyrm"}</Text>
         </Pressable>

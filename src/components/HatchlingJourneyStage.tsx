@@ -23,7 +23,7 @@ import {
   getDragonForm,
   getIdleUpgradeCost,
   isIdleUpgradeCapped,
-  getOfflineEssenceReward
+  getOfflineGoldReward
 } from "../game";
 import { clearGameState } from "../storage";
 import { BALANCE } from "../balance";
@@ -117,7 +117,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
   const numberFormat = state.settings.numberFormat;
   const questIntervalMs = getQuestIntervalMs(state);
   const evolutionCost = getNextEvolutionCost(state.dragon.stage);
-  const canEvolve = evolutionCost !== null && state.player.essence >= evolutionCost;
+  const canEvolve = evolutionCost !== null && state.player.gold >= evolutionCost;
   const evolutionProgress = getEvolutionProgressRatio(state);
   const anticipationLevel: AnticipationLevel = evolutionProgress >= BALANCE.softProgressionAssist.excitementThreshold ? "excited" : evolutionProgress >= BALANCE.softProgressionAssist.rewardAssistThreshold ? "alert" : "calm";
   const nearEvolutionExcitement = isNearEvolutionExcitement(state);
@@ -249,7 +249,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
 
   const buyIdleUpgrade = (upgradeId: IdleUpgradeId) => {
     const cost = getIdleUpgradeCost(state, upgradeId);
-    if (state.player.essence < cost || isIdleUpgradeCapped(state, upgradeId)) {
+    if (state.player.gold < cost || isIdleUpgradeCapped(state, upgradeId)) {
       return;
     }
 
@@ -305,7 +305,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
       console.log("[Evolve]", {
         stage: state.dragon.stage,
         element: state.dragon.element,
-        essence: state.player.essence,
+        gold: state.player.gold,
         nextEvolutionCost: evolutionCost,
         canEvolve,
         actionTaken
@@ -315,7 +315,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
 
   const evolveDragon = () => {
     if (!canEvolve) {
-      logEvolvePress("blocked:not-enough-essence-or-terminal-stage");
+      logEvolvePress("blocked:not-enough-gold-or-terminal-stage");
       return;
     }
     setActivePanel(null);
@@ -341,7 +341,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
       console.log("[Evolve]", {
         stage: state.dragon.stage,
         element: state.dragon.element,
-        essence: state.player.essence,
+        gold: state.player.gold,
         nextEvolutionCost: evolutionCost,
         canEvolve,
         actionTaken: "branch-choice-confirmed",
@@ -833,7 +833,7 @@ export function SettingsPanelContent({
   const displayedEvolutionProgress = presenceTestOverrides.anticipationLevel === "excited" ? 0.95 : presenceTestOverrides.anticipationLevel === "alert" ? 0.8 : actualEvolutionProgress;
 
   const simulateReturn = (awayDurationMs: number) => {
-    const offlineReward = Math.max(1, getOfflineEssenceReward(state, awayDurationMs));
+    const offlineReward = Math.max(1, getOfflineGoldReward(state, awayDurationMs));
     onPresenceTestChange((current) => ({
       ...current,
       returnPresence: {
@@ -934,7 +934,7 @@ export function SettingsPanelContent({
           </SectionCard>
           <DrakeContinuityReviewPanel reducedMotion={state.settings.reducedMotion} />
           <SectionCard title="Emotional Presence Test" subtitle="Dev-only companion feel checks">
-            <Text style={styles.panelMutedText}>Visual-only tests check animation/lines. Reward tests also apply offline essence.</Text>
+            <Text style={styles.panelMutedText}>Visual-only tests check animation/lines. Reward tests also apply offline gold.</Text>
             <View style={styles.debugRows}>
               <View style={styles.debugRow}>
                 <Text style={styles.debugLabel}>Away duration</Text>

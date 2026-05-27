@@ -263,7 +263,7 @@ export const supportingSystemRecommendations: SupportingSystemRecommendation[] =
     lane: "hoard",
     name: "Dragon Hoard Progression",
     purpose: "Turn collected treasure into a visible dragon fantasy instead of a hidden multiplier table.",
-    inGameProof: "Treasures persist through reincarnation and feed tap essence, EPS, offline rewards, battle rewards, and upgrade cost math.",
+    inGameProof: "Treasures persist through reincarnation and feed tap gold, EPS, offline rewards, battle rewards, and upgrade cost math.",
     nextHook: "Add a hoard room scene with piles, pedestals, and milestone unlocks."
   },
   {
@@ -635,7 +635,7 @@ export function getDragonPathBattleModifier(state: GameState) {
   };
 }
 
-export const ACTIVE_SKILL_CROSS_PATH_ESSENCE_COST = 250;
+export const ACTIVE_SKILL_CROSS_PATH_GOLD_COST = 250;
 
 function createEliteSkillDraftOffer(state: GameState, node: AdventureNode): EliteSkillDraftOffer {
   const path = state.dragon.path ? dragonPathDefinitions[state.dragon.path] : null;
@@ -724,14 +724,14 @@ export function getActiveSkillUnlockState(state: GameState, skill: DragonSkillDr
     };
   }
 
-  const unlocked = state.lifetimeEssence >= ACTIVE_SKILL_CROSS_PATH_ESSENCE_COST;
+  const unlocked = state.player.gold >= ACTIVE_SKILL_CROSS_PATH_GOLD_COST;
   return {
     unlocked,
     requirement: unlocked
-      ? `Unlocked: ${ACTIVE_SKILL_CROSS_PATH_ESSENCE_COST} lifetime essence cross-path training.`
-      : `Requires ${ACTIVE_SKILL_CROSS_PATH_ESSENCE_COST} lifetime essence to slot cross-path skills.`,
+      ? `Unlocked: ${ACTIVE_SKILL_CROSS_PATH_GOLD_COST} gold cross-path training.`
+      : `Requires ${ACTIVE_SKILL_CROSS_PATH_GOLD_COST} gold to slot cross-path skills.`,
     isPathDefault,
-    cost: ACTIVE_SKILL_CROSS_PATH_ESSENCE_COST
+    cost: ACTIVE_SKILL_CROSS_PATH_GOLD_COST
   };
 }
 
@@ -832,7 +832,7 @@ type JourneyEventChoiceDefinition = {
   id: string;
   label: string;
   detail: string;
-  costEssence?: number;
+  costGold?: number;
   requiredElement?: DragonElement;
   effect?: {
     label: string;
@@ -840,11 +840,11 @@ type JourneyEventChoiceDefinition = {
     multiplier: number;
   };
   reward?: {
-    essence?: number;
+    gold?: number;
     treasure?: boolean;
   };
   risk?: {
-    essenceLossPercent?: number;
+    goldLossPercent?: number;
   };
 };
 
@@ -853,9 +853,9 @@ export const journeyEventDefinitions: Record<JourneyEventId, { title: string; de
     title: "Wandering Merchant",
     description: "A hooded trader offers a crystal that hums near your dragon.",
     choices: [
-      { id: "buyCrystal", label: "Buy crystal", detail: "Spend 120 essence for +20% EPS for 60s.", costEssence: 120, effect: { label: "Merchant Crystal", type: "eps", multiplier: 1.2 } },
+      { id: "buyCrystal", label: "Buy crystal", detail: "Spend 120 gold for +20% EPS for 60s.", costGold: 120, effect: { label: "Merchant Crystal", type: "eps", multiplier: 1.2 } },
       { id: "ignoreMerchant", label: "Ignore", detail: "Keep moving. Nothing happens." },
-      { id: "intimidateMerchant", label: "Intimidate", detail: "Fire: +25% battle damage for 60s. Otherwise risk losing essence.", requiredElement: "fire", effect: { label: "Frightened Foes", type: "battleDamage", multiplier: 1.25 }, risk: { essenceLossPercent: 0.08 } }
+      { id: "intimidateMerchant", label: "Intimidate", detail: "Fire: +25% battle damage for 60s. Otherwise risk losing gold.", requiredElement: "fire", effect: { label: "Frightened Foes", type: "battleDamage", multiplier: 1.25 }, risk: { goldLossPercent: 0.08 } }
     ]
   },
   injuredAdventurer: {
@@ -872,7 +872,7 @@ export const journeyEventDefinitions: Record<JourneyEventId, { title: string; de
     description: "Old runes pulse with a power your dragon recognizes.",
     choices: [
       { id: "prayForGrowth", label: "Pray", detail: "+20% EPS for 60s.", effect: { label: "Shrine Growth", type: "eps", multiplier: 1.2 } },
-      { id: "absorbEnergy", label: "Absorb", detail: "+25% tap essence for 60s.", effect: { label: "Stored Spark", type: "tap", multiplier: 1.25 } },
+      { id: "absorbEnergy", label: "Absorb", detail: "+25% tap gold for 60s.", effect: { label: "Stored Spark", type: "tap", multiplier: 1.25 } },
       { id: "leaveShrine", label: "Leave", detail: "Avoid disturbing the shrine." }
     ]
   },
@@ -882,7 +882,7 @@ export const journeyEventDefinitions: Record<JourneyEventId, { title: string; de
     choices: [
       { id: "chaseGoblin", label: "Chase", detail: "Guaranteed treasure.", reward: { treasure: true } },
       { id: "blastGoblin", label: "Blast path", detail: "+30% battle damage for 60s.", effect: { label: "Battle Frenzy", type: "battleDamage", multiplier: 1.3 } },
-      { id: "letGoblinGo", label: "Let go", detail: "+80 essence for staying focused.", reward: { essence: 80 } }
+      { id: "letGoblinGo", label: "Let go", detail: "+80 gold for staying focused.", reward: { gold: 80 } }
     ]
   },
   elementalStorm: {
@@ -900,16 +900,16 @@ export const journeyEventDefinitions: Record<JourneyEventId, { title: string; de
     choices: [
       { id: "sneakPast", label: "Sneak", detail: "Upgrades 10% cheaper for 60s.", effect: { label: "Quiet Focus", type: "upgradeCost", multiplier: 0.9 } },
       { id: "wakeBeast", label: "Wake it", detail: "+35% battle damage for 60s.", effect: { label: "Battle Frenzy", type: "battleDamage", multiplier: 1.35 } },
-      { id: "feedBeast", label: "Feed it", detail: "Lose 10% essence, then gain +20% quest rewards for 60s.", risk: { essenceLossPercent: 0.1 }, effect: { label: "Beast's Favor", type: "questReward", multiplier: 1.2 } }
+      { id: "feedBeast", label: "Feed it", detail: "Lose 10% gold, then gain +20% quest rewards for 60s.", risk: { goldLossPercent: 0.1 }, effect: { label: "Beast's Favor", type: "questReward", multiplier: 1.2 } }
     ]
   },
   lostCaravan: {
     title: "Lost Caravan",
     description: "Merchants are stuck at a fork in the road.",
     choices: [
-      { id: "guideCaravan", label: "Guide", detail: "+100 essence.", reward: { essence: 100 } },
-      { id: "tradeSupplies", label: "Trade", detail: "Spend 80 essence. Upgrades 20% cheaper for 60s.", costEssence: 80, effect: { label: "Caravan Supplies", type: "upgradeCost", multiplier: 0.8 } },
-      { id: "searchWagons", label: "Search", detail: "Small gamble: lose 8% essence or find treasure.", risk: { essenceLossPercent: 0.08 }, reward: { treasure: true } }
+      { id: "guideCaravan", label: "Guide", detail: "+100 gold.", reward: { gold: 100 } },
+      { id: "tradeSupplies", label: "Trade", detail: "Spend 80 gold. Upgrades 20% cheaper for 60s.", costGold: 80, effect: { label: "Caravan Supplies", type: "upgradeCost", multiplier: 0.8 } },
+      { id: "searchWagons", label: "Search", detail: "Small gamble: lose 8% gold or find treasure.", risk: { goldLossPercent: 0.08 }, reward: { treasure: true } }
     ]
   },
   dragonMemory: {
@@ -918,7 +918,7 @@ export const journeyEventDefinitions: Record<JourneyEventId, { title: string; de
     choices: [
       { id: "rememberHunt", label: "The hunt", detail: "+30% critical tap chance for 60s.", effect: { label: "Memory of Claws", type: "criticalTap", multiplier: 1.3 } },
       { id: "rememberHoard", label: "The hoard", detail: "Guaranteed treasure.", reward: { treasure: true } },
-      { id: "forgetMemory", label: "Let it fade", detail: "+60 essence.", reward: { essence: 60 } }
+      { id: "forgetMemory", label: "Let it fade", detail: "+60 gold.", reward: { gold: 60 } }
     ]
   }
 };
@@ -1018,10 +1018,10 @@ export const autoBattleEnemyDefinitions: Record<AreaId, string[]> = {
   voidNest: ["Voidling", "Nightmare Wyrm", "Rift Herald"]
 };
 
-export const idleQuestDefinitions: Record<IdleQuestId, { title: string; target: number; rewardEssence: number }> = {
-  defeatSlimes: { title: "Defeat 10 slimes", target: 10, rewardEssence: 6 },
-  gatherCrystals: { title: "Gather 25 essence crystals", target: 25, rewardEssence: 8 },
-  findScale: { title: "Find 1 ancient scale", target: 1, rewardEssence: 18 }
+export const idleQuestDefinitions: Record<IdleQuestId, { title: string; target: number; rewardGold: number }> = {
+  defeatSlimes: { title: "Defeat 10 slimes", target: 10, rewardGold: 6 },
+  gatherCrystals: { title: "Gather 25 crystals", target: 25, rewardGold: 8 },
+  findScale: { title: "Find 1 ancient scale", target: 1, rewardGold: 18 }
 };
 
 export const idleQuestOrder: IdleQuestId[] = ["defeatSlimes", "gatherCrystals", "findScale"];
@@ -1034,13 +1034,13 @@ export const treasureRarityDefinitions: Record<TreasureRarity, { label: string; 
 };
 
 export const treasureDefinitions: Record<TreasureId, { name: string; bonus: string; rarity: TreasureRarity }> = {
-  tinyCrown: { name: "Tiny Crown", bonus: "+5% tap essence", rarity: "common" },
+  tinyCrown: { name: "Tiny Crown", bonus: "+5% tap gold", rarity: "common" },
   glowingScale: { name: "Glowing Scale", bonus: "+5% EPS", rarity: "common" },
   ancientCoin: { name: "Ancient Coin", bonus: "+5% quest rewards", rarity: "common" },
   dragonFang: { name: "Dragon Fang", bonus: "+5% battle damage", rarity: "rare" },
   manaPearl: { name: "Mana Pearl", bonus: "+4% EPS", rarity: "rare" },
   worldrootSeed: { name: "Worldroot Seed", bonus: "3% cheaper upgrades", rarity: "epic" },
-  phoenixEmber: { name: "Phoenix Ember", bonus: "+8% tap essence", rarity: "epic" },
+  phoenixEmber: { name: "Phoenix Ember", bonus: "+8% tap gold", rarity: "epic" },
   leviathanTear: { name: "Leviathan Tear", bonus: "+8% offline rewards", rarity: "legendary" },
   titanStone: { name: "Titan Stone", bonus: "+8% battle rewards", rarity: "legendary" }
 };
@@ -1117,19 +1117,19 @@ export type EvolutionTraitDefinition = {
 };
 
 export type RewardDefinition = {
-  essence?: number;
+  gold?: number;
   dragonSouls?: number;
   shards?: Partial<Record<DragonElement, number>>;
 };
 
 export const achievementDefinitions: Record<AchievementId, { title: string; description: string; reward: RewardDefinition }> = {
-  firstHatch: { title: "First Hatch", description: "Reach Hatchling.", reward: { essence: 50 } },
-  firstDrake: { title: "First Drake", description: "Reach Drake.", reward: { essence: 150 } },
+  firstHatch: { title: "First Hatch", description: "Reach Hatchling.", reward: { gold: 50 } },
+  firstDrake: { title: "First Drake", description: "Reach Drake.", reward: { gold: 150 } },
   firstDragon: { title: "First Dragon", description: "Reach Dragon.", reward: { dragonSouls: 1 } },
   firstWyrm: { title: "First Wyrm", description: "Reach Wyrm.", reward: { dragonSouls: 2 } },
   soulbound: { title: "Soulbound", description: "Reincarnate once.", reward: { dragonSouls: 1 } },
-  treasureHoarder: { title: "Treasure Hoarder", description: "Collect 5 treasures.", reward: { essence: 500 } },
-  essenceTycoon: { title: "Essence Tycoon", description: "Earn 100,000 lifetime essence.", reward: { dragonSouls: 3 } }
+  treasureHoarder: { title: "Treasure Hoarder", description: "Collect 5 treasures.", reward: { gold: 500 } },
+  essenceTycoon: { title: "Essence Tycoon", description: "Complete 10 adventures.", reward: { dragonSouls: 3 } }
 };
 
 export const achievementOrder: AchievementId[] = [
@@ -1143,25 +1143,25 @@ export const achievementOrder: AchievementId[] = [
 ];
 
 export const dailyGoalDefinitions: Record<DailyGoalId, { title: string; target: number; reward: RewardDefinition }> = {
-  completeAdventure1: { title: "Complete 1 adventure", target: 1, reward: { essence: 120, shards: { fire: 1 } } },
-  completeQuest5: { title: "Complete 5 quest actions", target: 5, reward: { essence: 180, shards: { water: 1 } } },
-  buyUpgrade3: { title: "Buy 3 upgrades", target: 3, reward: { essence: 220, shards: { earth: 1 } } },
-  earnTreasure1: { title: "Earn 1 treasure", target: 1, reward: { essence: 300, shards: { fire: 1, water: 1, earth: 1 } } }
+  completeAdventure1: { title: "Complete 1 adventure", target: 1, reward: { gold: 120, shards: { fire: 1 } } },
+  completeQuest5: { title: "Complete 5 quest actions", target: 5, reward: { gold: 180, shards: { water: 1 } } },
+  buyUpgrade3: { title: "Buy 3 upgrades", target: 3, reward: { gold: 220, shards: { earth: 1 } } },
+  earnTreasure1: { title: "Earn 1 treasure", target: 1, reward: { gold: 300, shards: { fire: 1, water: 1, earth: 1 } } }
 };
 
 export const dailyGoalOrder: DailyGoalId[] = ["completeAdventure1", "completeQuest5", "buyUpgrade3", "earnTreasure1"];
 
 export const dailyLoginRewardDefinitions: Record<number, { title: string; reward: RewardDefinition }> = {
-  1: { title: "Essence Cache", reward: { essence: 150 } },
+  1: { title: "Gold Cache", reward: { gold: 150 } },
   2: { title: "Elemental Shards", reward: { shards: { fire: 1, water: 1, earth: 1, light: 1, dark: 1 } } },
   3: { title: "Treasure Find", reward: {} },
-  4: { title: "Greater Essence Cache", reward: { essence: 500 } },
+  4: { title: "Greater Gold Cache", reward: { gold: 500 } },
   5: { title: "Dragon Soul", reward: { dragonSouls: 1 } }
 };
 
 export const evolutionTraitDefinitions: Record<DragonElement, EvolutionTraitDefinition[]> = {
   fire: [
-    { id: "flameclawDrake", name: "Flameclaw Drake", bonus: "+25% tap essence" },
+    { id: "flameclawDrake", name: "Flameclaw Drake", bonus: "+25% tap gold" },
     { id: "ashwingDrake", name: "Ashwing Drake", bonus: "+20% quest rewards" }
   ],
   water: [
@@ -1197,7 +1197,6 @@ export const initialGameState: GameState = {
   player: {
     gold: 80,
     gems: 0,
-    essence: 10,
     inventory: [],
     unlockedStage: 1,
     battlesWon: 0,
@@ -1238,7 +1237,6 @@ export const initialGameState: GameState = {
   },
   selectedEvolutionTraits: {},
   selectedActiveSkillId: null,
-  lifetimeEssence: 0,
   dragonSouls: 0,
   totalReincarnations: 0,
   unlockedAchievements: [],
@@ -1396,7 +1394,7 @@ export function isIdleUpgradeCapped(state: GameState, upgradeId: IdleUpgradeId) 
   return cap > 0 && (state.idleUpgrades[upgradeId] ?? 0) >= cap;
 }
 
-export function getEssencePerSecond(state: GameState) {
+export function getGoldPerSecond(state: GameState) {
   const base = idleUpgradeOrder.reduce((total, upgradeId) => {
     const level = state.idleUpgrades[upgradeId] ?? 0;
     return total + level * idleUpgradeDefinitions[upgradeId].adventureLootBonus;
@@ -1407,9 +1405,9 @@ export function getEssencePerSecond(state: GameState) {
   return Math.round(base * treasureMultiplier * elementMultiplier * traitMultiplier * getDragonSoulMultiplier(state) * getEquipmentBonusMultiplier(state, "adventureLoot") * getJourneyEventEffectMultiplier(state, "eps") * 10) / 10;
 }
 
-export function getTapEssence(state: GameState) {
+export function getTapGold(state: GameState) {
   const stageBonus = state.dragon.stage === "wyrm" ? 10 : state.dragon.stage === "dragon" ? 8 : state.dragon.stage === "drake" ? 4 : 1;
-  const base = stageBonus + Math.floor(getEssencePerSecond(state) / 20);
+  const base = stageBonus + Math.floor(getGoldPerSecond(state) / 20);
   const treasureMultiplier = 1 + (state.treasures.tinyCrown ?? 0) * 0.05 + (state.treasures.phoenixEmber ?? 0) * 0.08;
   const elementMultiplier = state.dragon.element === "fire" ? 1.2 : 1;
   const traitMultiplier = hasEvolutionTrait(state, "flameclawDrake") ? 1.25 : 1;
@@ -1439,10 +1437,10 @@ export function getTreasureDropChance(state: GameState) {
   return Math.min(BALANCE.dropRates.treasure.maxChance, baseChance * elementMultiplier * traitMultiplier * getEquipmentBonusMultiplier(state, "treasureDrop"));
 }
 
-export function getOfflineEssenceReward(state: GameState, elapsedMs: number) {
+export function getOfflineGoldReward(state: GameState, elapsedMs: number) {
   const seconds = Math.max(0, Math.floor(elapsedMs / 1000));
   const cappedSeconds = Math.min(seconds, 60 * 60 * 8);
-  return Math.floor(getEssencePerSecond(state) * cappedSeconds * getOfflineRewardMultiplier(state));
+  return Math.floor(getGoldPerSecond(state) * cappedSeconds * getOfflineRewardMultiplier(state));
 }
 
 export function getDragonSoulMultiplier(state: GameState) {
@@ -1454,7 +1452,7 @@ export function getReincarnationSoulsGained(state: GameState) {
     return 0;
   }
 
-  const totalPotentialSouls = Math.floor(Math.sqrt(state.lifetimeEssence / BALANCE.reincarnation.lifetimeEssenceDivisor));
+  const totalPotentialSouls = Math.floor(Math.sqrt((state.completedAdventureRuns ?? 0) * 10));
   return Math.max(0, totalPotentialSouls - state.dragonSouls);
 }
 
@@ -1473,7 +1471,7 @@ export function getDragonPower(state: GameState) {
           : state.dragon.stage === "hatchling"
             ? 140
             : 40;
-  const economyPower = getEssencePerSecond(state) * 9 + getTapEssence(state) * 28;
+  const economyPower = getGoldPerSecond(state) * 9 + getTapGold(state) * 28;
   const treasurePower = getTreasureTotal(state) * 35;
   const soulPower = state.dragonSouls * 75;
   return Math.max(1, Math.floor((stagePower + economyPower + treasurePower + soulPower) * getDragonSoulMultiplier(state)));
@@ -1519,7 +1517,7 @@ export function getBattleDamage(state: GameState) {
   return Math.max(1, Math.floor(getDragonPower(state) * 0.18 * statMultiplier * critMultiplier * elementMultiplier * treasureMultiplier * pathDamageMultiplier * getEquipmentBonusMultiplier(state, "battleDamage") * getJourneyEventEffectMultiplier(state, "battleDamage")));
 }
 
-export function getBattleRewardEssence(state: GameState) {
+export function getBattleRewardGold(state: GameState) {
   const areaIndex = areaOrder.indexOf(state.autoBattle.areaId);
   const areaMultiplier = Math.max(1, areaIndex + 1);
   const baseReward = 12 * areaMultiplier + getSoftCappedBattleRewardDefeats(state.autoBattle.defeatedCount) * (4 + areaMultiplier);
@@ -1574,7 +1572,7 @@ export function getEvolutionProgressRatio(state: GameState) {
   if (!nextCost || nextCost <= 0) {
     return 0;
   }
-  return Math.min(1, state.player.essence / nextCost);
+  return Math.min(1, state.player.gold / nextCost);
 }
 
 export function getNearEvolutionRewardAssistMultiplier(state: GameState) {
@@ -1708,7 +1706,7 @@ function getManualNextStage(stage: DragonStage): DragonStage {
 
 function getQuestPower(state: GameState) {
   const stagePower = state.dragon.stage === "wyrm" ? 10 : state.dragon.stage === "dragon" ? 8 : state.dragon.stage === "drake" ? 5 : 2;
-  return stagePower + Math.floor(state.dragon.stats.attack / 10) + Math.floor(getEssencePerSecond(state) / 10);
+  return stagePower + Math.floor(state.dragon.stats.attack / 10) + Math.floor(getGoldPerSecond(state) / 10);
 }
 
 function getNextArea(areaId: AreaId) {
@@ -1804,10 +1802,9 @@ function addDailyProgress(state: GameState, goalId: DailyGoalId, amount: number)
 }
 
 function applyReward(state: GameState, reward: RewardDefinition) {
-  const essence = reward.essence ?? 0;
+  const gold = reward.gold ?? 0;
   return syncAchievements({
     ...state,
-    lifetimeEssence: state.lifetimeEssence + essence,
     dragonSouls: state.dragonSouls + (reward.dragonSouls ?? 0),
     elementalShards: {
       fire: state.elementalShards.fire + (reward.shards?.fire ?? 0),
@@ -1818,7 +1815,7 @@ function applyReward(state: GameState, reward: RewardDefinition) {
     },
     player: {
       ...state.player,
-      essence: state.player.essence + essence
+      gold: state.player.gold + gold
     }
   });
 }
@@ -1871,12 +1868,12 @@ function resolveJourneyEventChoice(state: GameState, choiceId: string) {
     return state;
   }
 
-  if (choice.costEssence && state.player.essence < choice.costEssence) {
+  if (choice.costGold && state.player.gold < choice.costGold) {
     return {
       ...state,
       lastLoot: {
         id: now,
-        message: "Not enough essence for that choice."
+        message: "Not enough gold for that choice."
       }
     };
   }
@@ -1885,9 +1882,9 @@ function resolveJourneyEventChoice(state: GameState, choiceId: string) {
   const appliedEffect = elementMatches ? choice.effect : undefined;
   const riskApplies = choice.risk && (!choice.requiredElement || !elementMatches || Math.random() < 0.5);
   const treasureDrop = choice.reward?.treasure && (!riskApplies || Math.random() < 0.5) ? pickTreasure(state.currentArea) : null;
-  const essenceReward = choice.reward?.essence ?? 0;
-  const essenceCost = choice.costEssence ?? 0;
-  const essenceLoss = riskApplies ? Math.floor(state.player.essence * (choice.risk?.essenceLossPercent ?? 0)) : 0;
+  const goldReward = choice.reward?.gold ?? 0;
+  const goldCost = choice.costGold ?? 0;
+  const goldLoss = riskApplies ? Math.floor(state.player.gold * (choice.risk?.goldLossPercent ?? 0)) : 0;
   const nextEffect: JourneyEventEffect | null = appliedEffect
     ? {
         id: `event-effect-${now}-${choice.id}`,
@@ -1902,18 +1899,17 @@ function resolveJourneyEventChoice(state: GameState, choiceId: string) {
     event.title,
     nextEffect ? nextEffect.label : null,
     treasureDrop ? `Found ${treasureDefinitions[treasureDrop].name}` : null,
-    essenceReward > 0 ? `+${essenceReward} essence` : null,
-    essenceCost > 0 ? `-${essenceCost} essence` : null,
-    essenceLoss > 0 ? `Risk cost -${essenceLoss} essence` : null
+    goldReward > 0 ? `+${goldReward} gold` : null,
+    goldCost > 0 ? `-${goldCost} gold` : null,
+    goldLoss > 0 ? `Risk cost -${goldLoss} gold` : null
   ].filter(Boolean);
 
   const nextState: GameState = {
     ...state,
     player: {
       ...state.player,
-      essence: Math.max(0, state.player.essence - essenceCost - essenceLoss + essenceReward)
+      gold: Math.max(0, state.player.gold - goldCost - goldLoss + goldReward)
     },
-    lifetimeEssence: state.lifetimeEssence + essenceReward,
     treasures: treasureDrop
       ? {
           ...state.treasures,
@@ -1942,7 +1938,7 @@ function createPlaytestNote(state: GameState, text: string): PlaytestNote {
     timestamp: Date.now(),
     stage: state.dragon.stage,
     element: state.dragon.element,
-    essence: state.player.essence,
+    essence: state.player.gold,
     area: state.currentArea,
     defeatedCount: state.autoBattle.defeatedCount
   };
@@ -1968,7 +1964,7 @@ function syncAchievements(state: GameState) {
   if (getTreasureTotal(state) >= 5) {
     unlocked.add("treasureHoarder");
   }
-  if (state.lifetimeEssence >= 100000) {
+  if ((state.completedAdventureRuns ?? 0) >= 10) {
     unlocked.add("essenceTycoon");
   }
 
@@ -2059,7 +2055,7 @@ function applyAutoBattleAction(state: GameState) {
   }
 
   const stateForReward = { ...state, autoBattle: battle };
-  const rewardEssence = getBattleRewardEssence(stateForReward);
+  const rewardGold = getBattleRewardGold(stateForReward);
   const treasureDrop = Math.random() < getTreasureDropChance(stateForReward) ? pickTreasure(state.currentArea) : null;
   const equipmentDrop = Math.random() < getEquipmentDropChance(stateForReward) ? createEquipmentItem(state.currentArea) : null;
   const nextBattle = createAutoBattle(state.currentArea, battle.defeatedCount + 1);
@@ -2070,7 +2066,7 @@ function applyAutoBattleAction(state: GameState) {
         ? "Stonebound strength turns victory into richer spoils."
         : "Flames tear through the enemy line.";
   const rewardParts = [
-    `+${rewardEssence} essence`,
+    `+${rewardGold} gold`,
     treasureDrop ? treasureDefinitions[treasureDrop].name : null,
     equipmentDrop ? `${equipmentRarityDefinitions[equipmentDrop.rarity].label} ${equipmentDrop.name}` : null
   ].filter(Boolean);
@@ -2087,9 +2083,8 @@ function applyAutoBattleAction(state: GameState) {
     equipmentInventory: equipmentDrop ? [equipmentDrop, ...(state.equipmentInventory ?? [])] : state.equipmentInventory,
     player: {
       ...state.player,
-      essence: state.player.essence + rewardEssence
+      gold: state.player.gold + rewardGold
     },
-    lifetimeEssence: state.lifetimeEssence + rewardEssence,
     lastLoot: {
       id: Date.now(),
       message: `${battle.enemyName} defeated. ${victoryFlavor} ${rewardParts.join(", ")}`,
@@ -2378,7 +2373,6 @@ function getNextRunState(run: AdventureRun, visitedNodeId: string, message: stri
 function summarizeReward(reward: AdventureReward) {
   const parts = [
     reward.gold ? `${reward.gold} gold` : null,
-    reward.essence ? `${reward.essence} essence` : null,
     reward.xp ? `${reward.xp} XP` : null,
     reward.evolution && reward.evolution >= 10 ? "major boss reward" : null,
     reward.statBoost ? formatStatBoost(reward.statBoost) : null
@@ -2417,7 +2411,6 @@ function createAdventureRewardBundle(
 ): AdventureRewardBundle {
   const lootGained = [
     reward.gold ? `${reward.gold} gold` : null,
-    reward.essence ? `${reward.essence} essence` : null,
     reward.xp ? `${reward.xp} XP` : null,
     treasureDrop ? treasureDefinitions[treasureDrop].name : null,
     equipmentDrop ? `${equipmentRarityDefinitions[equipmentDrop.rarity].label} ${equipmentDrop.name}` : null
@@ -2477,8 +2470,7 @@ function applyAdventureReward(state: GameState, reward: AdventureReward, fallbac
     player: {
       ...state.player,
       gold: state.player.gold + (permanentReward.gold ?? 0),
-      gems: state.player.gems + (permanentReward.gems ?? 0),
-      essence: state.player.essence + (permanentReward.essence ?? 0)
+      gems: state.player.gems + (permanentReward.gems ?? 0)
     }
   };
 
@@ -2576,7 +2568,6 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
         element: node.element ?? baseEncounter.element,
         stats: scaleStats(baseEncounter.stats, node.difficulty),
         rewardGold: baseEncounter.rewardGold + (node.reward.gold ?? 0),
-        rewardEssence: baseEncounter.rewardEssence + (node.reward.essence ?? 0),
         rewardXp: baseEncounter.rewardXp + (node.reward.xp ?? 0)
       }
     : baseEncounter;
@@ -2698,7 +2689,7 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
     activeSkill: summarizeActiveSkill(activeSkill, activeSkillBonus.combatEffect),
     nodeKind: node?.kind,
     title: node?.title,
-    rewardSummary: node ? summarizeReward({ ...node.reward, gold: encounter.rewardGold, essence: encounter.rewardEssence, xp: encounter.rewardXp }) : undefined
+    rewardSummary: node ? summarizeReward({ ...node.reward, gold: encounter.rewardGold, xp: encounter.rewardXp }) : undefined
   };
 }
 
@@ -2883,7 +2874,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
     case "buyIdleUpgrade": {
       const cost = getIdleUpgradeCost(state, action.upgradeId);
-      if (state.player.essence < cost || isIdleUpgradeCapped(state, action.upgradeId)) {
+      if (state.player.gold < cost || isIdleUpgradeCapped(state, action.upgradeId)) {
         return state;
       }
 
@@ -2895,14 +2886,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         },
         player: {
           ...state.player,
-          essence: state.player.essence - cost,
+          gold: state.player.gold - cost,
           upgradesBought: state.player.upgradesBought + 1
         }
       }, "buyUpgrade3", 1);
     }
     case "evolveDragon": {
       const cost = getNextEvolutionCost(state.dragon.stage);
-      if (cost === null || state.player.essence < cost) {
+      if (cost === null || state.player.gold < cost) {
         return state;
       }
       if (state.dragon.stage === "hatchling" && (!state.dragon.path || !action.traitId)) {
@@ -2926,7 +2917,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             : state.selectedEvolutionTraits,
         player: {
           ...state.player,
-          essence: state.player.essence - cost
+          gold: state.player.gold - cost
         }
       });
     }
@@ -2966,7 +2957,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const currentProgress = state.idleQuestProgress[incompleteQuestId] ?? 0;
       const nextProgress = Math.min(quest.target, currentProgress + increment);
       const rewardMultiplier = getQuestRewardMultiplier(state);
-      const rewardEssence = Math.max(1, Math.floor(quest.rewardEssence * rewardMultiplier));
+      const rewardGold = Math.max(1, Math.floor(quest.rewardGold * rewardMultiplier));
       const power = getQuestPower(state);
       const treasureDrop = Math.random() < getTreasureDropChance(state) ? pickTreasure(state.currentArea) : null;
       const shardDrop =
@@ -2975,7 +2966,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           : null;
       const treasureName = treasureDrop ? treasureDefinitions[treasureDrop].name : null;
       const shardText = shardDrop ? `${shardDrop} shard` : null;
-      const lootParts = [`+${rewardEssence} essence`, treasureName, shardText].filter(Boolean);
+      const lootParts = [`+${rewardGold} gold`, treasureName, shardText].filter(Boolean);
 
       const nextState: GameState = {
         ...state,
@@ -2997,9 +2988,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           : state.elementalShards,
         player: {
           ...state.player,
-          essence: state.player.essence + rewardEssence
+          gold: state.player.gold + rewardGold
         },
-        lifetimeEssence: state.lifetimeEssence + rewardEssence,
         lastLoot: {
           id: Date.now(),
           message: formatElementLootMessage(state, quest.title, lootParts),
@@ -3019,15 +3009,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const soulsGained = getReincarnationSoulsGained(state);
       return syncAchievements({
         ...initialGameState,
-        player: {
-          ...initialGameState.player,
-          essence: 0
-        },
         treasures: state.treasures,
         equippedItems: state.equippedItems,
         equipmentInventory: state.equipmentInventory,
         dragonSouls: state.dragonSouls + soulsGained,
-        lifetimeEssence: state.lifetimeEssence,
         totalReincarnations: state.totalReincarnations + 1,
         tutorialCompleted: state.tutorialCompleted,
         lastLoginRewardDate: state.lastLoginRewardDate,
@@ -3116,14 +3101,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         equippedItems: nextEquippedItems,
         equipmentInventory: state.equipmentInventory.filter((entry) => entry.id !== action.itemId),
-        lifetimeEssence: state.lifetimeEssence + item.sellValue,
         player: {
           ...state.player,
-          essence: state.player.essence + item.sellValue
+          gold: state.player.gold + item.sellValue
         },
         lastLoot: {
           id: Date.now(),
-          message: `Sold ${equipmentRarityDefinitions[item.rarity].label} ${item.name} for +${item.sellValue} essence.`
+          message: `Sold ${equipmentRarityDefinitions[item.rarity].label} ${item.name} for +${item.sellValue} gold.`
         }
       });
     }
@@ -3246,9 +3230,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         },
         player: {
           ...state.player,
-          essence: state.player.essence + rewardToApply
+          gold: state.player.gold + rewardToApply
         },
-        lifetimeEssence: state.lifetimeEssence + rewardToApply,
         lastSavedAt: now,
         lastLoot:
           rewardToApply > 0
@@ -3256,14 +3239,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 id: now,
                 message:
                   state.dragon.element === "water"
-                    ? `The tide carried back +${rewardToApply} offline essence.`
-                    : `Returned to +${rewardToApply} offline essence.`
+                    ? `The tide carried back +${rewardToApply} offline gold.`
+                    : `Returned to +${rewardToApply} offline gold.`
               }
             : state.lastLoot
       });
     }
     case "startReturnPresenceTest": {
-      const pendingOfflineReward = action.withRewards ? getOfflineEssenceReward(state, action.awayDurationMs) : 0;
+      const pendingOfflineReward = action.withRewards ? getOfflineGoldReward(state, action.awayDurationMs) : 0;
       const lastSaveDateBefore = Date.now() - action.awayDurationMs;
       if (__DEV__) {
         console.log("[ReturnPresence]", {
@@ -3344,7 +3327,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           {
             ...node.reward,
             gold: battle.encounter.rewardGold,
-            essence: battle.encounter.rewardEssence,
             xp: battle.encounter.rewardXp
           },
           chapterFinalBoss ? 18 : node.kind === "elite" || node.kind === "boss" ? 12 : 8,
@@ -3476,7 +3458,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         player: {
           ...nextState.player,
           gold: nextState.player.gold + battle.encounter.rewardGold,
-          essence: nextState.player.essence + battle.encounter.rewardEssence,
           unlockedStage: Math.min(encounters.length, nextState.player.unlockedStage + 1),
           battlesWon: nextState.player.battlesWon + 1,
           stagesCleared: Math.max(nextState.player.stagesCleared, battle.encounter.stage)
@@ -3521,7 +3502,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         player: {
           ...state.player,
           gold: state.player.gold + quest.rewardGold,
-          essence: state.player.essence + quest.rewardEssence,
           claimedQuests: [...state.player.claimedQuests, action.questId]
         }
       };
@@ -3606,7 +3586,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         dailyResetDate: action.state.dailyResetDate ?? getTodayKey(),
         lastLoginRewardDate: action.state.lastLoginRewardDate ?? null,
         loginStreakDay: action.state.loginStreakDay ?? 0,
-        lifetimeEssence: action.state.lifetimeEssence ?? 0,
         dragonSouls: action.state.dragonSouls ?? 0,
         totalReincarnations: action.state.totalReincarnations ?? 0,
         settings: {
@@ -3660,7 +3639,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
       const savedHasProgress =
         action.state.phase === "journey" ||
-        (action.state.lifetimeEssence ?? 0) > 0 ||
+        (action.state.completedAdventureRuns ?? 0) > 0 ||
         (action.state.dragonSouls ?? 0) > 0 ||
         (action.state.totalReincarnations ?? 0) > 0;
       const savedPendingReturn =
@@ -3669,7 +3648,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           : null;
       const lastSaveDateBefore = action.state.lastSavedAt ?? Date.now();
       const elapsedSinceSaveMs = Date.now() - lastSaveDateBefore;
-      const offlineReward = getOfflineEssenceReward(hydrated, elapsedSinceSaveMs);
+      const offlineReward = getOfflineGoldReward(hydrated, elapsedSinceSaveMs);
       const shouldShowReturnPresence = savedHasProgress && elapsedSinceSaveMs >= returnPresenceThresholdMs;
       if (__DEV__) {
         console.log("[ReturnPresence]", {
@@ -3686,9 +3665,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...hydrated,
         player: {
           ...hydrated.player,
-          essence: shouldShowReturnPresence || savedPendingReturn ? hydrated.player.essence : hydrated.player.essence + offlineReward
+          gold: shouldShowReturnPresence || savedPendingReturn ? hydrated.player.gold : hydrated.player.gold + offlineReward
         },
-        lifetimeEssence: shouldShowReturnPresence || savedPendingReturn ? hydrated.lifetimeEssence : hydrated.lifetimeEssence + offlineReward,
         phase: action.state.phase ?? (action.state.dragon?.stage === "hatchling" ? "journey" : "egg"),
         currentQuestionIndex: action.state.currentQuestionIndex ?? Math.min(Object.keys(action.state.eggAnswers ?? {}).length, 2),
         journeyStep: action.state.journeyStep ?? 0,
@@ -3710,8 +3688,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 id: Date.now(),
                 message:
                   hydrated.dragon.element === "water"
-                    ? `The tide carried back +${offlineReward} offline essence.`
-                    : `Returned to +${offlineReward} offline essence.`
+                    ? `The tide carried back +${offlineReward} offline gold.`
+                    : `Returned to +${offlineReward} offline gold.`
               }
             : action.state.lastLoot ?? null,
         lastSavedAt: shouldShowReturnPresence || savedPendingReturn ? lastSaveDateBefore : Date.now()

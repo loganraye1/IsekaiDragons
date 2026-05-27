@@ -16,7 +16,6 @@ export default function ResourceBar({ state }: { state: GameState }) {
   return (
     <View style={styles.resourceBar}>
       <Resource label="Gold" value={state.player.gold} />
-      <Resource label="Essence" value={state.player.essence} />
       <Resource label="Level" value={state.dragon.level} />
       <Resource label="XP" value={`${state.dragon.xp}/${xpNeeded}`} />
     </View>
