@@ -10,7 +10,7 @@ import {
   getUpgradeCostMultiplier,
   getOfflineRewardMultiplier,
   getEvolutionProgressRatio,
-  getNextEvolutionCost,
+  getEvolutionChapterRequirement,
   getBattleRewardGold,
   getDragonPower,
   getReincarnationSoulsGained,
@@ -279,7 +279,7 @@ export function createBalanceSnapshotExport(state: GameState) {
       treasureDropChance: getTreasureDropChance(state),
       upgradeCostMultiplier: getUpgradeCostMultiplier(state),
       offlineRewardMultiplier: getOfflineRewardMultiplier(state),
-      nextEvolutionCost: getNextEvolutionCost(state.dragon.stage),
+      evolutionChapterTarget: getEvolutionChapterRequirement(state.dragon.stage),
       reincarnationSoulsGainedNow: getReincarnationSoulsGained(state)
     },
     balanceValues: BALANCE,

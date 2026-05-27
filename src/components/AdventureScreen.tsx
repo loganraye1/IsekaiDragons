@@ -12,7 +12,7 @@ import {
   getAdventureNodeById,
   getDragonPower,
   getNextAdventureDifficultyId,
-  getNextEvolutionCost,
+  getEvolutionChapterRequirement,
   getNodeKindLabel,
   idleQuestDefinitions,
   idleQuestOrder,
@@ -917,9 +917,10 @@ function AdventureRewardRecap({ state, focused = false, onReturnToDen }: { state
   const equipment = reward.equipmentDrop;
   const treasureName = reward.treasureDrop ? treasureDefinitions[reward.treasureDrop].name : null;
   const hoardCount = treasureOrder.reduce((total, treasureId) => total + (state.treasures[treasureId] ?? 0), 0);
-  const nextEvolutionCost = getNextEvolutionCost(state.dragon.stage);
-  const evolutionLine = nextEvolutionCost
-    ? `${reward.evolutionProgress} • ${Math.max(0, nextEvolutionCost - state.dragon.evolution)} evolution to next form`
+  const evolutionChapterTarget = getEvolutionChapterRequirement(state.dragon.stage);
+  const completedRuns = state.completedAdventureRuns ?? 0;
+  const evolutionLine = evolutionChapterTarget
+    ? `${reward.evolutionProgress} • Ch ${completedRuns}/${evolutionChapterTarget} to evolve`
     : reward.evolutionProgress;
   const chapterMatch = run?.title.match(/Chapter (\d+)/);
   const chapterNumber = chapterMatch ? chapterMatch[1] : "1";

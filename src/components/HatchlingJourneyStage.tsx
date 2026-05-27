@@ -17,7 +17,7 @@ import {
 import {
   dragonPathDefinitions,
   getQuestIntervalMs,
-  getNextEvolutionCost,
+  getEvolutionChapterRequirement,
   getEvolutionProgressRatio,
   isNearEvolutionExcitement,
   getDragonForm,
@@ -114,8 +114,8 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
   const form = getDragonForm(state.dragon.stage, element);
   const numberFormat = state.settings.numberFormat;
   const questIntervalMs = getQuestIntervalMs(state);
-  const evolutionCost = getNextEvolutionCost(state.dragon.stage);
-  const canEvolve = evolutionCost !== null && state.player.gold >= evolutionCost;
+  const evolutionChapterTarget = getEvolutionChapterRequirement(state.dragon.stage);
+  const canEvolve = evolutionChapterTarget !== null && (state.completedAdventureRuns ?? 0) >= evolutionChapterTarget;
   const evolutionProgress = getEvolutionProgressRatio(state);
   const anticipationLevel: AnticipationLevel = evolutionProgress >= BALANCE.softProgressionAssist.excitementThreshold ? "excited" : evolutionProgress >= BALANCE.softProgressionAssist.rewardAssistThreshold ? "alert" : "calm";
   const nearEvolutionExcitement = isNearEvolutionExcitement(state);
@@ -290,7 +290,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         stage: state.dragon.stage,
         element: state.dragon.element,
         gold: state.player.gold,
-        nextEvolutionCost: evolutionCost,
+        evolutionChapterTarget,
         canEvolve,
         actionTaken
       });
@@ -299,7 +299,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
 
   const evolveDragon = () => {
     if (!canEvolve) {
-      logEvolvePress("blocked:not-enough-gold-or-terminal-stage");
+      logEvolvePress("blocked:chapter-requirement-not-met-or-terminal-stage");
       return;
     }
     setActivePanel(null);
@@ -326,7 +326,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         stage: state.dragon.stage,
         element: state.dragon.element,
         gold: state.player.gold,
-        nextEvolutionCost: evolutionCost,
+        evolutionChapterTarget,
         canEvolve,
         actionTaken: "branch-choice-confirmed",
         traitId
@@ -502,7 +502,7 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
             <EvolutionPanelContent
               state={state}
               canEvolve={canEvolve}
-              evolutionCost={evolutionCost}
+              evolutionChapterTarget={evolutionChapterTarget}
               onEvolve={evolveDragon}
             />
           ) : null}

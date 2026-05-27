@@ -545,27 +545,31 @@ export function StatsPanelContent({ state }: { state: GameState }) {
 export function EvolutionPanelContent({
   state,
   canEvolve,
-  evolutionCost,
+  evolutionChapterTarget,
   onEvolve,
 }: {
   state: GameState;
   canEvolve: boolean;
-  evolutionCost: number | null;
+  evolutionChapterTarget: number | null;
   onEvolve: () => void;
 }) {
   const element = state.dragon.element ?? "fire";
   const theme = elementTheme[element];
   const elementBonus = elementBonusDefinitions[element];
   const trait = getSelectedEvolutionTrait(state);
-  const numberFormat = state.settings.numberFormat;
+  const chapters = state.completedAdventureRuns ?? 0;
+
+  const evolutionSubtitle =
+    evolutionChapterTarget === null
+      ? "Your dragon is fully evolved."
+      : canEvolve
+        ? `Chapter ${evolutionChapterTarget}/${evolutionChapterTarget} reached — Evolve now!`
+        : `Chapter ${chapters}/${evolutionChapterTarget} — Keep adventuring!`;
 
   return (
     <>
-      <SectionCard
-        title="Evolution"
-        subtitle={evolutionCost === null ? "Your dragon is fully evolved." : `${formatGameNumber(Math.floor(state.player.gold), numberFormat)} / ${formatGameNumber(evolutionCost, numberFormat)} gold`}
-      >
-        {evolutionCost !== null ? (
+      <SectionCard title="Evolution" subtitle={evolutionSubtitle}>
+        {evolutionChapterTarget !== null ? (
           <Pressable onPress={onEvolve} disabled={!canEvolve} style={[styles.primaryPanelButton, !canEvolve && styles.disabledUpgradeCard]}>
             <Text style={styles.primaryPanelButtonText}>Evolve</Text>
           </Pressable>

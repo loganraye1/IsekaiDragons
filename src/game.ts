@@ -1552,11 +1552,9 @@ export function getQuestRewardMultiplier(state: GameState) {
 }
 
 export function getEvolutionProgressRatio(state: GameState) {
-  const nextCost = getNextEvolutionCost(state.dragon.stage);
-  if (!nextCost || nextCost <= 0) {
-    return 0;
-  }
-  return Math.min(1, state.player.gold / nextCost);
+  const requirement = getEvolutionChapterRequirement(state.dragon.stage);
+  if (!requirement) return 0;
+  return Math.min(1, (state.completedAdventureRuns ?? 0) / requirement);
 }
 
 export function getNearEvolutionRewardAssistMultiplier(state: GameState) {
@@ -1666,9 +1664,14 @@ function hasEvolutionTrait(state: GameState, traitId: EvolutionTraitId) {
   return Object.values(state.selectedEvolutionTraits).includes(traitId);
 }
 
-export function getNextEvolutionCost(stage: DragonStage) {
-  const nextStage = getManualNextStage(stage);
-  return nextStage === stage ? null : BALANCE.evolutionCosts[nextStage];
+const EVOLUTION_CHAPTER_REQUIREMENTS: Partial<Record<DragonStage, number>> = {
+  hatchling: 10,
+  drake: 30,
+  dragon: 60
+};
+
+export function getEvolutionChapterRequirement(stage: DragonStage): number | null {
+  return EVOLUTION_CHAPTER_REQUIREMENTS[stage] ?? null;
 }
 
 function getManualNextStage(stage: DragonStage): DragonStage {
@@ -2856,8 +2859,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
     case "evolveDragon": {
-      const cost = getNextEvolutionCost(state.dragon.stage);
-      if (cost === null || state.player.gold < cost) {
+      const chapterRequirement = getEvolutionChapterRequirement(state.dragon.stage);
+      if (chapterRequirement === null || (state.completedAdventureRuns ?? 0) < chapterRequirement) {
         return state;
       }
       if (state.dragon.stage === "hatchling" && (!state.dragon.path || !action.traitId)) {
@@ -2878,11 +2881,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 ...state.selectedEvolutionTraits,
                 drake: action.traitId
               }
-            : state.selectedEvolutionTraits,
-        player: {
-          ...state.player,
-          gold: state.player.gold - cost
-        }
+            : state.selectedEvolutionTraits
       });
     }
     case "autoQuestAction": {

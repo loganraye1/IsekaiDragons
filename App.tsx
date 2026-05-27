@@ -53,7 +53,7 @@ import {
   getDragonForm,
   getEvolutionProgressRatio,
   getLeadingElement,
-  getNextEvolutionCost,
+  getEvolutionChapterRequirement,
   getPendingDailyLoginRewardDay,
   getOfflineGoldReward,
   getOfflineRewardMultiplier,
