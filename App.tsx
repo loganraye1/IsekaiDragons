@@ -107,6 +107,7 @@ import EggAwakeningStage from "./src/components/EggAwakeningStage";
 import BattleScreen, { getAutoBattleEnemyImageKey, BattleTacticPreview } from "./src/components/BattleScreen";
 import QuestScreen, { QuestProgressList } from "./src/components/QuestScreen";
 import ShopScreen from "./src/components/ShopScreen";
+import UpgradeScreen from "./src/components/UpgradeScreen";
 import { SafeExpoImage, SafeLottie } from "./src/ui/SafeMedia";
 import {
   type ArtValidationBackgroundKey,
@@ -4405,110 +4406,6 @@ function RewardChips({ rewardText }: { rewardText: string }) {
           <Text style={styles.rewardChipText}>{part}</Text>
         </View>
       ))}
-    </View>
-  );
-}
-
-
-function UpgradeScreen({ state, dispatch }: { state: GameState; dispatch: (action: GameAction) => void }) {
-  return <FocusedTrainingPanel state={state} dispatch={dispatch} />;
-}
-
-function FocusedTrainingPanel({ state, dispatch }: { state: GameState; dispatch: (action: GameAction) => void }) {
-  const priorityStats: Array<keyof Stats> = ["attack", "defense", "critChance", "speed"];
-  const selectedSkill = getActiveDragonSkill(state);
-
-  return (
-    <View style={styles.focusedTrainingPanel}>
-      <Text style={styles.sectionTitle}>Train for next fight</Text>
-      <Text style={styles.bodyText} numberOfLines={1}>Pick one impactful combat upgrade, then test it on the route.</Text>
-      <View style={styles.focusedTrainingGrid}>
-        {priorityStats.map((stat) => {
-          const cost = getUpgradeCost(state, stat);
-          return (
-            <Pressable
-              key={stat}
-              onPress={() => dispatch({ type: "buyUpgrade", stat })}
-              disabled={state.player.gold < cost}
-              style={[styles.focusedTrainingStatCard, state.player.gold < cost && styles.disabledButton]}
-            >
-              <Text style={styles.statValue}>{formatStatValue(stat, state.dragon.stats[stat])}</Text>
-              <Text style={styles.statLabel}>{formatStat(stat)}</Text>
-              <Text style={styles.statHint} numberOfLines={1}>{combatStatTips[stat]}</Text>
-              <Text style={styles.buyButtonText}>{cost}g</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-      <View style={styles.focusedTrainingSkillRow}>
-        <View style={styles.focusedTrainingSkillCopy}>
-          <Text style={styles.skillDraftArchetype}>ACTIVE SKILL</Text>
-          <Text style={styles.skillDraftName} numberOfLines={1}>{selectedSkill ? selectedSkill.name : "Path default active skill"}</Text>
-          <Text style={styles.skillDraftHooks} numberOfLines={1}>{selectedSkill ? selectedSkill.effect : "Win elite fights to unlock build picks."}</Text>
-        </View>
-      </View>
-      <SkillDraftPanel state={state} dispatch={dispatch} />
-    </View>
-  );
-}
-
-function SkillDraftPanel({ state, dispatch }: { state: GameState; dispatch: (action: GameAction) => void }) {
-  const selectedSkill = getActiveDragonSkill(state);
-  const eliteDraftSkills = state.lastSkillDraftOffer
-    ? state.lastSkillDraftOffer.skillIds
-        .map((skillId) => dragonSkillDrafts.find((skill) => skill.id === skillId))
-        .filter(Boolean)
-    : [];
-  const chosenDraftSkill = state.lastSkillDraftOffer?.chosenSkillId
-    ? dragonSkillDrafts.find((skill) => skill.id === state.lastSkillDraftOffer?.chosenSkillId)
-    : null;
-
-  const visibleSkills = state.lastSkillDraftOffer
-    ? dragonSkillDrafts.filter((skill) => state.lastSkillDraftOffer?.skillIds.includes(skill.id))
-    : dragonSkillDrafts.slice(0, 3);
-
-  return (
-    <View style={styles.skillDraftPanel}>
-      <Text style={styles.panelTitle}>Skill Draft</Text>
-      <Text style={styles.bodyText} numberOfLines={1}>Three clear build picks, not a full encyclopedia.</Text>
-      <Text style={styles.skillDraftHooks} numberOfLines={1}>Skill slot: {selectedSkill ? `${selectedSkill.name} (${selectedSkill.elementFocus.toUpperCase()} ${selectedSkill.roleFocus.toUpperCase()})` : "Path default active skill"}</Text>
-      {state.lastSkillDraftOffer ? (
-        <View style={styles.skillDraftCardSelected}>
-          <Text style={styles.skillDraftArchetype}>ELITE SKILL DRAFT REWARD</Text>
-          <Text style={styles.skillDraftName}>{state.lastSkillDraftOffer.sourceNodeTitle}</Text>
-          <Text style={styles.skillDraftLine}>{state.lastSkillDraftOffer.reason}</Text>
-          <Text style={styles.skillDraftHooks}>Draft choices: {eliteDraftSkills.map((skill) => skill?.name).join(" / ")}</Text>
-          <Text style={styles.skillDraftHooks}>Draft picked: {chosenDraftSkill ? `${chosenDraftSkill.name} is now the active build reward.` : "Choose one skill below to lock in this elite reward."}</Text>
-        </View>
-      ) : (
-        <Text style={styles.skillDraftHooks}>Elite fights now unlock a three-choice skill draft reward for testing new builds.</Text>
-      )}
-      <View style={styles.skillDraftGrid}>
-        {visibleSkills.map((skill) => {
-          const isSlotted = selectedSkill?.id === skill.id;
-          const unlockState = getActiveSkillUnlockState(state, skill);
-          const isLocked = !unlockState.unlocked;
-          const isUnclaimedEliteDraftChoice = Boolean(
-            state.lastSkillDraftOffer?.skillIds.includes(skill.id) && !state.lastSkillDraftOffer.chosenSkillId && !unlockState.isPathDefault
-          );
-          return (
-            <View key={skill.id} style={[styles.skillDraftCard, isSlotted && styles.skillDraftCardSelected]}>
-              <Text style={styles.skillDraftArchetype}>{skill.elementFocus.toUpperCase()} · {skill.archetype.toUpperCase()} · {skill.roleFocus.toUpperCase()} BUILD</Text>
-              <Text style={styles.skillDraftName}>{skill.name}</Text>
-              <Text style={styles.skillDraftLine} numberOfLines={1}>Trigger: {skill.trigger}</Text>
-              <Text style={styles.skillDraftLine} numberOfLines={1}>{skill.effect}</Text>
-              <Text style={styles.skillDraftSynergy} numberOfLines={1}>{skill.synergy}</Text>
-              <Text style={styles.skillDraftHooks} numberOfLines={1}>Bonus: {Math.round((skill.activeBonus.damageMultiplier - 1) * 1000) / 10}% DMG / {Math.round(skill.activeBonus.damageReduction * 1000) / 10}% MIT</Text>
-              <Text style={styles.skillDraftHooks} numberOfLines={1}>Hooks: {skill.statHooks.map(formatStat).join(" / ")}</Text>
-              <PrimaryButton
-                label={isSlotted ? "Active skill slotted" : isLocked ? "Skill locked" : isUnclaimedEliteDraftChoice ? "Choose draft skill" : "Slot active skill"}
-                disabled={isSlotted || isLocked}
-                onPress={() => dispatch({ type: "selectActiveSkill", skillId: skill.id })}
-              />
-            </View>
-          );
-        })}
-      </View>
     </View>
   );
 }
