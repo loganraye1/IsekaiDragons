@@ -2118,7 +2118,7 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
   hatchlingTrail: {
     id: "hatchlingTrail",
     chapter: 1,
-    title: "Chapter 1: Ember Gate",
+    title: "Chapter 1: Warden's Gate",
     nodeCount: 60,
     background: "forest",
     enemyFamilies: ["cinder slimes", "ember boars", "fire wisps", "coaljaw sentinels", "gatefire captains"],
@@ -2126,7 +2126,7 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     lootTierBonus: 0,
     unlockCompletions: 0,
     // Contract note: full-length 60-stop Chapter 1 Fire adventure.
-    description: "The Ember Gate road winds through trader tents, cinder crossings, shrines, treasure caches, elite ambushes, and a late hoard boss."
+    description: "The hatchling's first steps out of the Warden's Vault wind through trader tents, cinder crossings, shrines, treasure caches, and elite ambushes. The Meadow's creatures are already wrong — something is coordinating them. The path ends at the Warden's Gate boss before the world opens up."
   },
   drakeExpedition: {
     id: "drakeExpedition",
@@ -2138,7 +2138,7 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     difficultyMultiplier: 1,
     lootTierBonus: 2,
     unlockCompletions: 1,
-    description: "A 30-day Drake Expedition that now chains Water Moonwell, Earth Crystal Crag, and Light Sunbeam Spires route identity: tide movement, rune markets, halo shops, radiant wisp crossings, Sun Lancer duels, crit/dodge/block pressure, and an aurora crown hoard payoff."
+    description: "The drake's element has crystallized and the Shadow Minions have noticed. This 30-stop expedition chains Water Moonwell, Earth Crystal Crag, and Light Sunbeam Spires — tide movement, rune markets, radiant wisp crossings, Sun Lancer duels, and a hoard payoff. The creatures here are further corrupted than anything in the Meadow. Some remember what they used to be."
   },
   shadowVale: {
     id: "shadowVale",
@@ -2150,7 +2150,7 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     difficultyMultiplier: 1.12,
     lootTierBonus: 3,
     unlockCompletions: 2,
-    description: "The next 30-stop chapter keeps the run moving after Sunbeam Spires with Dark-route pressure, eclipse camps, hidden shrines, and a shadow hoard boss before the long climb to Chapter 10."
+    description: "The Shadow Vale is what the Meadow becomes when the Rift pressure gets heavy enough. The creatures here were ordinary once — the duskmire slimes, the gloam bats, the eclipse knights. Something hollowed them out and filled the space with Void. Thirty stops through eclipse camps, nightglass ambushes, and hidden shrines end at the Shadow Hoard Warden before the long climb to Chapter 10."
   },
   ancientRift: {
     id: "ancientRift",
@@ -2205,19 +2205,25 @@ function getShadowValeNodeTitle(node: AdventureNode, step: number) {
 }
 
 function getShadowValeNodeDescription(node: AdventureNode, step: number) {
-  if (node.kind === "battle" || node.kind === "elite" || node.kind === "boss") {
-    return `Dark pressure gathers at stop ${step}; Light and Dark strikes hit harder, so read the enemy before committing.`;
+  if (node.kind === "boss") {
+    return "The Shadow Hoard Warden was a guardian once — the kind that protected rather than threatened. What the Rift left behind kept the job but forgot the reason. Light and Dark strikes both land harder here.";
+  }
+  if (node.kind === "elite") {
+    return `An elite creature crosses the path at stop ${step}. Whatever it was before the Vale claimed it, it carries that history in the way it moves — not mindless, not fully gone.`;
+  }
+  if (node.kind === "battle") {
+    return `The creature blocking the path at stop ${step} has shadow edges where its natural element used to show. It was something ordinary before the Rift reached this deep. Light and Dark strikes hit harder — read the enemy before committing.`;
   }
   if (node.kind === "camp") {
-    return "A low purple campfire steadies the hatchling while shadow mist presses against the circle.";
+    return "A low purple campfire holds its circle against the mist. Someone built this camp knowing the Vale would press in. The warmth is deliberate — a kindness left by whoever passed through before the shadow came.";
   }
   if (node.kind === "shrine") {
-    return "An eclipse shrine offers guarded recovery, but every blessing asks the dragon to face the dark.";
+    return "An eclipse shrine offers recovery, but the blessing requires the dragon to acknowledge what the darkness used to be. The Vale tests whether the hatchling can tell the difference between corruption and the thing that was corrupted.";
   }
   if (node.kind === "shop") {
-    return "Nightglass traders sell quiet charms for surviving ambushes deeper in the vale.";
+    return "Nightglass traders work the vale because the profit margin is high and the questions are few. They sell charms that work against Shadow Minions without asking why the hatchling needs so many.";
   }
-  return "The Shadow Vale folds the path into moonless roots, hidden caches, and ambush signs.";
+  return "The Shadow Vale folds the path into moonless roots, hidden caches, and creatures that remember — faintly — what it felt like to be something else.";
 }
 
 function scaleAdventureNodeForDifficulty(node: AdventureNode, step: number, difficultyId: AdventureDifficultyId): AdventureNode {

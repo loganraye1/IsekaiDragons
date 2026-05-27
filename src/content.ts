@@ -420,7 +420,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 41,
     kind: "battle",
     title: "Ashwind Wolf Pack",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "Ashwing wolves hunt in tighter formation than pack instinct alone explains. Something is coordinating them from the tree line — not controlling, exactly. Nudging.",
     scene: "forest",
     element: "fire",
     encounterId: "boar",
@@ -434,14 +434,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 42,
     kind: "camp",
     title: "Smokebark Lean-To",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The lean-to was built by someone who knew the path would need a rest stop here. The ashes inside are old. Someone camped here long before the hatchling arrived and left in a hurry.",
     scene: "camp",
     element: "fire",
     difficulty: 1.06,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-42-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 18 } },
-      { id: "chapter-one-stop-42-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 8 } }
+      { id: "chapter-one-stop-42-power", label: "Search the old ashes", description: "Something in the cold hearth sparks a hotter stance for what's ahead.", reward: { statBoost: { attack: 2 }, xp: 18 } },
+      { id: "chapter-one-stop-42-survive", label: "Reinforce before moving up", description: "The lean-to's shelter steadies the hatchling's scales before the path gets worse.", reward: { statBoost: { health: 12, defense: 1 }, essence: 8 } }
     ]
   },
   {
@@ -451,7 +451,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 43,
     kind: "treasure",
     title: "Cinder Beetle Cache",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The beetles built their cache around something they found glowing in the dark. Whatever the original object was, the beetles relocated it long ago. What remains is the warmth they left behind — and everything they gathered around it.",
     scene: "cave",
     element: "fire",
     difficulty: 1.08,
@@ -464,14 +464,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 44,
     kind: "shrine",
     title: "Low Ember Oath Shrine",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The shrine marker is scorched on one side — an old burn, not recent. Something tested this spot before the hatchling found it. The flame inside still answers.",
     scene: "shrine",
     element: "fire",
     difficulty: 1.09,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-44-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 22 } },
-      { id: "chapter-one-stop-44-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 10 } }
+      { id: "chapter-one-stop-44-power", label: "Make the flame oath", description: "Swear to hit first and harder. The shrine accepts the bargain.", reward: { statBoost: { attack: 2 }, xp: 22 } },
+      { id: "chapter-one-stop-44-survive", label: "Make the scale oath", description: "Swear to endure. The shrine seals the promise in fireproof resolve.", reward: { statBoost: { health: 12, defense: 1 }, essence: 10 } }
     ]
   },
   {
@@ -481,7 +481,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 45,
     kind: "elite",
     title: "Coaljaw Sentinel",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The Sentinel was stationed at this ruin post before the path meant anything. It has been here long enough that the ruins grew around it. It doesn't know what it's guarding anymore — only that it must.",
     scene: "ruins",
     element: "fire",
     encounterId: "ruin-knight",
@@ -495,14 +495,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 46,
     kind: "shop",
     title: "Hearthglass Tinker Cart",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The tinker has a cart full of heat-charms and a policy of not asking questions. He's been selling to travelers on this stretch since before the Vault went quiet. He noticed when it did.",
     scene: "camp",
     element: "fire",
     difficulty: 1.12,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-46-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 26 } },
-      { id: "chapter-one-stop-46-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 12 } }
+      { id: "chapter-one-stop-46-power", label: "Buy a heat-strike charm", description: "A heat charm sharpens the next few strikes with focused ember edge.", reward: { statBoost: { attack: 2 }, xp: 26 } },
+      { id: "chapter-one-stop-46-survive", label: "Buy a shell-plate brace", description: "Reinforced plating makes the climb above more survivable.", reward: { statBoost: { health: 12, defense: 1 }, essence: 12 } }
     ]
   },
   {
@@ -512,7 +512,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 47,
     kind: "battle",
     title: "Sootwing Manta Dive",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The manta crosses from the smoke canopy above and drives straight down. It used to ride thermals for pleasure. Now it dives with purpose — pointed, like something gave it a direction.",
     scene: "forest",
     element: "fire",
     encounterId: "sky-manta",
@@ -526,7 +526,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 48,
     kind: "treasure",
     title: "Glass Coal Pocket",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "A pocket of compressed coal glass holds shapes that aren't random — they were arranged by something with patience and intent. The creature that arranged them either left or was taken. The hatchling inherits what it left.",
     scene: "cave",
     element: "fire",
     difficulty: 1.16,
@@ -539,14 +539,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 49,
     kind: "camp",
     title: "Sparkmoss Supper Camp",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The sparkmoss grows thicker this high on the path — it feeds on ember-heavy air. The hatchling eats, listens, and tries to count how many things in the Meadow are watching back.",
     scene: "camp",
     element: "fire",
     difficulty: 1.17,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-49-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 32 } },
-      { id: "chapter-one-stop-49-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 15 } }
+      { id: "chapter-one-stop-49-power", label: "Eat the spiced moss", description: "The sparkmoss burns going down and comes back as attack edge.", reward: { statBoost: { attack: 2 }, xp: 32 } },
+      { id: "chapter-one-stop-49-survive", label: "Eat the plain moss", description: "Plain sparkmoss is slow fuel — it settles into defense and patience.", reward: { statBoost: { health: 12, defense: 1 }, essence: 15 } }
     ]
   },
   {
@@ -556,7 +556,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 50,
     kind: "battle",
     title: "Gatefire Captain",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The Captain holds the inner gate with the patience of someone waiting for this fight specifically. The Vault's exit trail ends here. Winning means the path above is open. Something on the other side has been waiting for that too.",
     scene: "boss",
     element: "fire",
     encounterId: "ruin-knight",
@@ -570,14 +570,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 51,
     kind: "shrine",
     title: "Flame Reader Shrine",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The flame bends toward the hatchling without wind to move it. It's been waiting to read something. What it reads determines what it offers back.",
     scene: "shrine",
     element: "fire",
     difficulty: 1.2,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-51-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 36 } },
-      { id: "chapter-one-stop-51-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 17 } }
+      { id: "chapter-one-stop-51-power", label: "Let the flame read your strike", description: "The flame mirrors back a sharper version of what the hatchling showed it.", reward: { statBoost: { attack: 2 }, xp: 36 } },
+      { id: "chapter-one-stop-51-survive", label: "Let the flame read your guard", description: "The flame mirrors back a more durable version of what the hatchling showed it.", reward: { statBoost: { health: 12, defense: 1 }, essence: 17 } }
     ]
   },
   {
@@ -587,7 +587,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 52,
     kind: "battle",
     title: "Kindle Slime Flood",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "Slimes don't flood in numbers like this naturally. They're being pushed from behind by something the hatchling can't see yet — something that wants them moving in this direction.",
     scene: "forest",
     element: "fire",
     encounterId: "slime",
@@ -601,14 +601,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 53,
     kind: "shop",
     title: "Charcoal Charm Market",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The market clusters here because the path above feels wrong and nobody wants to go further alone. The hatchling is the only customer who seems to be heading up.",
     scene: "camp",
     element: "fire",
     difficulty: 1.23,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-53-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 40 } },
-      { id: "chapter-one-stop-53-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 19 } }
+      { id: "chapter-one-stop-53-power", label: "Buy a claw-edge charm", description: "Charcoal-ground edges sharpen strikes for the stretch above.", reward: { statBoost: { attack: 2 }, xp: 40 } },
+      { id: "chapter-one-stop-53-survive", label: "Buy a smoke-ward charm", description: "A smoke ward diffuses incoming attacks before they fully land.", reward: { statBoost: { health: 12, defense: 1 }, essence: 19 } }
     ]
   },
   {
@@ -618,7 +618,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 54,
     kind: "battle",
     title: "Wisp Chorus Duel",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "Four wisps move in the pattern of a warding circle — protective, once. They've been repurposed. The hatchling is now what they're warding against.",
     scene: "ruins",
     element: "fire",
     encounterId: "willow-wisp",
@@ -632,7 +632,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 55,
     kind: "treasure",
     title: "Dragon-Soot Reliquary",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The reliquary is sealed with a claw-mark that matches the hatchling's own grip exactly. The Elder Wyrm left things along this path. This is one of them.",
     scene: "cave",
     element: "fire",
     difficulty: 1.26,
@@ -645,14 +645,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 56,
     kind: "camp",
     title: "Red Canopy Rest",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "Red-leaf branches filter the heat into something almost comfortable. The camp is calm. The calm is the suspicious part.",
     scene: "camp",
     element: "fire",
     difficulty: 1.27,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-56-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 46 } },
-      { id: "chapter-one-stop-56-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 22 } }
+      { id: "chapter-one-stop-56-power", label: "Train in the canopy heat", description: "Heat training under red leaves builds attack edge for what waits above.", reward: { statBoost: { attack: 2 }, xp: 46 } },
+      { id: "chapter-one-stop-56-survive", label: "Rest in the canopy shade", description: "Rest conserves strength and sharpens scale defense for the harder path ahead.", reward: { statBoost: { health: 12, defense: 1 }, essence: 22 } }
     ]
   },
   {
@@ -662,7 +662,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 57,
     kind: "battle",
     title: "Briarflame Boar Stampede",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The boars come through the burned brush all at once, their shadow edges visible now in daylight. Most of it is still angry, bewildered animal. The rest is something that borrowed the body.",
     scene: "forest",
     element: "fire",
     encounterId: "boar",
@@ -676,14 +676,14 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 58,
     kind: "shrine",
     title: "Ash Crown Trial Shrine",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The ash crown marks sit in a ring at the base of this shrine — proof of trials completed by creatures that didn't survive to carry the crowns away. The hatchling adds one more circle to the ring.",
     scene: "shrine",
     element: "fire",
     difficulty: 1.31,
     reward: {},
     choices: [
-      { id: "chapter-one-stop-58-power", label: "Choose ember power", description: "Choose a hotter stance for the next stretch.", reward: { statBoost: { attack: 2 }, xp: 50 } },
-      { id: "chapter-one-stop-58-survive", label: "Choose scale guard", description: "Reinforce scales before the path gets meaner.", reward: { statBoost: { health: 12, defense: 1 }, essence: 24 } }
+      { id: "chapter-one-stop-58-power", label: "Claim the striker crown", description: "The ash marks seal a promise of sharper, faster strikes for what's ahead.", reward: { statBoost: { attack: 2 }, xp: 50 } },
+      { id: "chapter-one-stop-58-survive", label: "Claim the warden crown", description: "The ash marks seal a promise to endure what the path above delivers.", reward: { statBoost: { health: 12, defense: 1 }, essence: 24 } }
     ]
   },
   {
@@ -693,7 +693,7 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapterStop: 59,
     kind: "battle",
     title: "Ruin Knight Rematch",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    description: "The same ruin-armored figure from the road below, now following. It remembers the earlier fight — adjusts for it. That kind of memory shouldn't survive whatever claimed it.",
     scene: "ruins",
     element: "fire",
     encounterId: "ruin-knight",
@@ -706,8 +706,8 @@ const chapterOneExtendedStops: AdventureNode[] = [
     chapter: 1,
     chapterStop: 60,
     kind: "boss",
-    title: "Ember Gate Hoard Tyrant",
-    description: "The Ember Gate path narrows under hot branches while distant claws scrape stone.",
+    title: "Warden's Gate Hoard Tyrant",
+    description: "The Hoard Tyrant has been collecting things the Void discarded — fragments of creatures that were changed and then abandoned. It built a hoard from what was left behind. The hatchling is about to inherit what it built.",
     scene: "boss",
     element: "fire",
     encounterId: "ruin-knight",
@@ -721,8 +721,8 @@ export const adventureNodes: AdventureNode[] = [
     id: "roadside-trader",
     step: 1,
     kind: "shop",
-    title: "Ash Orchard Gate Trader",
-    description: "At the Ash Orchard Gate, a goblin merchant sells pepper-feed and first-run route charms for a Fire hatchling.",
+    title: "Warden's Gate Trader",
+    description: "Past the Warden's Gate, a goblin trader has set up camp — the first sign the world continues past where the egg was sleeping. He's been here a while. He doesn't ask where the hatchling came from.",
     scene: "camp",
     element: "fire",
     difficulty: 1,
@@ -737,7 +737,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 2,
     kind: "shrine",
     title: "Kindling Shrine",
-    description: "A warm shrine asks whether your hatchling will guard the flame or chase faster evolution sparks.",
+    description: "A stone marker half-swallowed by warm roots — old work, built for something that hadn't hatched yet. It pulses when the hatchling approaches, as if it was left here waiting.",
     scene: "shrine",
     element: "fire",
     difficulty: 1,
@@ -752,7 +752,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 3,
     kind: "battle",
     title: "Cinder Slime Crossing",
-    description: "Cinder slimes bubble across the first bridge and teach the hatchling its first readable Fire Breath fight.",
+    description: "These slimes used to scatter at the sound of footsteps. Something changed. They hold their ground at the bridge now, pressing inward like they're following an order they don't understand.",
     scene: "forest",
     element: "fire",
     encounterId: "slime",
@@ -764,7 +764,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 4,
     kind: "treasure",
     title: "Ember Brush Cache",
-    description: "A hidden satchel glows beneath warm red leaves while tiny sparks drift from the clasp.",
+    description: "A hidden satchel glows beneath warm red leaves while tiny sparks drift from the clasp. Whoever left it here left it recently — the ember inside is still hot.",
     scene: "forest",
     element: "fire",
     difficulty: 1,
@@ -775,7 +775,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 5,
     kind: "camp",
     title: "Charcoal Root Rest Camp",
-    description: "A soot-warmed shelter lets the hatchling breathe, sharpen claws, and listen for the next threat.",
+    description: "A soot-warmed shelter lets the hatchling breathe, sharpen claws, and listen. The Meadow is quieter than it should be this far from the Vault. Quiet usually means something is watching.",
     scene: "camp",
     element: "fire",
     difficulty: 1,
@@ -790,7 +790,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 6,
     kind: "battle",
     title: "Ember Boar Charge",
-    description: "A soot-bristled boar crashes through burnt brush so block, dodge, and defense can visibly matter.",
+    description: "The boar's bristles carry a faint shadow edge — barely visible, like smoke that forgot to rise. It was a Meadow creature once. Whatever claimed it hasn't finished the job yet.",
     scene: "forest",
     element: "fire",
     encounterId: "boar",
@@ -802,7 +802,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 7,
     kind: "shop",
     title: "Coalback Peddler",
-    description: "A turtle-backed vendor with a tiny furnace trades heat charms for road stories.",
+    description: "A turtle-backed vendor with a tiny furnace trades heat charms for road stories. He's cheerful in the way of someone who hasn't seen the Vault side of the Meadow lately. The hatchling doesn't correct him.",
     scene: "camp",
     element: "fire",
     difficulty: 1,
@@ -817,7 +817,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 8,
     kind: "shrine",
     title: "Sun-Spark Font",
-    description: "Golden sparks ripple in a shallow basin and preview the coming Guardian/Raider/Mystic skill choice.",
+    description: "Golden sparks ripple in a shallow basin. The font is old — older than the path that leads to it. It hums differently when the hatchling approaches than when anything else does.",
     scene: "shrine",
     element: "fire",
     difficulty: 1,
@@ -832,7 +832,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 9,
     kind: "battle",
     title: "Wildfire Wisp Ambush",
-    description: "Playful flame spirits circle the trail, baiting crits, dodges, and fast Fire Breath timing before the next road guard.",
+    description: "The wisps circle in patterns that don't quite make sense — they used to be playful. Whatever turned them doesn't fully control them yet. They fight like creatures following an instinct that isn't theirs anymore.",
     scene: "cave",
     element: "fire",
     encounterId: "willow-wisp",
@@ -844,7 +844,7 @@ export const adventureNodes: AdventureNode[] = [
     step: 10,
     kind: "battle",
     title: "Ruin Knight Road Guard",
-    description: "A silent armored guardian blocks the early road and previews the Fire skill draft payoff without ending the chapter.",
+    description: "The armored figure hasn't moved from this post in a long time. It isn't hostile for the usual reasons — something is keeping it here, not duty or pay. It guards the road the way the Vault's wall used to guard the egg: because something told it to.",
     scene: "ruins",
     element: "fire",
     encounterId: "ruin-knight",

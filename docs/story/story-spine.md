@@ -174,6 +174,65 @@ At Wyrm stage, the player's dragon has accumulated enough lifetime essence that 
 
 ---
 
+## World Expansion
+
+The world grows with the dragon. Each chapter tier unlocks a new layer of civilization — from the Vault's stone silence to a metropolis the dragon's arrival has reshaped. The Den mirrors this: it begins as a bare Meadow clearing and becomes something the world builds around.
+
+### Location Progression by Chapter
+
+| Chapter | Difficulty ID | Location Name | Setting Type | Who Lives Here |
+|---|---|---|---|---|
+| 1 | hatchlingTrail | Mystic Meadow / Warden's Gate | Wilderness | Nobody. Slimes, boars, wisps — some of them wrong. |
+| 2 | drakeExpedition | Ember Woods Fringe | Scattered outposts | Traveling merchants, loners, traders who work the edge routes because the center routes are watched. |
+| 3 | shadowVale | Shadow Vale | Corrupted forest | Survivors of the Rift's first outward push. People who stayed when everyone else fled. They built eclipse camps and nightglass markets because leaving felt like giving up. |
+| 10 | ancientRift | Stoneback Crossing | Frontier town | A real settlement with walls, a market, and a militia that pretends to be an army. The dragon's arrival is news here. Some people have opinions about it. |
+| 50 | — | Sky Ruins / Sunbeam Citadel | Ruined city | Was a Light dragon's capital before the first Rift surge. Cloud Harpies were its defenders. Storm Sentinels are its automated walls, still running. Aether Drakes are its dragons. The city is a ruin being slowly reclaimed by people who don't know that history. |
+| 100 | — | Void Threshold | Last city before the Rift | The final inhabited settlement. Half the population came here to fight. Half came here because there was nowhere else left. The dragon is the most powerful thing in a hundred miles and everyone can feel it. |
+| 200 | — | The Settled World | Transformed | Depends on the destiny path. Hero: the world exhales — cities reopen old trade routes, Shadow Minions in outer areas start reverting. Demon Lord: the world reorganizes — Rift pressure stops spreading, but the command structure is visible and everyone knows who holds it. |
+
+---
+
+### The Den — Evolution Alongside the World
+
+The Den is not just a home screen. It is the dragon's anchor point in the world — the place that reflects how far the hatchling has come and how the world has started to arrange itself around them. Den evolution should be written as the world noticing the dragon, not the dragon decorating a room.
+
+| Stage | Den Form | What It Looks Like | Why It Changed |
+|---|---|---|---|
+| egg | Warden's Vault (lower chamber) | Stone walls. A glowing egg on a carved shelf. Vines from the Elder Wyrm's old workings. Quiet. | The Vault was designed to hide. It succeeded. |
+| hatchling | Meadow Clearing | Open sky, scorched grass from first breath tests, a warm flat rock that serves as a bed. No walls. The hatchling hasn't decided to stay anywhere yet. | The world is too new to settle into. The clearing is where the egg landed when the Vault door broke open. |
+| drake | Ember Hollow / Element Den | A sheltered hollow shaped by the drake's element — ember-warmed stone for fire, tide-smoothed cave for water, root-vaulted grove for earth, light-filled cliff ledge for light, shadow-folded ruin for dark. The first place that feels chosen rather than found. | The path crystallized. The element decided where home should be. |
+| dragon | Crossroads Den | The Ember Hollow has grown into something travelers and NPCs reference by name. A merchant sets up nearby. A messenger arrives once. The hero/demon lord faction makes contact here. The den is on maps now. | The dragon is powerful enough that proximity to the den has value. The world started building around it before the dragon noticed. |
+| wyrm | Destiny Anchor | **Hero path:** A sanctuary that others come to — the den becomes a waypoint for people moving toward or away from the Rift. Warm, recognizable, quietly defended. **Demon Lord path:** A command post that others defer to — the den becomes the place decisions are ratified. Cooler, more formal, radiates authority. **Both:** The Elder Wyrm's original Vault markings appear faintly on the walls. She was here, in some form, before the dragon arrived. | The world has reorganized around the dragon's choice. The den reflects which version of the world the wyrm chose to live in. |
+
+---
+
+### Landmarks Along the Path
+
+These locations should be treated as persistent places that can be referenced across journey events, achievement descriptions, and future content — not one-off node backgrounds.
+
+**Warden's Vault** — The egg's origin. Never shown directly in gameplay after Ch. 1, but referenced in journal entries and reincarnation flavor text. The Elder Wyrm's claw marks are still in the stone. Content writers can treat it as a place the dragon occasionally thinks about.
+
+**Ash Orchard Gate** — The first gate past the Vault. The goblin trader at step 1 has been here for years. He is a recurring character possibility: mention him in journey events, have him recognize the dragon in later chapters. He knows something is wrong with the Meadow and has chosen not to leave.
+
+**Kindling Shrine** — Built by the Elder Wyrm or someone who worked for her. The first marker on the path she designed. Other shrines along Ch. 1 are ordinary; this one is specific. Future content can reveal more of what she left here and why.
+
+**Stoneback Crossing** (Ch. 10 town) — The first place with walls, a name, and people who argue about politics. The Guardian-path dragon earns an ally here. The Raider-path dragon earns a reputation. The Mystic-path dragon earns a rumor. All three are useful.
+
+**Sunbeam Citadel Ruins** (Ch. 50) — The ruined Light dragon capital. The Cloud Harpies are the corrupted former defenders. Storm Sentinels are still running automated defensive programs. Any NPC who knows this history is old, unreliable, or both. The ruins themselves are a useful setting for faction recruitment scenes.
+
+**Void Threshold** (Ch. 100) — The last city. Flavor text here should carry the weight of a place that exists because nobody could agree on whether to abandon it. People here are tired, determined, or both. The dragon's arrival is the most significant thing that has happened to this city in years.
+
+---
+
+### World Expansion Content Rules
+
+1. **The world is not post-apocalyptic.** The Rift is a slow pressure, not a catastrophe. Cities exist. Trade happens. People argue about mundane things. The dragon's journey is unusual, not the only thing happening.
+2. **Locations have history before the dragon arrived.** The Sunbeam Citadel was a capital. The Shadow Vale had ordinary creatures. Stoneback Crossing survived previous Rift pushes. Write places as if they have pasts that the dragon is only the latest chapter of.
+3. **The Den reacts to the dragon, not the other way around.** Don't write the dragon choosing to redecorate. Write the world noticing and adjusting — a merchant sets up nearby, a faction sends a message, the walls stop being stone and start being something that knows it's watched.
+4. **Chapter thresholds are moments of world recognition.** When the dragon evolves, something in the world registers it — even if the dragon doesn't. Shadow Minions change behavior. NPCs reconsider. The Rift's immune response shifts. These recognition moments are content opportunities at every stage gate.
+
+---
+
 ## Standing Rules for Content Writers
 
 1. **Reincarnation is never death.** Always frame it as the Memory Cycle — a chosen reset, not a failure.
