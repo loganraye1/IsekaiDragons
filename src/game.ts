@@ -1259,7 +1259,8 @@ export const initialGameState: GameState = {
     rewardApplied: false,
     lastSaveDateBefore: null,
     lastSaveDateAfter: null
-  }
+  },
+  statUpgrades: { attack: 0, defense: 0, health: 0 }
 };
 
 const elementStatBonus: Record<DragonElement, Partial<Stats>> = {
@@ -1294,6 +1295,16 @@ export function getUpgradeCost(state: GameState, stat: keyof Stats) {
     state,
     Math.round(base + statValue * BALANCE.upgrades.statUpgrade.statValueMultiplier + state.player.upgradesBought * BALANCE.upgrades.statUpgrade.purchaseScaling)
   );
+}
+
+const STAT_UPGRADE_BASE_COST: Record<"attack" | "defense" | "health", number> = {
+  attack: 50,
+  defense: 75,
+  health: 100
+};
+
+export function getStatUpgradeCost(stat: "attack" | "defense" | "health", level: number): number {
+  return Math.round(STAT_UPGRADE_BASE_COST[stat] * Math.pow(1.5, level));
 }
 
 function getJourneyEventDelayMs() {
@@ -3421,6 +3432,30 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       }, "buyUpgrade3", 1);
     }
+    case "upgradeStats": {
+      const currentLevel = (state.statUpgrades ?? { attack: 0, defense: 0, health: 0 })[action.stat];
+      const upgradeCost = getStatUpgradeCost(action.stat, currentLevel);
+      if (state.player.gold < upgradeCost) return state;
+      const statBoost: Partial<Stats> =
+        action.stat === "attack" ? { attack: 5 } :
+        action.stat === "defense" ? { defense: 3 } :
+        { health: 10 };
+      return {
+        ...state,
+        dragon: {
+          ...state.dragon,
+          stats: addStats(state.dragon.stats, statBoost)
+        },
+        player: {
+          ...state.player,
+          gold: state.player.gold - upgradeCost
+        },
+        statUpgrades: {
+          ...(state.statUpgrades ?? { attack: 0, defense: 0, health: 0 }),
+          [action.stat]: currentLevel + 1
+        }
+      };
+    }
     case "claimQuest": {
       const quest = quests.find((item) => item.id === action.questId);
       if (!quest || state.player.claimedQuests.includes(action.questId)) {
@@ -3538,6 +3573,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           ...initialGameState.returnPresence,
           ...(action.state.returnPresence ?? {}),
           active: false
+        },
+        statUpgrades: {
+          ...initialGameState.statUpgrades,
+          ...(action.state.statUpgrades ?? {})
         },
         dragon: {
           ...initialGameState.dragon,

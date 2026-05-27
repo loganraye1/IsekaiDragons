@@ -42,7 +42,7 @@ import AdventureScreen, { AdventureJourneyScene } from "./AdventureScreen";
 import QuestScreen from "./QuestScreen";
 import ShopScreen from "./ShopScreen";
 import UpgradeScreen from "./UpgradeScreen";
-import { SectionCard, PrimaryButton, StatsPanelContent, EvolutionPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
+import { SectionCard, PrimaryButton, StatsPanelContent, StatUpgradePanel, EvolutionPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
 import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, type PresenceTestOverrides } from "./Modals";
 import { BalanceDebugPanel, GuidedPlaytestOverlay, getAutoCompletedGuidedStepIds, guidedPlaytestSteps, DrakeContinuityReviewPanel, HatchlingReviewModal, DevToggleButton, PlaytestNotesPanel, createBalanceSnapshotExport, TestChecklist } from "./DevTools";
 import { SafeExpoImage } from "../ui/SafeMedia";
@@ -98,7 +98,7 @@ export function DragonPathBadge({ pathId, element }: { pathId: DragonPathId; ele
 
 
 
-type IdlePanelKey = "stats" | "upgrades" | "adventure" | "evolution" | "goals" | "rebirth" | "settings";
+type IdlePanelKey = "stats" | "upgrades" | "train" | "adventure" | "evolution" | "goals" | "rebirth" | "settings";
 
 const onboardingSteps = [
   "Choose adventures to earn loot and Essence.",
@@ -506,6 +506,12 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
               onEvolve={evolveDragon}
             />
           ) : null}
+          {activePanel === "train" ? (
+            <StatUpgradePanel
+              state={state}
+              onUpgrade={(stat) => dispatch({ type: "upgradeStats", stat })}
+            />
+          ) : null}
           {activePanel === "adventure" ? (
             <AdventurePanelContent
               state={state}
@@ -578,6 +584,8 @@ export function getPanelTitle(panel: IdlePanelKey | null) {
       return "Stats";
     case "upgrades":
       return "Evolve";
+    case "train":
+      return "Train";
     case "adventure":
       return "Adventure";
     case "evolution":
@@ -616,6 +624,7 @@ export function BottomNav({ activePanel, onSelect }: { activePanel: IdlePanelKey
   const items: Array<{ key: IdlePanelKey; label: string; icon: string }> = [
     { key: "stats", label: "Stats", icon: "▣" },
     { key: "upgrades", label: "Evolve", icon: "⬆" },
+    { key: "train", label: "Train", icon: "⚡" },
     { key: "adventure", label: "Path", icon: "⚔" },
     { key: "evolution", label: "Evo", icon: "🐉" },
     { key: "goals", label: "Goals", icon: "★" },

@@ -20,6 +20,7 @@ import {
   getDragonSoulMultiplier,
   getReincarnationSoulsGained,
   getSelectedEvolutionTrait,
+  getStatUpgradeCost,
   supportingSystemRecommendations,
   treasureDefinitions,
   treasureOrder,
@@ -576,6 +577,57 @@ export function EvolutionPanelContent({
       <SectionCard title="Evolution Trait" subtitle={trait ? trait.name : "Choose a Drake path"}>
         <Text style={styles.panelMutedText}>{trait ? trait.bonus : "Your first branch unlocks when evolving from Hatchling to Drake."}</Text>
       </SectionCard>
+    </>
+  );
+}
+
+const STAT_UPGRADE_LABELS: Record<"attack" | "defense" | "health", string> = {
+  attack: "Attack",
+  defense: "Defense",
+  health: "Health"
+};
+
+const STAT_UPGRADE_BONUS: Record<"attack" | "defense" | "health", string> = {
+  attack: "+5 ATK per level",
+  defense: "+3 DEF per level",
+  health: "+10 HP per level"
+};
+
+export function StatUpgradePanel({
+  state,
+  onUpgrade,
+}: {
+  state: GameState;
+  onUpgrade: (stat: "attack" | "defense" | "health") => void;
+}) {
+  const numberFormat = state.settings.numberFormat;
+  const upgrades = state.statUpgrades ?? { attack: 0, defense: 0, health: 0 };
+  const stats: Array<"attack" | "defense" | "health"> = ["attack", "defense", "health"];
+
+  return (
+    <>
+      {stats.map((stat) => {
+        const level = upgrades[stat];
+        const cost = getStatUpgradeCost(stat, level);
+        const canAfford = state.player.gold >= cost;
+        return (
+          <SectionCard
+            key={stat}
+            title={`${STAT_UPGRADE_LABELS[stat]} (Lv ${level})`}
+            subtitle={STAT_UPGRADE_BONUS[stat]}
+          >
+            <Pressable
+              onPress={() => onUpgrade(stat)}
+              disabled={!canAfford}
+              style={[styles.primaryPanelButton, !canAfford && styles.disabledUpgradeCard]}
+            >
+              <Text style={styles.primaryPanelButtonText}>
+                Train — {formatGameNumber(cost, numberFormat)} gold
+              </Text>
+            </Pressable>
+          </SectionCard>
+        );
+      })}
     </>
   );
 }

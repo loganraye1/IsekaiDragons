@@ -432,6 +432,7 @@ export type GameState = {
   guidedPlaytest: GuidedPlaytestState;
   journeyEvents: JourneyEventState;
   returnPresence: ReturnPresenceState;
+  statUpgrades: { attack: number; defense: number; health: number };
 };
 
 export type GameAction =
@@ -468,6 +469,7 @@ export type GameAction =
   | { type: "resolveAdventureChoice"; nodeId: string; choiceId: string }
   | { type: "runAdventure" }
   | { type: "buyUpgrade"; stat: keyof Stats }
+  | { type: "upgradeStats"; stat: "attack" | "defense" | "health" }
   | { type: "claimQuest"; questId: string }
   | { type: "buyShopItem"; itemId: string }
   | { type: "setScreen"; screen: ScreenKey }
