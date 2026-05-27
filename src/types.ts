@@ -380,6 +380,13 @@ export type JourneyEventState = {
   activeEffects: JourneyEventEffect[];
 };
 
+export type OfflineRewardBundle = {
+  gold: number;
+  gems: number;
+  equipmentItem: EquipmentItem | null;
+  treasureId: TreasureId | null;
+};
+
 export type ReturnPresenceState = {
   active: boolean;
   startedAt: number | null;
@@ -387,6 +394,7 @@ export type ReturnPresenceState = {
   line: string;
   offlineReward: number;
   pendingOfflineReward: number;
+  offlineBundle: OfflineRewardBundle | null;
   rewardApplied: boolean;
   lastSaveDateBefore: number | null;
   lastSaveDateAfter: number | null;

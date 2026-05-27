@@ -833,6 +833,7 @@ export function SettingsPanelContent({
         line: awayDurationMs >= 60 * 60 * 1000 ? "Look what I found!" : "I missed you.",
         offlineReward,
         pendingOfflineReward: 0,
+        offlineBundle: null,
         rewardApplied: false,
         lastSaveDateBefore: Date.now() - awayDurationMs,
         lastSaveDateAfter: null

@@ -263,6 +263,18 @@ export function ReturnPresenceToast({ state, presence, phase }: { state: GameSta
   const theme = state.dragon.element ? elementTheme[state.dragon.element] : elementTheme.fire;
   const numberFormat = state.settings.numberFormat;
   const showReward = phase === "rewards" && presence.offlineReward > 0;
+  const bundle = presence.offlineBundle;
+
+  const rewardParts: string[] = [];
+  if (bundle) {
+    if (bundle.gold > 0) rewardParts.push(`+${formatGameNumber(bundle.gold, numberFormat)} gold`);
+    if (bundle.gems > 0) rewardParts.push(`+${bundle.gems} gem${bundle.gems !== 1 ? "s" : ""}`);
+    if (bundle.equipmentItem) rewardParts.push(bundle.equipmentItem.name);
+    if (bundle.treasureId) rewardParts.push(bundle.treasureId.replace(/([A-Z])/g, " $1").trim());
+  } else if (presence.offlineReward > 0) {
+    rewardParts.push(`+${formatGameNumber(presence.offlineReward, numberFormat)} gold`);
+  }
+
   const copy =
     phase === "sleeping"
       ? "Resting..."
@@ -271,7 +283,7 @@ export function ReturnPresenceToast({ state, presence, phase }: { state: GameSta
         : phase === "greeting"
           ? presence.line
           : showReward
-            ? `Brought back +${formatGameNumber(presence.offlineReward, numberFormat)} Essence`
+            ? rewardParts.length > 0 ? `Found: ${rewardParts.join(" · ")}` : presence.line
             : presence.line;
 
   return (

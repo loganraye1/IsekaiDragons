@@ -25,6 +25,7 @@ import {
   EquipmentSlot,
   EliteSkillDraftOffer,
   EvolutionTraitId,
+  OfflineRewardBundle,
   FireStarterAdventureMilestone,
   GameAction,
   GameSettings,
@@ -1256,6 +1257,7 @@ export const initialGameState: GameState = {
     line: "",
     offlineReward: 0,
     pendingOfflineReward: 0,
+    offlineBundle: null,
     rewardApplied: false,
     lastSaveDateBefore: null,
     lastSaveDateAfter: null
@@ -1324,14 +1326,15 @@ function pickReturnPresenceLine() {
   return returnPresenceLines[Math.floor(Math.random() * returnPresenceLines.length)] ?? "I missed you.";
 }
 
-function createReturnPresence(awayDurationMs: number, offlineReward: number, lastSaveDateBefore: number | null) {
+function createReturnPresence(awayDurationMs: number, bundle: OfflineRewardBundle, lastSaveDateBefore: number | null) {
   return {
     active: true,
     startedAt: Date.now(),
     awayDurationMs,
     line: pickReturnPresenceLine(),
-    offlineReward,
-    pendingOfflineReward: offlineReward,
+    offlineReward: bundle.gold,
+    pendingOfflineReward: bundle.gold,
+    offlineBundle: bundle,
     rewardApplied: false,
     lastSaveDateBefore,
     lastSaveDateAfter: null
@@ -1401,10 +1404,27 @@ export function getTreasureDropChance(state: GameState) {
   return Math.min(BALANCE.dropRates.treasure.maxChance, baseChance * elementMultiplier * traitMultiplier * getEquipmentBonusMultiplier(state, "treasureDrop"));
 }
 
+export function getOfflineRewardBundle(state: GameState, elapsedMs: number): OfflineRewardBundle {
+  const chapters = state.completedAdventureRuns ?? 0;
+  const hoursOffline = Math.min(elapsedMs / 3_600_000, 24);
+  const offlineMultiplier = getOfflineRewardMultiplier(state);
+
+  const goldPerHour = 50 + chapters * 25;
+  const gold = Math.floor(goldPerHour * hoursOffline * offlineMultiplier);
+
+  const gems = Math.floor(hoursOffline / 4);
+
+  const equipChance = Math.min(0.9, (0.15 + chapters * 0.04) * (hoursOffline / 4));
+  const equipmentItem = Math.random() < equipChance ? createEquipmentItem(state.currentArea) : null;
+
+  const treasureChance = Math.min(0.9, (0.1 + chapters * 0.03) * (hoursOffline / 4));
+  const treasureId = Math.random() < treasureChance ? pickTreasure(state.currentArea) : null;
+
+  return { gold, gems, equipmentItem, treasureId };
+}
+
 export function getOfflineGoldReward(state: GameState, elapsedMs: number) {
-  const seconds = Math.max(0, Math.floor(elapsedMs / 1000));
-  const cappedSeconds = Math.min(seconds, 60 * 60 * 8);
-  return Math.floor(getGoldPerSecond(state) * cappedSeconds * getOfflineRewardMultiplier(state));
+  return getOfflineRewardBundle(state, elapsedMs).gold;
 }
 
 export function getDragonSoulMultiplier(state: GameState) {
@@ -3151,15 +3171,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case "resolveJourneyEvent":
       return resolveJourneyEventChoice(state, action.choiceId);
     case "completeReturnPresence": {
-      const rewardToApply = state.returnPresence.rewardApplied ? 0 : state.returnPresence.pendingOfflineReward;
+      const bundle = state.returnPresence.rewardApplied ? null : state.returnPresence.offlineBundle;
+      const goldToApply = bundle?.gold ?? (state.returnPresence.rewardApplied ? 0 : state.returnPresence.pendingOfflineReward);
+      const gemsToApply = bundle?.gems ?? 0;
+      const equipItem = bundle?.equipmentItem ?? null;
+      const treasureId = bundle?.treasureId ?? null;
       const now = Date.now();
       if (__DEV__) {
         console.log("[ReturnPresence]", {
           awayDurationMs: state.returnPresence.awayDurationMs,
-          calculatedOfflineEssence: state.returnPresence.offlineReward,
+          calculatedOfflineGold: state.returnPresence.offlineReward,
           pendingOfflineReward: state.returnPresence.pendingOfflineReward,
+          bundle,
           returnPhase: "rewards",
-          rewardApplied: rewardToApply > 0,
+          rewardApplied: goldToApply > 0,
           lastSaveDateBefore: state.returnPresence.lastSaveDateBefore,
           lastSaveDateAfter: now
         });
@@ -3168,35 +3193,42 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         returnPresence: {
           ...initialGameState.returnPresence,
-          rewardApplied: rewardToApply > 0 || state.returnPresence.rewardApplied,
+          rewardApplied: (goldToApply > 0 || gemsToApply > 0 || !!equipItem || !!treasureId) || state.returnPresence.rewardApplied,
           lastSaveDateBefore: state.returnPresence.lastSaveDateBefore,
           lastSaveDateAfter: now
         },
         player: {
           ...state.player,
-          gold: state.player.gold + rewardToApply
+          gold: state.player.gold + goldToApply,
+          gems: state.player.gems + gemsToApply
         },
+        equipmentInventory: equipItem
+          ? [...state.equipmentInventory, equipItem]
+          : state.equipmentInventory,
+        treasures: treasureId
+          ? { ...state.treasures, [treasureId]: (state.treasures[treasureId] ?? 0) + 1 }
+          : state.treasures,
         lastSavedAt: now,
         lastLoot:
-          rewardToApply > 0
+          goldToApply > 0
             ? {
                 id: now,
                 message:
                   state.dragon.element === "water"
-                    ? `The tide carried back +${rewardToApply} offline gold.`
-                    : `Returned to +${rewardToApply} offline gold.`
+                    ? `The tide carried back +${goldToApply} offline gold.`
+                    : `Returned to +${goldToApply} offline gold.`
               }
             : state.lastLoot
       });
     }
     case "startReturnPresenceTest": {
-      const pendingOfflineReward = action.withRewards ? getOfflineGoldReward(state, action.awayDurationMs) : 0;
+      const emptyBundle: OfflineRewardBundle = { gold: 0, gems: 0, equipmentItem: null, treasureId: null };
+      const bundle = action.withRewards ? getOfflineRewardBundle(state, action.awayDurationMs) : emptyBundle;
       const lastSaveDateBefore = Date.now() - action.awayDurationMs;
       if (__DEV__) {
         console.log("[ReturnPresence]", {
           awayDurationMs: action.awayDurationMs,
-          calculatedOfflineEssence: pendingOfflineReward,
-          pendingOfflineReward,
+          bundle,
           returnPhase: "resting",
           rewardApplied: false,
           lastSaveDateBefore,
@@ -3205,7 +3237,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
       return {
         ...state,
-        returnPresence: createReturnPresence(action.awayDurationMs, pendingOfflineReward, lastSaveDateBefore)
+        returnPresence: createReturnPresence(action.awayDurationMs, bundle, lastSaveDateBefore)
       };
     }
     case "startAdventureRun": {
@@ -3616,12 +3648,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           : null;
       const lastSaveDateBefore = action.state.lastSavedAt ?? Date.now();
       const elapsedSinceSaveMs = Date.now() - lastSaveDateBefore;
-      const offlineReward = getOfflineGoldReward(hydrated, elapsedSinceSaveMs);
+      const offlineBundle = getOfflineRewardBundle(hydrated, elapsedSinceSaveMs);
+      const offlineReward = offlineBundle.gold;
       const shouldShowReturnPresence = savedHasProgress && elapsedSinceSaveMs >= returnPresenceThresholdMs;
+      const applyBundleSilently = offlineReward > 0 && !shouldShowReturnPresence && !savedPendingReturn;
       if (__DEV__) {
         console.log("[ReturnPresence]", {
           awayDurationMs: savedPendingReturn?.awayDurationMs ?? elapsedSinceSaveMs,
-          calculatedOfflineEssence: savedPendingReturn?.pendingOfflineReward ?? offlineReward,
+          offlineBundle,
           pendingOfflineReward: savedPendingReturn?.pendingOfflineReward ?? (shouldShowReturnPresence ? offlineReward : 0),
           returnPhase: shouldShowReturnPresence || savedPendingReturn ? "resting" : "complete",
           rewardApplied: false,
@@ -3633,8 +3667,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...hydrated,
         player: {
           ...hydrated.player,
-          gold: shouldShowReturnPresence || savedPendingReturn ? hydrated.player.gold : hydrated.player.gold + offlineReward
+          gold: shouldShowReturnPresence || savedPendingReturn ? hydrated.player.gold : hydrated.player.gold + offlineReward,
+          gems: applyBundleSilently ? hydrated.player.gems + offlineBundle.gems : hydrated.player.gems
         },
+        equipmentInventory: applyBundleSilently && offlineBundle.equipmentItem
+          ? [...hydrated.equipmentInventory, offlineBundle.equipmentItem]
+          : hydrated.equipmentInventory,
+        treasures: applyBundleSilently && offlineBundle.treasureId
+          ? { ...hydrated.treasures, [offlineBundle.treasureId]: (hydrated.treasures[offlineBundle.treasureId] ?? 0) + 1 }
+          : hydrated.treasures,
         phase: action.state.phase ?? (action.state.dragon?.stage === "hatchling" ? "journey" : "egg"),
         currentQuestionIndex: action.state.currentQuestionIndex ?? Math.min(Object.keys(action.state.eggAnswers ?? {}).length, 2),
         journeyStep: action.state.journeyStep ?? 0,
@@ -3644,14 +3685,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           ? {
               ...initialGameState.returnPresence,
               ...savedPendingReturn,
+              offlineBundle: savedPendingReturn.offlineBundle ?? null,
               active: true,
               startedAt: Date.now()
             }
           : shouldShowReturnPresence
-            ? createReturnPresence(elapsedSinceSaveMs, offlineReward, lastSaveDateBefore)
+            ? createReturnPresence(elapsedSinceSaveMs, offlineBundle, lastSaveDateBefore)
             : initialGameState.returnPresence,
         lastLoot:
-          offlineReward > 0 && !shouldShowReturnPresence && !savedPendingReturn
+          applyBundleSilently
             ? {
                 id: Date.now(),
                 message:
