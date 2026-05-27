@@ -380,6 +380,14 @@ export type JourneyEventState = {
   activeEffects: JourneyEventEffect[];
 };
 
+export type StoryCard = {
+  id: string;
+  title: string;
+  body: string;
+  type: "intro" | "outro";
+  chapterId: AdventureDifficultyId;
+};
+
 export type OfflineRewardBundle = {
   gold: number;
   gems: number;
@@ -441,6 +449,7 @@ export type GameState = {
   journeyEvents: JourneyEventState;
   returnPresence: ReturnPresenceState;
   statUpgrades: { attack: number; defense: number; health: number };
+  pendingStoryCard: StoryCard | null;
 };
 
 export type GameAction =
@@ -478,6 +487,7 @@ export type GameAction =
   | { type: "runAdventure" }
   | { type: "buyUpgrade"; stat: keyof Stats }
   | { type: "upgradeStats"; stat: "attack" | "defense" | "health" }
+  | { type: "dismissStoryCard" }
   | { type: "claimQuest"; questId: string }
   | { type: "buyShopItem"; itemId: string }
   | { type: "setScreen"; screen: ScreenKey }

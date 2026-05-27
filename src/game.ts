@@ -26,6 +26,7 @@ import {
   EliteSkillDraftOffer,
   EvolutionTraitId,
   OfflineRewardBundle,
+  StoryCard,
   FireStarterAdventureMilestone,
   GameAction,
   GameSettings,
@@ -1159,6 +1160,73 @@ export const evolutionTraitDefinitions: Record<DragonElement, EvolutionTraitDefi
   ]
 };
 
+const storyCards: Record<AdventureDifficultyId, { intro: StoryCard; outro: StoryCard }> = {
+  hatchlingTrail: {
+    intro: {
+      id: "ch1-intro",
+      title: "Chapter 1 — The Cracked Shell",
+      body: "The egg didn't hatch. It woke up. The Warden's Vault is behind you, the Meadow is wrong, and the Slimes are already watching. Something has been waiting for this.",
+      type: "intro",
+      chapterId: "hatchlingTrail"
+    },
+    outro: {
+      id: "ch1-outro",
+      title: "First Breath Taken",
+      body: "The Warden's Gate guardian falls. You are no longer just an egg that woke — you are something the world has begun to notice. The path ahead is open.",
+      type: "outro",
+      chapterId: "hatchlingTrail"
+    }
+  },
+  drakeExpedition: {
+    intro: {
+      id: "ch2-intro",
+      title: "Chapter 2 — First Fire",
+      body: "Your element has crystallized and the Shadow Minions have noticed. The spires ahead remember that the Elder Wyrm walked this path once. They are waiting to see what you do with it.",
+      type: "intro",
+      chapterId: "drakeExpedition"
+    },
+    outro: {
+      id: "ch2-outro",
+      title: "The Meadow Takes Notice",
+      body: "The spires are behind you. Something higher in the Shadow Minion hierarchy has been told. The Rift's immune response is beginning to calibrate to your presence.",
+      type: "outro",
+      chapterId: "drakeExpedition"
+    }
+  },
+  shadowVale: {
+    intro: {
+      id: "ch3-intro",
+      title: "Chapter 3 — Into the Shadow",
+      body: "The Shadow Vale is what the Meadow becomes when the Rift pressure gets heavy enough. The creatures here were ordinary once. Something hollowed them out and filled the space with Void.",
+      type: "intro",
+      chapterId: "shadowVale"
+    },
+    outro: {
+      id: "ch3-outro",
+      title: "The Corruption Mapped",
+      body: "The Shadow Hoard Warden falls. You understand now what the Rift does to things it touches — and what it would do to you if you weren't something it can't quite read. The long climb to Chapter 10 begins.",
+      type: "outro",
+      chapterId: "shadowVale"
+    }
+  },
+  ancientRift: {
+    intro: {
+      id: "ch10-intro",
+      title: "Chapter 10 — Stoneback Crossing",
+      body: "The first place with walls, a name, and people who argue about politics. Some of them have opinions about a dragon passing through. The Ancient Rift is ahead. The Shadow of the First Demon Lord waits at its end.",
+      type: "intro",
+      chapterId: "ancientRift"
+    },
+    outro: {
+      id: "ch10-outro",
+      title: "The Drake Wakes",
+      body: "The seal of the First Demon Lord is broken. The path crystallizes — Guardian, Raider, or Mystic. The world registered your drake form before you chose it. What you are is no longer anonymous.",
+      type: "outro",
+      chapterId: "ancientRift"
+    }
+  }
+};
+
 export const initialGameState: GameState = {
   dragon: {
     name: "Unnamed Egg",
@@ -1262,7 +1330,8 @@ export const initialGameState: GameState = {
     lastSaveDateBefore: null,
     lastSaveDateAfter: null
   },
-  statUpgrades: { attack: 0, defense: 0, health: 0 }
+  statUpgrades: { attack: 0, defense: 0, health: 0 },
+  pendingStoryCard: null
 };
 
 const elementStatBonus: Record<DragonElement, Partial<Stats>> = {
@@ -2155,7 +2224,7 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     difficultyMultiplier: 1.32,
     lootTierBonus: 5,
     unlockCompletions: 3,
-    description: "Chapter 10 is a 60-stop mythic adventure with multiple bosses; the first true evolution trigger lives at Chapter 10 Stop 10."
+    description: "Chapter 10 is a 60-stop mythic adventure through the Ancient Rift. The Shadow of the First Demon Lord waits at stop 60 — defeat it to break the seal and unlock drake evolution."
   }
 };
 
@@ -3277,12 +3346,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ? getNextAdventureDifficultyId(state.adventureRun.difficultyId)
         : "hatchlingTrail");
 
+      const startStep = action.startStep ?? 1;
       return {
         ...state,
         activeScreen: "adventure",
-        adventureRun: createAdventureRun(action.startStep ?? 1, nextDifficultyId, state.dragon.stats.health),
+        adventureRun: createAdventureRun(startStep, nextDifficultyId, state.dragon.stats.health),
         lastAdventureRewards: null,
-        lastSkillDraftOffer: null
+        lastSkillDraftOffer: null,
+        pendingStoryCard: startStep === 1 ? storyCards[nextDifficultyId].intro : state.pendingStoryCard
       };
     }
     case "selectAdventureNode": {
@@ -3362,6 +3433,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return {
           ...completionProgressState,
           selectedActiveSkillId: chapterFinalBoss && state.lastSkillDraftOffer?.skillIds.includes(state.selectedActiveSkillId ?? "") ? null : completionProgressState.selectedActiveSkillId,
+          pendingStoryCard: chapterFinalBoss ? storyCards[run.difficultyId].outro : completionProgressState.pendingStoryCard,
           lastLoot: ancientRiftFinalBossWon
             ? {
                 id: Date.now(),
@@ -3526,6 +3598,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       };
     }
+    case "dismissStoryCard":
+      return { ...state, pendingStoryCard: null };
     case "claimQuest": {
       const quest = quests.find((item) => item.id === action.questId);
       if (!quest || state.player.claimedQuests.includes(action.questId)) {
@@ -3648,6 +3722,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           ...initialGameState.statUpgrades,
           ...(action.state.statUpgrades ?? {})
         },
+        pendingStoryCard: null,
         dragon: {
           ...initialGameState.dragon,
           ...(action.state.dragon ?? {}),

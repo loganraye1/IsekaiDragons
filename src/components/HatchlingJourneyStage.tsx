@@ -46,6 +46,7 @@ import UpgradeScreen from "./UpgradeScreen";
 import { SectionCard, PrimaryButton, StatsPanelContent, StatUpgradePanel, EvolutionPanelContent, AdventurePanelContent, GoalsPanelContent, RebirthPanelContent, EvolutionChoiceModal, ReincarnationConfirmModal } from "./DenScreen";
 import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, type PresenceTestOverrides } from "./Modals";
 import { BalanceDebugPanel, GuidedPlaytestOverlay, getAutoCompletedGuidedStepIds, guidedPlaytestSteps, DrakeContinuityReviewPanel, HatchlingReviewModal, DevToggleButton, PlaytestNotesPanel, createBalanceSnapshotExport, TestChecklist } from "./DevTools";
+import StoryCardModal from "./StoryCardModal";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import ParticleField from "../ui/ParticleField";
 import type { DragonElement, DragonPathId, DragonStage, EvolutionTraitId, GameAction, GameSettings, GameState, ScreenKey } from "../types";
@@ -574,6 +575,10 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         <BalanceDebugPanel visible={showDebugPanel} state={state} onClose={() => setShowDebugPanel(false)} onResetSave={resetSave} />
         <DailyLoginRewardModal visible={shouldShowDailyLoginReward} state={state} onClaim={claimDailyLoginReward} />
         {shouldShowJourneyEventModal ? <JourneyEventModal state={state} dispatch={dispatch} /> : null}
+        <StoryCardModal
+          card={state.pendingStoryCard ?? null}
+          onDismiss={() => dispatch({ type: "dismissStoryCard" })}
+        />
       </DragonDisplay>
     </Animated.View>
   );
