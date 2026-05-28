@@ -1269,6 +1269,102 @@ const storyCards: Record<AdventureDifficultyId, { intro: StoryCard; outro: Story
       chapterId: "shadowVale"
     }
   },
+  emberDepths: {
+    intro: {
+      id: "ch4-intro",
+      title: "Chapter 4 — Ember Depths",
+      body: "The Ember Woods opened, and you kept going down. The deep ash-veins remember a time before the Rift, when fire meant forge and warmth, not pressure and Void. What lives here now has forgotten that difference.",
+      type: "intro",
+      chapterId: "emberDepths"
+    },
+    outro: {
+      id: "ch4-outro",
+      title: "The Forge Remembers",
+      body: "The Depths are behind you. Something in the ember-stone flickered recognition when you passed — not greeting, not threat. An old reflex from a world that had dragons in it and knew what they were for.",
+      type: "outro",
+      chapterId: "emberDepths"
+    }
+  },
+  stonebackCrossing: {
+    intro: {
+      id: "ch5-intro",
+      title: "Chapter 5 — Stoneback Sprint",
+      body: "The Stoneback Hills are faster to cross than to understand. Stone Golems patrol routes they've held since before the Rift started coordinating them. Two warden-class encounters stand between you and the far side. Move quickly.",
+      type: "intro",
+      chapterId: "stonebackCrossing"
+    },
+    outro: {
+      id: "ch5-outro",
+      title: "Stone Held",
+      body: "The wardens fall. The Hills remember every army that tried to cross them — most didn't. The garrison dragons who held this ground are gone now. You passed through the space they left behind.",
+      type: "outro",
+      chapterId: "stonebackCrossing"
+    }
+  },
+  crystalCrag: {
+    intro: {
+      id: "ch6-intro",
+      title: "Chapter 6 — Crystal Crag",
+      body: "Tide Cavern meets the Stoneback shelf in a shelf of crystal-threaded rock where two kinds of Void pressure meet. The Pearl Serpents and Cave Crabs here were dangerous before the Rift. The Rift made them purposeful.",
+      type: "intro",
+      chapterId: "crystalCrag"
+    },
+    outro: {
+      id: "ch6-outro",
+      title: "The Tide Recedes",
+      body: "The Crag warden falls and the tide-pulse dims. Water and earth remember different things about the Rift. You carry both now, in the way you move through tunnels that have seen three hundred years of slow pressure.",
+      type: "outro",
+      chapterId: "crystalCrag"
+    }
+  },
+  moonlessHollow: {
+    intro: {
+      id: "ch7-intro",
+      title: "Chapter 7 — Moonless Hollow",
+      body: "There is no light in the Hollow that isn't borrowed. The trees here absorbed so much Void that they stopped being trees and became a kind of architecture the Rift built to hold something. Two wardens guard what it's holding.",
+      type: "intro",
+      chapterId: "moonlessHollow"
+    },
+    outro: {
+      id: "ch7-outro",
+      title: "What the Dark Held",
+      body: "The second warden falls and the Hollow opens. Whatever the Rift was storing here dissipates into ordinary shadow. It wasn't anything special — just pressure that had nowhere to go. The dark is quieter now. For now.",
+      type: "outro",
+      chapterId: "moonlessHollow"
+    }
+  },
+  skyRuins: {
+    intro: {
+      id: "ch8-intro",
+      title: "Chapter 8 — Sky Ruins",
+      body: "The Sunbeam Citadel was a Light dragon's capital before the first Rift surge. The Cloud Harpies were its defenders. The Storm Sentinels are its automated walls, still running. Thirty stops through a city that remembers what it protected and has no one left to protect.",
+      type: "intro",
+      chapterId: "skyRuins"
+    },
+    outro: {
+      id: "ch8-outro",
+      title: "The Citadel Quiets",
+      body: "The Sky Ruins warden falls. Something in the automated sentinel network registers the outcome and goes still — not deactivated, just watching. The ruins have seen a dragon pass through them before. They aren't sure yet if this one is different.",
+      type: "outro",
+      chapterId: "skyRuins"
+    }
+  },
+  riftEdge: {
+    intro: {
+      id: "ch9-intro",
+      title: "Chapter 9 — Rift Edge",
+      body: "The Void pressure here is not ambient — it has direction. The Ancient Rift is close enough that the shadow minions stop patrolling and start waiting. Three warden-class encounters guard the last approach. The Shadow of the First Demon Lord is one more chapter ahead.",
+      type: "intro",
+      chapterId: "riftEdge"
+    },
+    outro: {
+      id: "ch9-outro",
+      title: "The Edge Crossed",
+      body: "Three wardens fall. The Rift registers the passage in its own way — a shift in how the Void pressure moves, a stillness that was not there before. Something on the other side of the Ancient Rift has been told that you are coming.",
+      type: "outro",
+      chapterId: "riftEdge"
+    }
+  },
   ancientRift: {
     intro: {
       id: "ch10-intro",
@@ -1358,6 +1454,12 @@ export const initialGameState: GameState = {
     hatchlingTrail: 0,
     drakeExpedition: 0,
     shadowVale: 0,
+    emberDepths: 0,
+    stonebackCrossing: 0,
+    crystalCrag: 0,
+    moonlessHollow: 0,
+    skyRuins: 0,
+    riftEdge: 0,
     ancientRift: 0
   },
   completedAdventureRuns: 0,
@@ -2237,7 +2339,7 @@ function addStats(stats: Stats, boost: Partial<Stats>): Stats {
   };
 }
 
-export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id: AdventureDifficultyId; chapter: number; title: string; nodeCount: 30 | 60; background: AdventureNode["scene"]; enemyFamilies: string[]; difficultyMultiplier: number; lootTierBonus: number; unlockCompletions: number; description: string }> = {
+export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id: AdventureDifficultyId; chapter: number; title: string; nodeCount: 10 | 30 | 60; background: AdventureNode["scene"]; enemyFamilies: string[]; difficultyMultiplier: number; lootTierBonus: number; unlockCompletions: number; description: string }> = {
   hatchlingTrail: {
     id: "hatchlingTrail",
     chapter: 1,
@@ -2275,6 +2377,78 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
     unlockCompletions: 2,
     description: "The Shadow Vale is what the Meadow becomes when the Rift pressure gets heavy enough. The creatures here were ordinary once — the duskmire slimes, the gloam bats, the eclipse knights. Something hollowed them out and filled the space with Void. Thirty stops through eclipse camps, nightglass ambushes, and hidden shrines end at the Shadow Hoard Warden before the long climb to Chapter 10."
   },
+  emberDepths: {
+    id: "emberDepths",
+    chapter: 4,
+    title: "Chapter 4: Ember Depths",
+    nodeCount: 30,
+    background: "cave",
+    enemyFamilies: ["cinder golems", "ash crawlers", "forge sentinels", "ember boars", "coalclaw wardens"],
+    difficultyMultiplier: 1.20,
+    lootTierBonus: 4,
+    unlockCompletions: 4,
+    description: "The Ember Depths are the fire-and-earth roots beneath the Ember Woods — forge caverns the Elder Wyrm's era used for tempering. The Rift filled them with Void pressure between the coal seams. Thirty stops through ash corridors, smoldering shrines, and forge relics end at the Ember Depths Warden."
+  },
+  stonebackCrossing: {
+    id: "stonebackCrossing",
+    chapter: 5,
+    title: "Chapter 5: Stoneback Sprint",
+    nodeCount: 10,
+    background: "ruins",
+    enemyFamilies: ["rock boars", "stone golems", "basalt rams", "stoneback wardens"],
+    difficultyMultiplier: 1.22,
+    lootTierBonus: 4,
+    unlockCompletions: 5,
+    description: "Ten stops, two warden-class bosses. The Stoneback Hills garrison once held this crossing against the Rift's second push. The garrison dragons are gone. Their orders remain, absorbed by the Stone Golems and Basalt Rams that still patrol the route. Cross fast."
+  },
+  crystalCrag: {
+    id: "crystalCrag",
+    chapter: 6,
+    title: "Chapter 6: Crystal Crag",
+    nodeCount: 30,
+    background: "cave",
+    enemyFamilies: ["cave crabs", "pearl serpents", "drowned spirits", "crystal golems", "tide wardens"],
+    difficultyMultiplier: 1.23,
+    lootTierBonus: 5,
+    unlockCompletions: 6,
+    description: "Crystal Crag is where Tide Cavern meets the Stoneback shelf — water pressure and earth pressure in the same passage, Void pressure threading between them. Thirty stops through flooded corridors, crystal formations, and Drowned Spirit ambushes end at the Crystal Crag Warden."
+  },
+  moonlessHollow: {
+    id: "moonlessHollow",
+    chapter: 7,
+    title: "Chapter 7: Moonless Hollow",
+    nodeCount: 10,
+    background: "ruins",
+    enemyFamilies: ["hollow bats", "void-tree wraiths", "rootveil hunters", "hollow wardens"],
+    difficultyMultiplier: 1.24,
+    lootTierBonus: 5,
+    unlockCompletions: 7,
+    description: "Ten stops, two warden-class bosses. The Moonless Hollow is a dark-forest depression the Rift chose as a containment vessel — it stored something here and sealed the exits with two wardens. Whatever it stored is no longer distinguishable from the Hollow itself. Move through before the distinction stops mattering."
+  },
+  skyRuins: {
+    id: "skyRuins",
+    chapter: 8,
+    title: "Chapter 8: Sky Ruins",
+    nodeCount: 30,
+    background: "shrine",
+    enemyFamilies: ["cloud harpies", "storm sentinels", "aether drakes", "citadel wardens"],
+    difficultyMultiplier: 1.26,
+    lootTierBonus: 6,
+    unlockCompletions: 8,
+    description: "The Sunbeam Citadel was a Light dragon capital before the first Rift surge. Thirty stops through its ruins: automated Storm Sentinel patrols, Cloud Harpy rookeries, Aether Drake flight corridors, and the intact Sunbeam shrine the Rift couldn't repurpose. The Sky Ruins Warden runs the Citadel's final protection protocol."
+  },
+  riftEdge: {
+    id: "riftEdge",
+    chapter: 9,
+    title: "Chapter 9: Rift Edge",
+    nodeCount: 10,
+    background: "boss",
+    enemyFamilies: ["rift scouts", "void pressure wraiths", "herald outriders", "edge wardens"],
+    difficultyMultiplier: 1.28,
+    lootTierBonus: 6,
+    unlockCompletions: 9,
+    description: "Ten stops, three warden-class bosses. The Void pressure here has direction — everything points toward the Ancient Rift. The Rift's immune response has deployed three escalating wardens as a final screen. The Shadow of the First Demon Lord is one chapter ahead. The edge wardens are its advance notice that something is coming."
+  },
   ancientRift: {
     id: "ancientRift",
     chapter: 10,
@@ -2289,7 +2463,18 @@ export const adventureDifficultyDefinitions: Record<AdventureDifficultyId, { id:
   }
 };
 
-const adventureDifficultyOrder: AdventureDifficultyId[] = ["hatchlingTrail", "drakeExpedition", "shadowVale", "ancientRift"];
+const adventureDifficultyOrder: AdventureDifficultyId[] = [
+  "hatchlingTrail",
+  "drakeExpedition",
+  "shadowVale",
+  "emberDepths",
+  "stonebackCrossing",
+  "crystalCrag",
+  "moonlessHollow",
+  "skyRuins",
+  "riftEdge",
+  "ancientRift"
+];
 
 export function getNextAdventureDifficultyId(currentId?: AdventureDifficultyId): AdventureDifficultyId {
   const currentIndex = adventureDifficultyOrder.indexOf(currentId ?? "hatchlingTrail");
@@ -2348,30 +2533,233 @@ function getShadowValeNodeDescription(node: AdventureNode, step: number) {
   return "The Shadow Vale folds the path into moonless roots, hidden caches, and creatures that remember — faintly — what it felt like to be something else.";
 }
 
+const emberDepthsStopTitles = [
+  "Ash-Vein Corridor",
+  "Cinder Golem Post",
+  "Forge-Stone Cache",
+  "Ember Boar Den",
+  "Soot Shrine",
+  "Smoldering Camp",
+  "Coalclaw Ambush",
+  "Deep Forge Ruin",
+  "Cinderwall Gate",
+  "Ember Depths Warden"
+];
+
+function getEmberDepthsNodeTitle(node: AdventureNode, step: number) {
+  if (node.kind === "boss") return "Ember Depths Warden";
+  return emberDepthsStopTitles[(step - 1) % emberDepthsStopTitles.length] ?? `Ember Depths Stop ${step}`;
+}
+
+function getEmberDepthsNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "boss") return "The Ember Depths Warden was a forge guardian before the Rift reached this deep. It kept the forge fires burning when everything else went cold. The job survived the corruption. The purpose did not.";
+  if (node.kind === "elite") return `An elite creature guards the ash-vein at stop ${step}. Whatever it forged here before the Rift took it, it carries the weight of it in every movement — purposeful, like it still knows what the work was for.`;
+  if (node.kind === "battle") return `The creature at stop ${step} has cinder edges where its natural element used to glow clean. The Rift filled the spaces between the fire with Void. It still burns, but in the wrong direction.`;
+  if (node.kind === "camp") return "A forge-stone hollow that still radiates warmth without flame. Someone sheltered here long enough to carve a rest-mark into the wall. The carving is old. The warmth isn't.";
+  if (node.kind === "shrine") return "An ember shrine built into the rock-face by the Elder Wyrm's workers, or someone who knew her methods. The blessing is fire-aligned — it restores what the Depths tried to drain.";
+  if (node.kind === "shop") return "A scavenger works the deep ash-veins because the forge relics down here are worth more than anything surface traders see. They don't ask how you got past the sentinels.";
+  return "The Ember Depths fold inward — ash corridors, pressurized chambers, and creatures that remember a time when the fire served a forge and not a Rift.";
+}
+
+const stonebackCrossingStopTitles = [
+  "Garrison Trail",
+  "Basalt Rampart",
+  "Stone Warden Post",
+  "Rock Boar Ravine",
+  "Crossing Shrine",
+  "Militia Checkpoint",
+  "Warden's Crossing Boss",
+  "Basalt Golem Gate",
+  "Stoneback Summit",
+  "Crossing Warden"
+];
+
+function getStonebackCrossingNodeTitle(node: AdventureNode, step: number) {
+  if (step === 5 || node.kind === "boss") return step === 10 ? "Crossing Warden" : "Stoneback Garrison Commander";
+  return stonebackCrossingStopTitles[(step - 1) % stonebackCrossingStopTitles.length] ?? `Stoneback Stop ${step}`;
+}
+
+function getStonebackCrossingNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "boss" && step === 10) return "The Crossing Warden held this post through two Rift surges. It is not malicious. It was given orders it cannot stop following — guard the crossing, let nothing through. Defeating it doesn't dishonor it. It means the crossing needs a new kind of guardian now.";
+  if (node.kind === "boss") return "The Stoneback Garrison Commander was the strategic center of the Hills defense before coordination passed to the Rift. It still commands. The commands are just wrong now.";
+  if (node.kind === "elite") return `An elite Stone Golem blocks the trail at stop ${step}. These were the Stoneback garrison's heavy line — slow, methodical, and very difficult to move. They've been standing here since orders stopped coming and the Rift started giving new ones.`;
+  if (node.kind === "battle") return `A patrol creature at stop ${step} holds its position with the discipline of something that was trained to hold positions. Whatever gave the orders changed. The discipline remained.`;
+  if (node.kind === "camp") return "A militia outpost that still has supply crates in it. The militia itself is long gone — some moved toward Stoneback Crossing, some didn't move at all. The supplies remained organized.";
+  if (node.kind === "shrine") return "A shrine carved into the crossing-stone by the garrison dragons before they fell. The blessing is defensive — it holds what the Hills would otherwise take.";
+  return "The Stoneback Hills move fast for something made of stone. The trail through them is ten stops that used to take a militia a day to clear. You are not a militia.";
+}
+
+const crystalCragStopTitles = [
+  "Tideroot Passage",
+  "Pearl Serpent Shallows",
+  "Crystal Cache",
+  "Cave Crab Narrows",
+  "Moonwell Shrine",
+  "Drowned Spirit Hollow",
+  "Gemvein Ambush",
+  "Crystal Crag Depths",
+  "Tide Warden Gate",
+  "Crystal Crag Warden"
+];
+
+function getCrystalCragNodeTitle(node: AdventureNode, step: number) {
+  if (node.kind === "boss") return "Crystal Crag Warden";
+  return crystalCragStopTitles[(step - 1) % crystalCragStopTitles.length] ?? `Crystal Crag Stop ${step}`;
+}
+
+function getCrystalCragNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "boss") return "The Crystal Crag Warden emerged from the intersection of tide-pressure and stone-memory. It was neither fish nor golem before the Rift harmonized them into something purposeful. Both elements fight through it now. Read which one leads before you commit.";
+  if (node.kind === "elite") return `An elite cave creature blocks the crystal passage at stop ${step}. The Tide Cavern's elite fauna were already apex predators before the Rift enhanced them. The crystal growth along its flanks is the Rift's annotation — it marked the things worth keeping.`;
+  if (node.kind === "battle") return `A Rift-touched creature guards the crystal vein at stop ${step}. The Tide Cavern's creatures have been absorbing Void pressure from the underground shelf for years. The crystal growths are the Rift's weight, visibly carried.`;
+  if (node.kind === "camp") return "A tide-smoothed alcove where the current doesn't reach. Someone built a rest-point here using the crystal formations as windbreak. The crystal catches sound oddly — the camp is quieter than it should be underground.";
+  if (node.kind === "shrine") return "A moonwell shrine fed by an underground spring that carries faint tidal essence. The blessing is water-aligned — it restores what the pressure and the Void have drained.";
+  if (node.kind === "shop") return "A gem trader works the crystal veins because Crag crystals are worth more than surface gems once the Void pressure has been properly removed from them. They have tools for that. They don't explain where they got them.";
+  return "Crystal Crag folds water and earth together in passages that flood, drain, and reform around the tidal cycle. The Rift's creatures here follow the same rhythm — regular, predictable, and precisely as dangerous as the tide.";
+}
+
+const moonlessHollowStopTitles = [
+  "Rootveil Passage",
+  "Hollow Bat Roost",
+  "Void-Tree Ambush",
+  "Dark Shrine",
+  "First Hollow Warden",
+  "Nightroot Depths",
+  "Eclipsed Camp",
+  "Gloamheart Crossing",
+  "Hollow Summit",
+  "Second Hollow Warden"
+];
+
+function getMoonlessHollowNodeTitle(node: AdventureNode, step: number) {
+  if (node.kind === "boss" && step <= 5) return "First Hollow Warden";
+  if (node.kind === "boss") return "Second Hollow Warden";
+  return moonlessHollowStopTitles[(step - 1) % moonlessHollowStopTitles.length] ?? `Moonless Hollow Stop ${step}`;
+}
+
+function getMoonlessHollowNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "boss" && step <= 5) return "The First Hollow Warden was the forest's edge guardian — the thing that kept larger Void incursions from reaching the trees. The trees are gone now. The guardian remained, reclassified by the Rift as something to hold the void in rather than keep it out.";
+  if (node.kind === "boss") return "The Second Hollow Warden sits at the Hollow's exit — the thing the Rift placed here to ensure whatever it stored in the Hollow couldn't easily leave. It doesn't know you're trying to get out, not in. That's a small advantage.";
+  if (node.kind === "elite") return `An elite Hollow creature guards the rootveil at stop ${step}. The Moonless Hollow's apex fauna evolved to hunt without light. The Rift gave them something to hunt toward — Void pressure has direction, and they follow it.`;
+  if (node.kind === "battle") return `A Void-touched creature crosses the path at stop ${step}. The Hollow's creatures don't navigate by sight — they navigate by essence. Whatever you are reads differently to them than ordinary prey, which makes this fight uncertain for both of you.`;
+  if (node.kind === "camp") return "A campfire that burns cold — blue-white and very still in the Hollow's permanent dark. Whoever lit it knew that real warmth would draw the wrong attention. The cold flame is accurate about what it illuminates.";
+  if (node.kind === "shrine") return "A dark shrine that the Hollow's original inhabitants built before the Void arrived. It was a prayer for moon-return. The Rift repurposed it into a marker. The blessing still works — the intent survives in the stone.";
+  return "The Moonless Hollow moves without landmarks because there is no light to anchor memory to. The ten stops through it are brief and unforgiving. What the Rift stored here doesn't want company.";
+}
+
+const skyRuinsStopTitles = [
+  "Citadel Outer Wall",
+  "Cloud Harpy Rookery",
+  "Sentinel Gate",
+  "Aether Drake Crossing",
+  "Sunbeam Shrine",
+  "Storm Sentinel Array",
+  "Upper Citadel Cache",
+  "Aether Archive Ruins",
+  "Citadel Spire Approach",
+  "Sky Ruins Warden"
+];
+
+function getSkyRuinsNodeTitle(node: AdventureNode, step: number) {
+  if (node.kind === "boss") return "Sky Ruins Warden";
+  return skyRuinsStopTitles[(step - 1) % skyRuinsStopTitles.length] ?? `Sky Ruins Stop ${step}`;
+}
+
+function getSkyRuinsNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "boss") return "The Sky Ruins Warden is what the Citadel's final defensive AI became when the Rift reached its command architecture. It is still running its protection protocol — it simply has a different definition of what needs protecting now. The ruins, the Void pressure, and anything the Rift has deemed worth guarding.";
+  if (node.kind === "elite") return `An elite Sky Ruins creature guards the Citadel approach at stop ${step}. The Cloud Harpies were the Citadel's defenders. The Aether Drakes were its dragons. Both are still doing their jobs — the job description just changed when the Rift reissued their orders.`;
+  if (node.kind === "battle") return `A Storm Sentinel runs its patrol route at stop ${step}. The Sentinel network has been running automated defense protocols since the Citadel fell. It does not distinguish between Void-touched intruders and a hatchling dragon. Protocol is protocol.`;
+  if (node.kind === "camp") return "A sheltered alcove in the Citadel walls where the automated defenses have a patrol gap. Someone found this gap a long time ago — there's evidence of extended stays. The gap is still there. So is the evidence.";
+  if (node.kind === "shrine") return "A Sunbeam shrine built into the Citadel's foundation by the Light dragons who lived here. The Rift couldn't repurpose it — the intent was too specific, too clearly light-origin. It still blesses. It's the only thing in the ruins that still does what it was made to do.";
+  if (node.kind === "shop") return "A salvager works the ruins because Citadel-era relics command extraordinary prices from the factions who know what they were. They do not ask how you got through the Sentinel network. They assume you have your reasons.";
+  return "The Sky Ruins are thirty stops through a city that was magnificent and remembers it. The Cloud Harpies, the Storm Sentinels, the Aether Drakes — none of them chose what they became. They were just still there when the Rift arrived.";
+}
+
+const riftEdgeStopTitles = [
+  "Void Threshold Approach",
+  "Rift Scout Patrol",
+  "First Edge Warden",
+  "Void Pressure Ridge",
+  "Herald Outpost",
+  "Rift-Stone Cache",
+  "Second Edge Warden",
+  "Void Convergence",
+  "Final Approach Gate",
+  "Third Edge Warden"
+];
+
+function getRiftEdgeNodeTitle(node: AdventureNode, step: number) {
+  if (node.kind === "boss" && step <= 3) return "First Edge Warden";
+  if (node.kind === "boss" && step <= 7) return "Second Edge Warden";
+  if (node.kind === "boss") return "Third Edge Warden";
+  return riftEdgeStopTitles[(step - 1) % riftEdgeStopTitles.length] ?? `Rift Edge Stop ${step}`;
+}
+
+function getRiftEdgeNodeDescription(node: AdventureNode, step: number) {
+  if (node.kind === "boss" && step <= 3) return "The First Edge Warden was placed here by the Rift's immune response at the moment it detected something significant approaching. It is a suppression measure. It is not expecting the thing it was sent to suppress to actually arrive.";
+  if (node.kind === "boss" && step <= 7) return "The Second Edge Warden is the Rift's second-stage response. It registered that the first warden fell and escalated. It is heavier, more deliberate, and has been told exactly what it is guarding against. That information has not made it more confident.";
+  if (node.kind === "boss") return "The Third Edge Warden stands at the last approach before the Ancient Rift itself. It is not the final challenge — that is one chapter ahead. But it was sent here to ensure that what arrives at the Rift's gate is worth the attention. Prove it.";
+  if (node.kind === "elite") return `An elite Rift creature guards the approach at stop ${step}. The Void pressure here is high enough that ordinary Shadow Minions have been replaced with something the Rift considers more appropriate for this proximity to the source. They are correct to feel territorial.`;
+  if (node.kind === "battle") return `A Rift-threshold creature holds the path at stop ${step}. The Void pressure here has direction — everything points toward the Rift's center, including the creatures. They are not lost. They know exactly where they are and what they are protecting.`;
+  if (node.kind === "camp") return "A fortified shelter built by someone who spent significant time at the Rift's edge. The walls are thick, the markings are deliberate, and the entrance faces away from the Rift. Whoever built it knew which direction the pressure came from.";
+  if (node.kind === "shrine") return "A shrine at the Rift's approach, built by someone who understood what they were asking for. The blessing does not fight the Void pressure — it acknowledges it and moves through it. There is a difference.";
+  return "The Rift Edge is ten stops of concentrated Void pressure, three warden-class encounters, and the last measured distance between you and the Ancient Rift. The Shadow of the First Demon Lord can be felt from here.";
+}
+
 const SHADOW_DEMON_LORD_TITLE = "Shadow of the First Demon Lord";
 const SHADOW_DEMON_LORD_DESCRIPTION =
   "A memory the Rift could not dissolve — the echo of the last soul who tried to command the Void before it consumed them. It does not fight out of hatred. It fights because it must know whether you are worthy of what comes next. Prove your power here, and the seal that has held back your drake form will finally crack. Fall here, and the Rift takes you instead.";
+
+const SPRINT_CHAPTER_BOSS_STOPS: Partial<Record<AdventureDifficultyId, number[]>> = {
+  stonebackCrossing: [5, 10],
+  moonlessHollow: [5, 10],
+  riftEdge: [3, 7, 10]
+};
 
 function scaleAdventureNodeForDifficulty(node: AdventureNode, step: number, difficultyId: AdventureDifficultyId): AdventureNode {
   const difficulty = getAdventureDifficulty(difficultyId);
   const cycle = Math.floor((step - 1) / 60);
   const shadowVale = difficultyId === "shadowVale";
   const isAncientRiftFinalBoss = difficultyId === "ancientRift" && step === difficulty.nodeCount && node.kind === "boss";
+  const sprintBossStops = SPRINT_CHAPTER_BOSS_STOPS[difficultyId];
+  const isSprintBoss = sprintBossStops?.includes(step) ?? false;
+  const resolvedKind = isSprintBoss ? ("boss" as const) : node.kind;
+
+  const getTitle = () => {
+    if (isAncientRiftFinalBoss) return SHADOW_DEMON_LORD_TITLE;
+    if (shadowVale) return getShadowValeNodeTitle(node, step);
+    if (difficultyId === "emberDepths") return getEmberDepthsNodeTitle({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "stonebackCrossing") return getStonebackCrossingNodeTitle({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "crystalCrag") return getCrystalCragNodeTitle({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "moonlessHollow") return getMoonlessHollowNodeTitle({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "skyRuins") return getSkyRuinsNodeTitle({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "riftEdge") return getRiftEdgeNodeTitle({ ...node, kind: resolvedKind }, step);
+    return cycle > 0 ? `${difficulty.title}: ${node.title}` : node.title;
+  };
+
+  const getDescription = () => {
+    if (isAncientRiftFinalBoss) return SHADOW_DEMON_LORD_DESCRIPTION;
+    if (shadowVale) return getShadowValeNodeDescription(node, step);
+    if (difficultyId === "emberDepths") return getEmberDepthsNodeDescription({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "stonebackCrossing") return getStonebackCrossingNodeDescription({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "crystalCrag") return getCrystalCragNodeDescription({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "moonlessHollow") return getMoonlessHollowNodeDescription({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "skyRuins") return getSkyRuinsNodeDescription({ ...node, kind: resolvedKind }, step);
+    if (difficultyId === "riftEdge") return getRiftEdgeNodeDescription({ ...node, kind: resolvedKind }, step);
+    return node.description;
+  };
+
   return {
     ...node,
-    id: cycle > 0 || shadowVale ? `${node.id}-${difficultyId}-${step}` : node.id,
+    kind: resolvedKind,
+    id: (cycle > 0 || shadowVale || sprintBossStops) ? `${node.id}-${difficultyId}-${step}` : node.id,
     step,
     chapter: difficulty.chapter,
     chapterStop: step,
     evolutionMilestone: isAncientRiftFinalBoss,
     scene: difficulty.background,
     element: shadowVale ? "dark" : node.element,
-    title: isAncientRiftFinalBoss
-      ? SHADOW_DEMON_LORD_TITLE
-      : shadowVale ? getShadowValeNodeTitle(node, step) : cycle > 0 ? `${difficulty.title}: ${node.title}` : node.title,
-    description: isAncientRiftFinalBoss
-      ? SHADOW_DEMON_LORD_DESCRIPTION
-      : shadowVale ? getShadowValeNodeDescription(node, step) : node.description,
+    title: getTitle(),
+    description: getDescription(),
     difficulty: Math.round((node.difficulty * difficulty.difficultyMultiplier + cycle * 0.12) * 100) / 100
   };
 }

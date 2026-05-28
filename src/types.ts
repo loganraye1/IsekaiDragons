@@ -87,7 +87,17 @@ export type ScreenKey = "den" | "egg" | "adventure" | "battle" | "upgrade" | "qu
 
 export type AdventureNodeKind = "battle" | "elite" | "treasure" | "shrine" | "camp" | "shop" | "boss";
 
-export type AdventureDifficultyId = "hatchlingTrail" | "drakeExpedition" | "shadowVale" | "ancientRift";
+export type AdventureDifficultyId =
+  | "hatchlingTrail"
+  | "drakeExpedition"
+  | "shadowVale"
+  | "emberDepths"
+  | "stonebackCrossing"
+  | "crystalCrag"
+  | "moonlessHollow"
+  | "skyRuins"
+  | "riftEdge"
+  | "ancientRift";
 
 export type GamePhase = "egg" | "question" | "hatching" | "journey";
 
