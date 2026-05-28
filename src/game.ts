@@ -1218,7 +1218,7 @@ function applyRunLevelXp(runLevel: RunLevel, xpGain: number): RunLevel {
   return { ...runLevel, xp: newXp };
 }
 
-export const initialRunLevel: RunLevel = { xp: 0, level: 0, activeCards: [], pendingLevelUpCards: null };
+export const initialRunLevel: RunLevel = { xp: 0, level: 1, activeCards: [], pendingLevelUpCards: null };
 
 const storyCards: Record<AdventureDifficultyId, { intro: StoryCard; outro: StoryCard }> = {
   hatchlingTrail: {
@@ -2702,6 +2702,27 @@ function getAdventureEnemyPressureMultiplier(node?: AdventureNode) {
   return Math.round((0.94 + routeProgress * 0.14) * 100) / 100;
 }
 
+export function getRunCardBoostedStats(state: GameState): Stats {
+  const activeRunCards = state.runLevel?.activeCards ?? [];
+  if (activeRunCards.length === 0) return state.dragon.stats;
+  const delta = activeRunCards.reduce<Partial<Stats>>((acc, card) => {
+    for (const key of Object.keys(card.statEffects) as Array<keyof Stats>) {
+      (acc as Record<string, number>)[key] = ((acc as Record<string, number>)[key] ?? 0) + (card.statEffects[key] ?? 0);
+    }
+    return acc;
+  }, {});
+  return {
+    attack: state.dragon.stats.attack + (delta.attack ?? 0),
+    health: state.dragon.stats.health + (delta.health ?? 0),
+    defense: state.dragon.stats.defense + (delta.defense ?? 0),
+    speed: state.dragon.stats.speed + (delta.speed ?? 0),
+    block: state.dragon.stats.block + (delta.block ?? 0),
+    dodge: state.dragon.stats.dodge + (delta.dodge ?? 0),
+    critChance: state.dragon.stats.critChance + (delta.critChance ?? 0),
+    critDamage: state.dragon.stats.critDamage + (delta.critDamage ?? 0)
+  };
+}
+
 function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   const baseEncounter =
     encounters.find((item) => item.id === node?.encounterId) ??
@@ -2724,25 +2745,7 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   const activeSkill = getActiveDragonSkill(state);
   const activeSkillBonus = getActiveSkillBattleBonus(activeSkill);
   const enemyPressureMultiplier = getAdventureEnemyPressureMultiplier(node);
-  const activeRunCards = state.runLevel?.activeCards ?? [];
-  const runCardStats = activeRunCards.reduce<Partial<Stats>>((acc, card) => {
-    for (const key of Object.keys(card.statEffects) as Array<keyof Stats>) {
-      (acc as Record<string, number>)[key] = ((acc as Record<string, number>)[key] ?? 0) + (card.statEffects[key] ?? 0);
-    }
-    return acc;
-  }, {});
-  const boostedDragonStats: Stats = {
-    ...state.dragon.stats,
-    attack: state.dragon.stats.attack + (runCardStats.attack ?? 0),
-    health: state.dragon.stats.health + (runCardStats.health ?? 0),
-    defense: state.dragon.stats.defense + (runCardStats.defense ?? 0),
-    speed: state.dragon.stats.speed + (runCardStats.speed ?? 0),
-    block: state.dragon.stats.block + (runCardStats.block ?? 0),
-    dodge: state.dragon.stats.dodge + (runCardStats.dodge ?? 0),
-    critChance: state.dragon.stats.critChance + (runCardStats.critChance ?? 0),
-    critDamage: state.dragon.stats.critDamage + (runCardStats.critDamage ?? 0)
-  };
-  const dragonProfile = getCombatStatProfile(boostedDragonStats);
+  const dragonProfile = getCombatStatProfile(getRunCardBoostedStats(state));
   const enemyProfile = getCombatStatProfile(encounter.stats);
   let playerHp = node && state.adventureRun?.status === "active"
     ? Math.min(state.adventureRun.maxHp, Math.max(1, state.adventureRun.currentHp))

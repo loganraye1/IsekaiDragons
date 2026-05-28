@@ -13,6 +13,7 @@ import {
   getDragonPower,
   getNextAdventureDifficultyId,
   getEvolutionChapterRequirement,
+  getRunCardBoostedStats,
   getNodeKindLabel,
   idleQuestDefinitions,
   idleQuestOrder,
@@ -1015,13 +1016,14 @@ function CapybaraAdventureBoard({
   const displayMaxSteps = run && chapterLabel === "Chapter 1" ? Math.max(run.maxSteps, 60) : run?.maxSteps;
   const progressLabel = run ? `${chapterLabel} • Stop ${run.step}/${displayMaxSteps}` : "Chapter 1 ready";
   const progress = run ? Math.min(1, Math.max(0, (run.step - 1) / (displayMaxSteps ?? run.maxSteps))) : 0;
+  const boostedStats = getRunCardBoostedStats(state);
   const chapterHpCurrent = run?.currentHp ?? state.dragon.stats.health;
   const chapterHpMax = run?.maxHp ?? state.dragon.stats.health;
   const chapterHpLabel = `Chapter HP ${chapterHpCurrent}/${chapterHpMax}`;
   const persistentChapterStats = [
     { label: "Health", value: `${chapterHpCurrent}/${chapterHpMax}` },
-    { label: "Attack", value: `${state.dragon.stats.attack}` },
-    { label: "Defense", value: `${state.dragon.stats.defense}` }
+    { label: "Attack", value: `${boostedStats.attack}` },
+    { label: "Defense", value: `${boostedStats.defense}` }
   ];
   const message = run?.message ?? "The Ember Gate opens. Choose a route stop and keep the hatchling moving.";
   const hasPendingSkillDraft = Boolean(state.lastSkillDraftOffer && !state.lastSkillDraftOffer.chosenSkillId && run?.status === "active");
@@ -1100,6 +1102,15 @@ function CapybaraAdventureBoard({
           </View>
         ))}
       </View>
+      {run?.status === "active" ? (
+        <View style={styles.runXpBarRow}>
+          <Text style={styles.runXpLevelLabel}>Lv {state.runLevel?.level ?? 0}</Text>
+          <View style={styles.runXpTrack}>
+            <View style={[styles.runXpFill, { width: `${Math.min(100, ((state.runLevel?.xp ?? 0) / 100) * 100)}%` as any }]} />
+          </View>
+          <Text style={styles.runXpValueLabel}>{state.runLevel?.xp ?? 0}/100</Text>
+        </View>
+      ) : null}
 
       <ImageBackground source={sceneImages[heroScene]} style={[styles.capybaraSceneFrame, focused && styles.capybaraSceneFrameFocused]} imageStyle={styles.capybaraSceneImage}>
         <LinearGradient colors={["rgba(255,248,226,0.12)", "rgba(13,29,58,0.38)", "rgba(8,6,17,0.84)"]} style={styles.capybaraSceneScrim}>
@@ -1667,6 +1678,40 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 6,
     marginTop: 7
+  },
+  runXpBarRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 7,
+    marginTop: 6
+  },
+  runXpLevelLabel: {
+    color: "#a89cff",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.5,
+    minWidth: 28
+  },
+  runXpTrack: {
+    backgroundColor: "rgba(8,6,17,0.76)",
+    borderColor: "rgba(124,106,247,0.34)",
+    borderRadius: 999,
+    borderWidth: 1,
+    flex: 1,
+    height: 7,
+    overflow: "hidden"
+  },
+  runXpFill: {
+    backgroundColor: "#7c6af7",
+    borderRadius: 999,
+    height: "100%"
+  },
+  runXpValueLabel: {
+    color: "#7c7490",
+    fontSize: 9,
+    fontWeight: "700",
+    minWidth: 30,
+    textAlign: "right"
   },
   persistentChapterStatsRowFocused: {
     marginTop: 5
