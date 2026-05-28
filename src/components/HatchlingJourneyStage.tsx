@@ -47,6 +47,7 @@ import { SectionCard, PrimaryButton, StatsPanelContent, StatUpgradePanel, Evolut
 import { OnboardingModal, DailyLoginRewardModal, JourneyEventModal, ReturnPresenceToast, PresenceDebugOverlay, PresenceVisualCue, LootPopup, type PresenceTestOverrides } from "./Modals";
 import { BalanceDebugPanel, GuidedPlaytestOverlay, getAutoCompletedGuidedStepIds, guidedPlaytestSteps, DrakeContinuityReviewPanel, HatchlingReviewModal, DevToggleButton, PlaytestNotesPanel, createBalanceSnapshotExport, TestChecklist } from "./DevTools";
 import StoryCardModal from "./StoryCardModal";
+import LevelUpModal from "./LevelUpModal";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import ParticleField from "../ui/ParticleField";
 import type { DragonElement, DragonPathId, DragonStage, EvolutionTraitId, GameAction, GameSettings, GameState, ScreenKey } from "../types";
@@ -578,6 +579,11 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
         <StoryCardModal
           card={state.pendingStoryCard ?? null}
           onDismiss={() => dispatch({ type: "dismissStoryCard" })}
+        />
+        <LevelUpModal
+          cards={state.runLevel?.pendingLevelUpCards ?? null}
+          level={state.runLevel?.level ?? 0}
+          onSelect={(cardId) => dispatch({ type: "selectLevelUpCard", cardId })}
         />
       </DragonDisplay>
     </Animated.View>

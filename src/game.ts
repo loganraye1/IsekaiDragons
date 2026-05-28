@@ -40,7 +40,10 @@ import {
   Stats,
   SupportingSystemRecommendation,
   TreasureRarity,
-  TreasureId
+  TreasureId,
+  RunCard,
+  RunCardRarity,
+  RunLevel
 } from "./types";
 
 const baseStats: Stats = {
@@ -1160,6 +1163,63 @@ export const evolutionTraitDefinitions: Record<DragonElement, EvolutionTraitDefi
   ]
 };
 
+const runCardPool: RunCard[] = [
+  // Commons
+  { id: "ironScales", name: "Iron Scales", description: "+8 defense, but claws are dulled", rarity: "common", statEffects: { defense: 8, attack: -4 } },
+  { id: "cinderBlood", name: "Cinder Blood", description: "+12 attack, but runs hot", rarity: "common", statEffects: { attack: 12, health: -6 } },
+  { id: "thickHide", name: "Thick Hide", description: "+18 health, but slower reflexes", rarity: "common", statEffects: { health: 18, speed: -2 } },
+  { id: "swiftTalon", name: "Swift Talon", description: "+4 speed, +5 attack", rarity: "common", statEffects: { speed: 4, attack: 5 } },
+  { id: "stoneskin", name: "Stoneskin", description: "+10 defense, +8 health", rarity: "common", statEffects: { defense: 10, health: 8 } },
+  { id: "razorWing", name: "Razor Wing", description: "+8 attack, +3 speed", rarity: "common", statEffects: { attack: 8, speed: 3 } },
+  { id: "ashMaw", name: "Ash Maw", description: "+10 attack, -5 defense", rarity: "common", statEffects: { attack: 10, defense: -5 } },
+  { id: "embertail", name: "Embertail", description: "+5 crit chance, +6 attack", rarity: "common", statEffects: { critChance: 5, attack: 6 } },
+  // Rares
+  { id: "voidEdge", name: "Void Edge", description: "+18 attack, but health thins", rarity: "rare", statEffects: { attack: 18, health: -12 } },
+  { id: "elderWard", name: "Elder Ward", description: "+20 defense, +15 health, but slower", rarity: "rare", statEffects: { defense: 20, health: 15, attack: -8 } },
+  { id: "bloodPact", name: "Blood Pact", description: "+22 attack, +10 crit chance, -15 health", rarity: "rare", statEffects: { attack: 22, critChance: 10, health: -15 } },
+  { id: "stormScale", name: "Storm Scale", description: "+8 speed, +12 attack, +8 defense", rarity: "rare", statEffects: { speed: 8, attack: 12, defense: 8 } },
+  { id: "moonveil", name: "Moonveil", description: "+15 dodge, +10 defense", rarity: "rare", statEffects: { dodge: 15, defense: 10 } },
+  { id: "runebone", name: "Runebone", description: "+25 health, +12 defense, -5 speed", rarity: "rare", statEffects: { health: 25, defense: 12, speed: -5 } },
+  // Mythics
+  { id: "demonLordWrath", name: "Demon Lord's Wrath", description: "+35 attack, +20 crit damage, but health is halved", rarity: "mythic", statEffects: { attack: 35, critDamage: 20, health: -25 }, special: "demonWrath" },
+  { id: "dragonheartCore", name: "Dragonheart Core", description: "+40 health, +20 defense, radiates power", rarity: "mythic", statEffects: { health: 40, defense: 20 } },
+  { id: "voidDomain", name: "Void Domain", description: "+30 attack, +15 speed, -20 health", rarity: "mythic", statEffects: { attack: 30, speed: 15, health: -20 }, special: "voidAura" }
+];
+
+const RUN_LEVEL_XP_PER_LEVEL = 100;
+const RARITY_WEIGHTS: Record<RunCardRarity, number> = { common: 60, rare: 30, mythic: 10 };
+
+function pickRunLevelUpCards(): RunCard[] {
+  const totalWeight = RARITY_WEIGHTS.common + RARITY_WEIGHTS.rare + RARITY_WEIGHTS.mythic;
+  const roll = Math.random() * totalWeight;
+  let rarity: RunCardRarity;
+  if (roll < RARITY_WEIGHTS.common) {
+    rarity = "common";
+  } else if (roll < RARITY_WEIGHTS.common + RARITY_WEIGHTS.rare) {
+    rarity = "rare";
+  } else {
+    rarity = "mythic";
+  }
+  const pool = runCardPool.filter((card) => card.rarity === rarity);
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(3, shuffled.length));
+}
+
+function applyRunLevelXp(runLevel: RunLevel, xpGain: number): RunLevel {
+  const newXp = runLevel.xp + xpGain;
+  if (newXp >= RUN_LEVEL_XP_PER_LEVEL && runLevel.pendingLevelUpCards === null) {
+    return {
+      ...runLevel,
+      xp: newXp - RUN_LEVEL_XP_PER_LEVEL,
+      level: runLevel.level + 1,
+      pendingLevelUpCards: pickRunLevelUpCards()
+    };
+  }
+  return { ...runLevel, xp: newXp };
+}
+
+export const initialRunLevel: RunLevel = { xp: 0, level: 0, activeCards: [], pendingLevelUpCards: null };
+
 const storyCards: Record<AdventureDifficultyId, { intro: StoryCard; outro: StoryCard }> = {
   hatchlingTrail: {
     intro: {
@@ -1331,7 +1391,8 @@ export const initialGameState: GameState = {
     lastSaveDateAfter: null
   },
   statUpgrades: { attack: 0, defense: 0, health: 0 },
-  pendingStoryCard: null
+  pendingStoryCard: null,
+  runLevel: initialRunLevel
 };
 
 const elementStatBonus: Record<DragonElement, Partial<Stats>> = {
@@ -2663,7 +2724,25 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   const activeSkill = getActiveDragonSkill(state);
   const activeSkillBonus = getActiveSkillBattleBonus(activeSkill);
   const enemyPressureMultiplier = getAdventureEnemyPressureMultiplier(node);
-  const dragonProfile = getCombatStatProfile(state.dragon.stats);
+  const activeRunCards = state.runLevel?.activeCards ?? [];
+  const runCardStats = activeRunCards.reduce<Partial<Stats>>((acc, card) => {
+    for (const key of Object.keys(card.statEffects) as Array<keyof Stats>) {
+      (acc as Record<string, number>)[key] = ((acc as Record<string, number>)[key] ?? 0) + (card.statEffects[key] ?? 0);
+    }
+    return acc;
+  }, {});
+  const boostedDragonStats: Stats = {
+    ...state.dragon.stats,
+    attack: state.dragon.stats.attack + (runCardStats.attack ?? 0),
+    health: state.dragon.stats.health + (runCardStats.health ?? 0),
+    defense: state.dragon.stats.defense + (runCardStats.defense ?? 0),
+    speed: state.dragon.stats.speed + (runCardStats.speed ?? 0),
+    block: state.dragon.stats.block + (runCardStats.block ?? 0),
+    dodge: state.dragon.stats.dodge + (runCardStats.dodge ?? 0),
+    critChance: state.dragon.stats.critChance + (runCardStats.critChance ?? 0),
+    critDamage: state.dragon.stats.critDamage + (runCardStats.critDamage ?? 0)
+  };
+  const dragonProfile = getCombatStatProfile(boostedDragonStats);
   const enemyProfile = getCombatStatProfile(encounter.stats);
   let playerHp = node && state.adventureRun?.status === "active"
     ? Math.min(state.adventureRun.maxHp, Math.max(1, state.adventureRun.currentHp))
@@ -3353,7 +3432,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         adventureRun: createAdventureRun(startStep, nextDifficultyId, state.dragon.stats.health),
         lastAdventureRewards: null,
         lastSkillDraftOffer: null,
-        pendingStoryCard: startStep === 1 ? storyCards[nextDifficultyId].intro : state.pendingStoryCard
+        pendingStoryCard: startStep === 1 ? storyCards[nextDifficultyId].intro : state.pendingStoryCard,
+        runLevel: initialRunLevel
       };
     }
     case "selectAdventureNode": {
@@ -3417,6 +3497,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           };
         }
 
+        const battleXpGain = (node.kind === "boss" || node.kind === "elite") ? 55 : 35;
+        const updatedRunLevel = applyRunLevelXp(nextState.runLevel ?? initialRunLevel, battleXpGain);
+        nextState = { ...nextState, runLevel: updatedRunLevel };
+
         const completedAdventureRuns = chapterFinalBoss ? (nextState.completedAdventureRuns ?? 0) + 1 : nextState.completedAdventureRuns;
         const adventureCompletions = chapterFinalBoss
           ? {
@@ -3452,6 +3536,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (run.pendingNodeId === node.id && !node.choices?.length) {
         const rewardedState = applyAdventureReward(state, node.reward, 3, { node, status: "active", nextStep: Math.min(run.maxSteps, run.step + 1) });
         const recoveredRun = withAdventureRecoveryStop(run, node);
+        const shrineXpGain = (node.kind === "shrine" || node.kind === "camp") ? 15 : 0;
+        const shrineRunLevel = shrineXpGain > 0 ? applyRunLevelXp(rewardedState.runLevel ?? initialRunLevel, shrineXpGain) : rewardedState.runLevel;
         const recoveryMessage = node.kind === "shrine"
           ? `${node.title} blessed the hatchling. Chapter HP restored; choose your next stop.`
           : node.kind === "camp"
@@ -3459,6 +3545,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             : `${node.title} resolved. Choose your next stop.`;
         return {
           ...rewardedState,
+          runLevel: shrineRunLevel,
           activeScreen: "adventure",
           adventureRun: getNextRunState(recoveredRun, node.id, recoveryMessage)
         };
@@ -3600,6 +3687,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
     case "dismissStoryCard":
       return { ...state, pendingStoryCard: null };
+    case "selectLevelUpCard": {
+      const chosen = state.runLevel?.pendingLevelUpCards?.find((card) => card.id === action.cardId);
+      if (!chosen || !state.runLevel) return state;
+      return {
+        ...state,
+        runLevel: {
+          ...state.runLevel,
+          activeCards: [...state.runLevel.activeCards, chosen],
+          pendingLevelUpCards: null
+        }
+      };
+    }
     case "claimQuest": {
       const quest = quests.find((item) => item.id === action.questId);
       if (!quest || state.player.claimedQuests.includes(action.questId)) {
@@ -3723,6 +3822,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           ...(action.state.statUpgrades ?? {})
         },
         pendingStoryCard: null,
+        runLevel: {
+          ...initialRunLevel,
+          ...(action.state.runLevel ?? {}),
+          pendingLevelUpCards: null
+        },
         dragon: {
           ...initialGameState.dragon,
           ...(action.state.dragon ?? {}),

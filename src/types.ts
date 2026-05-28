@@ -388,6 +388,24 @@ export type StoryCard = {
   chapterId: AdventureDifficultyId;
 };
 
+export type RunCardRarity = "common" | "rare" | "mythic";
+
+export type RunCard = {
+  id: string;
+  name: string;
+  description: string;
+  rarity: RunCardRarity;
+  statEffects: Partial<Stats>;
+  special?: string;
+};
+
+export type RunLevel = {
+  xp: number;
+  level: number;
+  activeCards: RunCard[];
+  pendingLevelUpCards: RunCard[] | null;
+};
+
 export type OfflineRewardBundle = {
   gold: number;
   gems: number;
@@ -450,6 +468,7 @@ export type GameState = {
   returnPresence: ReturnPresenceState;
   statUpgrades: { attack: number; defense: number; health: number };
   pendingStoryCard: StoryCard | null;
+  runLevel: RunLevel;
 };
 
 export type GameAction =
@@ -488,6 +507,7 @@ export type GameAction =
   | { type: "buyUpgrade"; stat: keyof Stats }
   | { type: "upgradeStats"; stat: "attack" | "defense" | "health" }
   | { type: "dismissStoryCard" }
+  | { type: "selectLevelUpCard"; cardId: string }
   | { type: "claimQuest"; questId: string }
   | { type: "buyShopItem"; itemId: string }
   | { type: "setScreen"; screen: ScreenKey }
