@@ -1625,7 +1625,7 @@ export function getBattleDamage(state: GameState) {
   const elementMultiplier = state.dragon.element === "fire" ? 1.15 : 1;
   const treasureMultiplier = 1 + (state.treasures.dragonFang ?? 0) * 0.05;
   const pathDamageMultiplier = getDragonPathBattleModifier(state).damageMultiplier;
-  const profile = getCombatStatProfile(state.dragon.stats);
+  const profile = getCombatStatProfile(getRunCardBoostedStats(state));
   const critMultiplier = 1 + profile.critChance * (profile.critDamage - 1);
   const statMultiplier = 1 + (profile.attack * 0.008) + (profile.speedTempo * 0.004);
   return Math.max(1, Math.floor(getDragonPower(state) * 0.18 * statMultiplier * critMultiplier * elementMultiplier * treasureMultiplier * pathDamageMultiplier * getEquipmentBonusMultiplier(state, "battleDamage") * getJourneyEventEffectMultiplier(state, "battleDamage")));
@@ -2830,7 +2830,7 @@ function createBattle(state: GameState, node?: AdventureNode): BattleResult {
   }
 
   if (playerHp > 0 && enemyHp > 0) {
-    const wonByPressure = playerHp / state.dragon.stats.health >= enemyHp / encounter.stats.health;
+    const wonByPressure = playerHp / getRunCardBoostedStats(state).health >= enemyHp / encounter.stats.health;
     if (wonByPressure) {
       enemyHp = 0;
       rounds.push("Fast fight result: your dragon wins by overwhelming momentum.");
