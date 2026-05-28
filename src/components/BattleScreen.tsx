@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Easing, Image, ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { elementTheme } from "../content";
-import { dragonPathDefinitions, getElementMatchupMultiplier, getNodeKindLabel } from "../game";
+import { dragonPathDefinitions, getElementMatchupMultiplier, getNodeKindLabel, getRunCardBoostedStats } from "../game";
 import { battleFireHatchlingImage, enemyImages, getDragonStageImage, sceneImages, type EnemyImageKey } from "../constants/assets";
 import { uiTheme } from "../constants/theme";
 import { SafeExpoImage } from "../ui/SafeMedia";
@@ -205,12 +205,13 @@ function FireBreathCombatVisual({ state, element = state.dragon.element ?? "fire
   const reducedMotion = state.settings.reducedMotion;
   const enemyImageKey = getAutoBattleEnemyImageKey(state.autoBattle.enemyName, state.autoBattle.areaId);
   const combatFx = elementCombatFx[element];
-  const critBadgeLabel = `CRIT ${state.dragon.stats.critChance}% • Crit DMG ${state.dragon.stats.critDamage}%`;
-  const dodgeBadgeLabel = `DODGE ${state.dragon.stats.dodge}% • SPD ${state.dragon.stats.speed}`;
-  const blockBadgeLabel = `BLOCK ${state.dragon.stats.block}% • DEF ${state.dragon.stats.defense}`;
+  const bs = getRunCardBoostedStats(state);
+  const critBadgeLabel = `CRIT ${bs.critChance}% • Crit DMG ${bs.critDamage}%`;
+  const dodgeBadgeLabel = `DODGE ${bs.dodge}% • SPD ${bs.speed}`;
+  const blockBadgeLabel = `BLOCK ${bs.block}% • DEF ${bs.defense}`;
   const safeEnemyMaxHp = Math.max(1, state.autoBattle.enemyMaxHp);
   const enemyHpPercent = Math.max(0, Math.min(100, Math.round((state.autoBattle.enemyHp / safeEnemyMaxHp) * 100)));
-  const dragonMaxHp = Math.max(1, state.dragon.stats.health);
+  const dragonMaxHp = Math.max(1, bs.health);
   const dragonHpPercent = 100;
   const breathPulse = useRef(new Animated.Value(0)).current;
   const hitPulse = useRef(new Animated.Value(0)).current;
@@ -419,7 +420,7 @@ function FireBreathCombatVisual({ state, element = state.dragon.element ?? "fire
         <View style={styles.fireBreathDragonHpTrack}>
           <View style={[styles.fireBreathDragonHpFill, { backgroundColor: combatFx.hpColor, width: `${dragonHpPercent}%` as any }]} />
         </View>
-        <Text style={styles.fireBreathDragonMeta}>{dragonMaxHp}/{dragonMaxHp} • DEF {state.dragon.stats.defense}</Text>
+        <Text style={styles.fireBreathDragonMeta}>{dragonMaxHp}/{dragonMaxHp} • DEF {bs.defense}</Text>
       </Animated.View>
       <Animated.View style={[styles.fireBreathEnemyCard, enemyHitStyle]}>
         <View style={styles.fireBreathEnemyShadow} />
@@ -753,6 +754,7 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
   }
 
   const enemyImageKey = getAutoBattleEnemyImageKey(battle.encounter.name, state.currentArea);
+  const boostedStats = getRunCardBoostedStats(state);
   const chapterMaxHp = state.adventureRun?.maxHp ?? state.dragon.stats.health;
   const chapterStartHp = battle.battleStartHp ?? (state.adventureRun?.status === "active"
     ? Math.min(chapterMaxHp, Math.max(1, state.adventureRun.currentHp))
@@ -798,8 +800,8 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
         : "Enemy bracing";
   const battlePersistentStats = [
     { label: "Health", value: `${animatedHp.playerHp}/${chapterMaxHp}` },
-    { label: "Attack", value: `${state.dragon.stats.attack}` },
-    { label: "Defense", value: `${state.dragon.stats.defense}` }
+    { label: "Attack", value: `${boostedStats.attack}` },
+    { label: "Defense", value: `${boostedStats.defense}` }
   ];
 
   return (
@@ -882,12 +884,12 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
               {battle.activeSkill ? (
                 <Text style={styles.battleSkillText} numberOfLines={1}>Active skill: {battle.activeSkill.name} • {battle.activeSkill.combatEffect}</Text>
               ) : null}
-              <Text style={styles.battleFightStats} numberOfLines={1}>Health {animatedHp.playerHp}/{chapterMaxHp} • Attack {state.dragon.stats.attack} • Defense {state.dragon.stats.defense} • CRIT {state.dragon.stats.critChance}% • BLOCK {state.dragon.stats.block}% • DODGE {state.dragon.stats.dodge}%</Text>
+              <Text style={styles.battleFightStats} numberOfLines={1}>Health {animatedHp.playerHp}/{chapterMaxHp} • Attack {boostedStats.attack} • Defense {boostedStats.defense} • CRIT {boostedStats.critChance}% • BLOCK {boostedStats.block}% • DODGE {boostedStats.dodge}%</Text>
             </View>
           ) : null}
 
           {exchangeComplete ? <BattleOutcomeBanner battle={battle} continueScreen={continueScreen} /> : null}
-          {exchangeComplete ? <BattleFlashCalloutRail battle={battle} stats={state.dragon.stats} element={element} /> : null}
+          {exchangeComplete ? <BattleFlashCalloutRail battle={battle} stats={boostedStats} element={element} /> : null}
 
           <Pressable
             disabled={battleStarted && !exchangeComplete}
