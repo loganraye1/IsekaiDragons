@@ -14,6 +14,8 @@ import {
 } from "../constants/assets";
 import { uiTheme } from "../constants/theme";
 import type { DragonElement, DragonStage } from "../types";
+import type { DragonClass, DragonPath, DragonStage as ArtDragonStage } from "../constants/dragonArt";
+import DragonImage from "./DragonImage";
 import GlowPulse from "../ui/GlowPulse";
 import { SafeExpoImage, SafeLottie } from "../ui/SafeMedia";
 
@@ -177,6 +179,8 @@ export default function DragonDisplay({
   showEvolutionBurst = false,
   pathRevealAccent = null,
   dragonStage = "hatchling",
+  dragonClass,
+  dragonPath,
   dragonTransforms = [],
   reducedMotion = false,
   tapBounceScale = BALANCE.softProgressionAssist.baseTapBounceScale,
@@ -189,7 +193,7 @@ export default function DragonDisplay({
   showDragon = true
 }: {
   element: DragonElement;
-  dragonSource: ImageSourcePropType;
+  dragonSource?: ImageSourcePropType;
   backgroundSource: ImageSourcePropType;
   children?: ReactNode;
   onTap?: () => void;
@@ -198,6 +202,8 @@ export default function DragonDisplay({
   showEvolutionBurst?: boolean;
   pathRevealAccent?: DragonPathRevealAccent | null;
   dragonStage?: DragonStage;
+  dragonClass?: DragonClass;
+  dragonPath?: DragonPath;
   dragonTransforms?: any[];
   reducedMotion?: boolean;
   tapBounceScale?: number;
@@ -268,6 +274,12 @@ export default function DragonDisplay({
           ? [{ translateY: -10 }, { scale: 1.08 }]
         : [];
   const showAuraFx = !reducedMotion && !auraDisabled;
+  // Map game DragonStage to art registry stage ('young' = art name for the dragon tier).
+  const artStage: ArtDragonStage =
+    dragonStage === 'egg' ? 'egg' :
+    dragonStage === 'hatchling' ? 'hatchling' :
+    dragonStage === 'drake' ? 'drake' :
+    'young'; // dragon / wyrm both use 'young' art; wyrm gets DragonImage's fallback if no art
   const useFireSpineFrameDragon =
     element === "fire" &&
     behaviorElement === "fire" &&
@@ -364,12 +376,17 @@ export default function DragonDisplay({
             ) : useFireSpineFrameDragon ? (
               <SpineFrameDragon animationId="idle_loop" reducedMotion={reducedMotion || idleFrozen} style={styles.dragonDisplayImage} />
             ) : (
-              <SafeExpoImage
-                source={dragonSource}
-                style={[styles.dragonDisplayImage, grayscaleMode && styles.dragonDisplayImageValidation, isEvolutionSilhouette && styles.dragonDisplayImageSilhouette]}
-                contentFit="contain"
-                transition={180}
-                fallback={<HatchlingArtFallback element={element} validationEnabled={grayscaleMode} />}
+              <DragonImage
+                element={element}
+                stage={artStage}
+                dragonClass={dragonClass}
+                path={dragonPath}
+                placeholder={dragonSource}
+                style={[
+                  styles.dragonDisplayImage,
+                  grayscaleMode && styles.dragonDisplayImageValidation,
+                  isEvolutionSilhouette && styles.dragonDisplayImageSilhouette,
+                ] as any}
               />
             )}
           </Animated.View>
