@@ -1465,6 +1465,7 @@ export const initialGameState: GameState = {
   completedAdventureRuns: 0,
   lastAdventureRewards: null,
   lastSkillDraftOffer: null,
+  hasSeenIntro: false,
   tutorialCompleted: false,
   lastLoginRewardDate: null,
   loginStreakDay: 0,
@@ -3363,11 +3364,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (state.dragon.stage === "hatchling") {
         return {
           ...state,
-          phase: "journey",
+          phase: state.hasSeenIntro ? "journey" : "intro",
           activeScreen: "den"
         };
       }
-      return gameReducer(state, { type: "hatchDragon" });
+      const hatched = gameReducer(state, { type: "hatchDragon" });
+      return state.hasSeenIntro ? hatched : { ...hatched, phase: "intro" };
+    }
+    case "completeIntro": {
+      return {
+        ...state,
+        hasSeenIntro: true,
+        phase: "journey",
+        activeScreen: "den"
+      };
     }
     case "selectDragonPath": {
       const path = dragonPathDefinitions[action.pathId];
@@ -4288,6 +4298,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         currentQuestionIndex: action.state.currentQuestionIndex ?? Math.min(Object.keys(action.state.eggAnswers ?? {}).length, 2),
         journeyStep: action.state.journeyStep ?? 0,
         currentArea: action.state.currentArea ?? initialGameState.currentArea,
+        hasSeenIntro: action.state.hasSeenIntro ?? false,
         tutorialCompleted: action.state.tutorialCompleted ?? savedHasProgress,
         returnPresence: savedPendingReturn
           ? {

@@ -5,11 +5,15 @@ export type ArtValidationBackgroundKey = "mysticMeadow" | "emberWoods" | "tideCa
 export type EnemyImageKey = "slime" | "boar" | "wisp" | "knight" | "manta" | "chimera";
 
 export const eggImages: Record<DragonElement, ImageSourcePropType> = {
-  fire: require("../../assets/eggs/optimized/fire-dragon-egg-cutout.png"),
-  water: require("../../assets/eggs/optimized/water-dragon-egg-cutout.png"),
-  earth: require("../../assets/eggs/optimized/earth-dragon-egg-cutout.png"),
-  light: require("../../assets/eggs/optimized/light-dragon-egg-cutout.png"),
-  dark: require("../../assets/eggs/optimized/storm-dragon-egg-cutout.png")
+  fire: require("../../assets/dragons/fire/egg.png"),
+  water: require("../../assets/dragons/water/egg.png"),
+  earth: require("../../assets/dragons/earth/egg.png"),
+  light: require("../../assets/dragons/light/egg.png"),
+  dark: require("../../assets/dragons/dark/egg.png")
+};
+
+export const eggHatchAnimations: Partial<Record<DragonElement, { source: ImageSourcePropType; durationMs: number }>> = {
+  fire: { source: require("../../assets/dragons/fire/egg-hatch.webp"), durationMs: 5300 }
 };
 
 export const eggCrackStageImages: Record<DragonElement, ImageSourcePropType[]> = {

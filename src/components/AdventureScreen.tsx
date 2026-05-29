@@ -22,7 +22,9 @@ import {
   treasureDefinitions,
   treasureOrder
 } from "../game";
-import { enemyImages, getDragonStageImage, sceneImages } from "../constants/assets";
+import { enemyImages, sceneImages } from "../constants/assets";
+import DragonImage from "./DragonImage";
+import { gameStageToArtStage } from "../constants/dragonArt";
 import { uiTheme } from "../constants/theme";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import { getAutoBattleEnemyImageKey, BattleTacticPreview } from "./BattleScreen";
@@ -418,7 +420,12 @@ function AdventureJourneyScene({ state, onReturnToDen, focused = false }: { stat
         <View style={[styles.adventureRouteNode, styles.adventureRouteNodeDen]} />
       </View>
       <Animated.View style={[styles.adventureDragonWalker, walkerStyle]}>
-        <SafeExpoImage source={getDragonStageImage(state.dragon.stage, element)} style={[styles.adventureDragonSprite, styles.adventureDragonSpriteFacingRight]} contentFit="contain" />
+        <DragonImage
+            element={element}
+            stage={gameStageToArtStage(state.dragon.stage)}
+            style={[styles.adventureDragonSprite, styles.adventureDragonSpriteFacingRight] as any}
+            resizeMode="contain"
+          />
       </Animated.View>
       {showEnemyEncounter ? (
         <View style={styles.adventureEnemyEncounter}>

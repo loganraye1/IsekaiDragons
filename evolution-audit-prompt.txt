@@ -1,0 +1,9 @@
+Audit the evolution / dragon-form art in the two places it's shown to the player, so we can swap the placeholders onto the registry (getDragonArt). Don't change anything yet — just report findings.
+
+1. Origin selection: find the screen where the player selects their origin / starting element (check EggAwakeningStage.tsx — eggSelectorOptions, selectedOriginId, selectedOriginOption — and any separate origin or path-select component). Show every place it renders dragon or evolution-preview art (NOT the egg image itself), the variable used, and its source: registry/DragonImage vs an old placeholder via assets.ts (e.g. getDragonStageImage, drakeImages, *_concept art).
+
+2. Evolution tab: find the Evolve tab content (EvolutionPanelContent in DenScreen.tsx) and any evolution-tree / codex component. Show every place it renders dragon-form art for current or future evolution stages, the variable used, and its source.
+
+3. Coverage check against the registry: list which stage + element (and, where relevant, path — physical/elemental young dragon — plus any dragon / wyrm / ancient and Hero/Demon Lord forms) actually have real entries in dragonArt.ts / getDragonArt today, and which return a fallback or have nothing. The goal is to know exactly what can be wired to real art now vs what must stay on a placeholder because the art doesn't exist yet.
+
+Report only. List file paths and line numbers for each render site.

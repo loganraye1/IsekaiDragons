@@ -2,10 +2,13 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Animated, Image, Pressable, StyleSheet, Text, View, type ImageSourcePropType, type ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { elementTheme } from "../content";
-import { eggCrackStageImages, eggImages, hatchlingImages } from "../constants/assets";
+import { eggCrackStageImages, eggHatchAnimations, eggImages, hatchlingImages } from "../constants/assets";
+import { SafeExpoImage } from "../ui/SafeMedia";
 import { APP_VERSION, uiTheme } from "../constants/theme";
 import type { DragonElement, GameAction, GameState } from "../types";
+import type { DragonClass } from "../constants/dragonArt";
 import { evolutionPreviewElements } from "../evolutionPreview";
+import DragonImage from "./DragonImage";
 import CrackOverlay from "../ui/CrackOverlay";
 import EggHatchBurst from "../ui/EggHatchBurst";
 import FloatingLayer from "../ui/FloatingLayer";
@@ -25,6 +28,11 @@ type EggSelectorOption = {
   placeholder: string;
   style: ViewStyle;
 };
+
+// Branch order is guardian(0)/raider(1)/mystic(2) for all five elements — each
+// branch.description starts with "Guardian branch."/"Raider branch."/"Mystic branch."
+// If the data order ever changes, derive the class from branch.description instead.
+const DRAKE_CLASS_BY_INDEX: DragonClass[] = ['guardian', 'raider', 'mystic'];
 
 const eggSelectorOptions: EggSelectorOption[] = [
   {
@@ -146,12 +154,16 @@ export default function EggAwakeningStage({
   const crackProgress = useRef(new Animated.Value(0)).current;
   const eggJolt = useRef(new Animated.Value(0)).current;
   const hatchBurst = useRef(new Animated.Value(0)).current;
+  const hatchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectedElement = state.dragon.element;
   const focusedElement = selectedElement ?? "light";
   const theme = elementTheme[focusedElement];
   const eggTaps = state.eggTaps ?? 0;
   const visibleEggStage = state.phase === "hatching" ? 3 : Math.min(3, eggTaps);
-  const focusedEggImage = eggCrackStageImages[focusedElement][visibleEggStage];
+  // CRACK FRAMES: swap back to per-stage source when animation art is wired —
+  //   const focusedEggImage = eggCrackStageImages[focusedElement][visibleEggStage];
+  const focusedEggImage = eggImages[focusedElement];
+  const hatchAnim = eggHatchAnimations[focusedElement];
   const hasSelectedEgg = Boolean(selectedElement);
   const [selectedOriginId, setSelectedOriginId] = useState<string | null>(null);
   const selectedOriginOption = eggSelectorOptions.find((option) => option.element === selectedElement);
@@ -189,27 +201,40 @@ export default function EggAwakeningStage({
   useEffect(() => {
     if (state.phase === "hatching") {
       hatchBurst.setValue(0);
-      Animated.parallel([
-        Animated.timing(crack, { toValue: 1, duration: 1650, useNativeDriver: true }),
-        Animated.timing(crackProgress, { toValue: 1, duration: 520, useNativeDriver: true }),
-        Animated.sequence([
-          Animated.delay(260),
-          Animated.timing(hatchBurst, { toValue: 1, duration: 1120, useNativeDriver: true })
-        ]),
-        Animated.sequence([
-          Animated.timing(eggJolt, { toValue: 1, duration: 130, useNativeDriver: true }),
-          Animated.timing(eggJolt, { toValue: 0, duration: 90, useNativeDriver: true }),
-          Animated.timing(eggJolt, { toValue: 1, duration: 95, useNativeDriver: true }),
-          Animated.timing(eggJolt, { toValue: 0, duration: 80, useNativeDriver: true })
-        ])
-      ]).start(() => {
-        dispatch({ type: "finishHatching" });
-      });
+      if (hatchAnim) {
+        crack.setValue(0);
+        hatchTimerRef.current = setTimeout(() => {
+          dispatch({ type: "finishHatching" });
+        }, hatchAnim.durationMs);
+      } else {
+        Animated.parallel([
+          Animated.timing(crack, { toValue: 1, duration: 1650, useNativeDriver: true }),
+          Animated.timing(crackProgress, { toValue: 1, duration: 520, useNativeDriver: true }),
+          Animated.sequence([
+            Animated.delay(260),
+            Animated.timing(hatchBurst, { toValue: 1, duration: 1120, useNativeDriver: true })
+          ]),
+          Animated.sequence([
+            Animated.timing(eggJolt, { toValue: 1, duration: 130, useNativeDriver: true }),
+            Animated.timing(eggJolt, { toValue: 0, duration: 90, useNativeDriver: true }),
+            Animated.timing(eggJolt, { toValue: 1, duration: 95, useNativeDriver: true }),
+            Animated.timing(eggJolt, { toValue: 0, duration: 80, useNativeDriver: true })
+          ])
+        ]).start(() => {
+          dispatch({ type: "finishHatching" });
+        });
+      }
     } else {
       crack.setValue(0);
       hatchBurst.setValue(0);
     }
-  }, [crack, crackProgress, dispatch, eggJolt, hatchBurst, state.phase]);
+    return () => {
+      if (hatchTimerRef.current !== null) {
+        clearTimeout(hatchTimerRef.current);
+        hatchTimerRef.current = null;
+      }
+    };
+  }, [crack, crackProgress, dispatch, eggJolt, hatchAnim, hatchBurst, state.phase]);
 
   useEffect(() => {
     if (state.phase === "hatching") {
@@ -283,43 +308,49 @@ export default function EggAwakeningStage({
                 </FloatingLayer>
               </Pressable>
             ) : null}
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.shellHalfClip,
-                styles.shellLeftClip,
-                {
-                  opacity: splitShellOpacity,
-                  transform: [{ translateX: Animated.multiply(shellSplit, -1) }, { translateY: shellLift }, { rotate: leftShellRotate }]
-                }
-              ]}
-            >
-                <Image key={`shell-left-${focusedElement}`} source={eggImages[focusedElement]} style={styles.shellHalfImage} resizeMode="contain" />
-            </Animated.View>
-            <Animated.View
-              pointerEvents="none"
-              style={[
-                styles.shellHalfClip,
-                styles.shellRightClip,
-                {
-                  opacity: splitShellOpacity,
-                  transform: [{ translateX: shellSplit }, { translateY: shellLift }, { rotate: rightShellRotate }]
-                }
-              ]}
-            >
-              <Image key={`shell-right-${focusedElement}`} source={eggImages[focusedElement]} style={[styles.shellHalfImage, styles.shellRightImage]} resizeMode="contain" />
-            </Animated.View>
-            <Animated.Image
-              source={hatchlingImages[focusedElement]}
-              resizeMode="contain"
-              style={[
-                styles.evolutionHatchling,
-                {
-                  opacity: hatchlingRevealOpacity,
-                  transform: [{ scale: hatchlingRevealScale }]
-                }
-              ]}
-            />
+            {state.phase === "hatching" && hatchAnim ? (
+              <SafeExpoImage source={hatchAnim.source} contentFit="contain" style={styles.evolutionHatchling} />
+            ) : (
+              <>
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    styles.shellHalfClip,
+                    styles.shellLeftClip,
+                    {
+                      opacity: splitShellOpacity,
+                      transform: [{ translateX: Animated.multiply(shellSplit, -1) }, { translateY: shellLift }, { rotate: leftShellRotate }]
+                    }
+                  ]}
+                >
+                  <Image key={`shell-left-${focusedElement}`} source={eggImages[focusedElement]} style={styles.shellHalfImage} resizeMode="contain" />
+                </Animated.View>
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    styles.shellHalfClip,
+                    styles.shellRightClip,
+                    {
+                      opacity: splitShellOpacity,
+                      transform: [{ translateX: shellSplit }, { translateY: shellLift }, { rotate: rightShellRotate }]
+                    }
+                  ]}
+                >
+                  <Image key={`shell-right-${focusedElement}`} source={eggImages[focusedElement]} style={[styles.shellHalfImage, styles.shellRightImage]} resizeMode="contain" />
+                </Animated.View>
+                <Animated.Image
+                  source={hatchlingImages[focusedElement]}
+                  resizeMode="contain"
+                  style={[
+                    styles.evolutionHatchling,
+                    {
+                      opacity: hatchlingRevealOpacity,
+                      transform: [{ scale: hatchlingRevealScale }]
+                    }
+                  ]}
+                />
+              </>
+            )}
           </View> : null}
 
           <View style={[styles.eggStartCard, !hasSelectedEgg && styles.eggStartCardOriginChoice]}>
@@ -386,19 +417,17 @@ export default function EggAwakeningStage({
                 </View>
                 <Text style={styles.originBranchesTitle}>First three evolution branches</Text>
                 {previewOriginOption.branches.map((branch, index) => {
-                  const branchPreview = previewEvolutionElement?.branches[index];
+                  const drakeClass = DRAKE_CLASS_BY_INDEX[index];
                   return (
                     <View key={branch.name} style={styles.originBranchRow}>
                       <Text style={[styles.originBranchNumber, { color: previewOriginOption.secondary }]}>{index + 1}</Text>
-                      {branchPreview ? (
-                        <View style={[styles.originBranchImageFrame, { borderColor: previewOriginOption.primary }]}>
-                          <Image source={branchPreview.drakeImage} style={styles.originBranchImage} resizeMode="contain" />
-                        </View>
-                      ) : null}
+                      <View style={[styles.originBranchImageFrame, { borderColor: previewOriginOption.primary }]}>
+                        <DragonImage element={previewOriginOption.element} stage="drake" dragonClass={drakeClass} style={styles.originBranchImage} resizeMode="contain" />
+                      </View>
                       <View style={styles.originBranchCopy}>
                         <Text style={styles.originBranchText}>{branch.name}</Text>
                         <Text style={styles.originBranchDescription}>{branch.description}</Text>
-                        {branchPreview ? <Text style={styles.originBranchPreviewLabel}>{`${branchPreview.label} drake preview`}</Text> : null}
+                        <Text style={styles.originBranchPreviewLabel}>{`${drakeClass.charAt(0).toUpperCase()}${drakeClass.slice(1)} drake`}</Text>
                       </View>
                     </View>
                   );

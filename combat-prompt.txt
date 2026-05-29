@@ -1,0 +1,16 @@
+Migrate the combat dragon sprite to the art registry, using the DragonImage component (the sprite component that DragonDisplay renders internally) — NOT the full DragonDisplay wrapper, so we don't drag in the den aura/background effects. Look at DragonDisplay.tsx first to see the correct DragonImage props and how it resolves stage/element.
+
+1. In BattleScreen.tsx, at the general dragon sprite render site that uses getDragonStageImage(state.dragon.stage, element) (around line 832), replace the <Image source={...}/> with DragonImage, preserving the existing battle layout, sizing, and any animation wrappers around it.
+
+2. Do the SAME in AdventureScreen.tsx at the dragon walking-sprite site that uses getDragonStageImage(state.dragon.stage, element) (around line 421).
+
+Do NOT change any of the following:
+- The fire-hatchling battle special case (battleFireHatchlingImage, around line 830) — leave it exactly as-is.
+- Enemy sprites (enemyImages).
+- Scene / arena backgrounds and node/event backgrounds (sceneImages).
+
+If getDragonArt has no entry for a given stage/element, it must fall back exactly the way DragonDisplay already does — do not invent a new fallback.
+
+After the swap, remove the now-unused getDragonStageImage import from each file ONLY if nothing else in that file still uses it (check first).
+
+Run npm run typecheck and report exactly what changed and which imports you removed.

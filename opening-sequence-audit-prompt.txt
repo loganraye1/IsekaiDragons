@@ -1,0 +1,16 @@
+Report only — do NOT change anything. Map how the egg opening sequence currently flows, so we can wire a one-shot hatch animation and splice the comic intro correctly.
+
+Look in EggAwakeningStage.tsx, GameStage.tsx, ComicIntro.tsx, and wherever phase transitions are driven.
+
+1. List the phases the egg/hatch sequence moves through (e.g. selection -> tapping/cracking -> hatching -> reveal -> den) and the exact state field(s) that track it (state.phase? local component state? eggTaps?). Show the type/union of allowed phase values.
+
+2. For each phase: what is rendered, and what triggers the transition to the next phase (a tap count, a timer, a button press, an animation end)? Specifically:
+   - What sets the phase to "hatching"?
+   - What renders during "hatching" (the split-shell halves around lines 297/310 and the hatchling reveal Animated.Image around line 313)?
+   - What advances from hatch -> reveal, and reveal -> den/main game?
+
+3. Where does the den / main game first mount after hatching? Is there already a hasSeenIntro flag anywhere (state, persisted game state, or local)? Does ComicIntro.tsx have a mount point wired in yet, or is the component built but never rendered? If it's mounted, show where and how it's gated; if not, show the most natural place to insert an "intro" phase between hatch/reveal and den.
+
+4. How are timers / setTimeout handled elsewhere in EggAwakeningStage (cleanup on unmount, refs, etc.), so any new animation-advance timer follows the same pattern?
+
+Report with file paths and line numbers for each finding.

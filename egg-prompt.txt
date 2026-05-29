@@ -1,0 +1,15 @@
+First report where the new single egg images are: check whether eggImages in assets.ts already points to the new art, or if the new files are elsewhere and not yet imported (if so, list them so they can be placed).
+
+Then, assuming eggImages holds the new single-per-element art, make these changes:
+
+1. In EggAwakeningStage.tsx, change the main tappable egg (around line 154) from eggCrackStageImages[focusedElement][visibleEggStage] to always use eggImages[focusedElement], regardless of visibleEggStage. Keep the visibleEggStage state and timing logic intact, but have every stage resolve to the same single image. Leave a clearly labeled comment seam right there: // CRACK FRAMES: swap back to per-stage source when animation art is wired — so it can be restored later.
+
+2. Leave the split-shell halves (around lines 297 and 310, already using eggImages[focusedElement]) and the hatchling reveal (around line 313, hatchlingImages) as-is.
+
+3. Confirm the egg selector pentagon and detail card (eggSelectorOptions, around lines 35-103) already use eggImages and need no change.
+
+4. In HatchlingJourneyStage.tsx, confirm EggScreen's eggImages[previewElement] and eggImages[answer.element] (around lines 1196 and 1226) now resolve to the new art with no change needed.
+
+Do NOT touch the eggCrackStageImages definition in assets.ts (it gets removed later, after the animation decision).
+
+Run npm run typecheck and report exactly what changed.

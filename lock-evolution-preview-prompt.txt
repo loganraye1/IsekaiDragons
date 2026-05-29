@@ -1,0 +1,11 @@
+Lock the player-facing evolution path preview until the player reaches the first evolution milestone (around Chapter 10), reusing the game's existing evolution-unlock condition rather than a new flag.
+
+1. Find the condition the game already uses to decide the first evolution (hatchling -> drake) is unlocked. This is the same logic the Evolve tab (EvolutionPanelContent in DenScreen.tsx) and getEvolutionProgressRatio use, based on completedAdventureRuns reaching 10. If there is an existing helper or derived boolean for it, reuse it. If not, compute it the same way (completedAdventureRuns >= 10). Do NOT introduce a separate threshold constant if one already exists.
+
+2. In HatchlingJourneyStage.tsx, the EvolutionPathPreview panel (starts around line 675) currently always renders its art: hero image (~717), drake branch grid (~731), contact sheet (~752), and stage option tiles (~775). Gate this. When evolution is NOT yet unlocked, render a LOCKED state in place of those art render sites — a lock indicator/icon plus a message like "Evolution paths reveal at Chapter 10" and the current chapter progress (reuse the same progress value the Evolve tab shows, e.g. "Chapter 7/10"). When evolution IS unlocked, render the existing preview exactly as it is today, unchanged.
+
+3. Keep the panel itself reachable and visible — do NOT unmount or hide the whole panel. Only its art contents are gated, so the feature stays discoverable as a locked teaser.
+
+4. Do NOT delete or change evolutionPreview.ts or any placeholder image imports. They are simply not displayed until unlock.
+
+Run npm run typecheck and report exactly what changed.

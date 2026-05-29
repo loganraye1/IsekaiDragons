@@ -1,0 +1,19 @@
+Wire real registry drake art into the origin info card's three evolution-branch preview slots, replacing the stale sub-element placeholder images. File: src/components/EggAwakeningStage.tsx, the previewOriginOption detail card (the per-branch loop around lines 390-406).
+
+Context from the audit: the three branch slots are consistently ordered guardian (index 0), raider (index 1), mystic (index 2) for all five elements, and the registry has real drake art for every element x class. The placeholder at line 397 (branchPreview.drakeImage) uses the old flame/smoke/magma sub-element model, which has no registry counterpart and should be dropped.
+
+1. Add imports at the top of EggAwakeningStage.tsx: DragonImage (default import from "./DragonImage") and the DragonClass type from "../constants/dragonArt". Look at DragonDisplay.tsx to see the exact DragonImage props needed to render a drake (it needs element, the drake stage, and the dragon class).
+
+2. Before the branch loop, define the index-to-class map:
+   const DRAKE_CLASS_BY_INDEX: DragonClass[] = ['guardian', 'raider', 'mystic'];
+   Add a brief safety check/comment: this relies on the eggSelectorOptions branch order being guardian/raider/mystic. While implementing, confirm each branch.description still matches that order (it says "Guardian branch" / "Raider branch" / "Mystic branch"); if the data order ever differs, derive the class from the description instead of the index.
+
+3. At line ~397, replace the placeholder <Image source={branchPreview.drakeImage} ... /> with a DragonImage rendering the real drake for previewOriginOption.element and dragonClass={DRAKE_CLASS_BY_INDEX[index]} at the drake stage. Preserve the existing image style (styles.originBranchImage) and sizing/resizeMode so layout is unchanged.
+
+4. Update the sub-label at line ~403: it currently renders `${branchPreview.label} drake preview` ("Flame drake preview"). Since the slot now shows the real guardian/raider/mystic drake, relabel it to the class (capitalize DRAKE_CLASS_BY_INDEX[index], e.g. "Guardian drake") or simply reuse branch.name, so the label matches the art. Keep the branch.name (line 401) and branch.description (line 402) text as-is.
+
+5. Leave the egg image (line 382) unchanged — it already resolves to real registry art.
+
+6. Do NOT change evolutionPreview.ts or delete any placeholder files. The drake-paths placeholders may still be referenced by the (now locked) evolution preview panel.
+
+Run npm run typecheck and report exactly what changed.

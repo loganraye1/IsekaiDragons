@@ -13,6 +13,7 @@
 // EXIST — a require() pointing at a missing file crashes the whole bundle.
 
 import type { ImageSourcePropType } from 'react-native';
+import type { DragonStage as GameDragonStage } from '../types';
 
 export type DragonElement = 'fire' | 'water' | 'earth' | 'dark' | 'light';
 export type DragonClass = 'guardian' | 'raider' | 'mystic';
@@ -173,4 +174,16 @@ export function getDragonArt(q: DragonArtQuery): ImageSourcePropType | undefined
     default:
       return undefined;
   }
+}
+
+/**
+ * Maps the game's DragonStage (egg/hatchling/drake/dragon/wyrm) to the art
+ * registry's DragonStage. When real dragon/wyrm art is added to the registry,
+ * update this helper and the registry — no call sites need to change.
+ */
+export function gameStageToArtStage(stage: GameDragonStage): DragonStage {
+  if (stage === 'egg') return 'egg';
+  if (stage === 'hatchling') return 'hatchling';
+  if (stage === 'drake') return 'drake';
+  return 'young'; // dragon / wyrm fall back to 'young' art until higher-tier registry entries exist
 }

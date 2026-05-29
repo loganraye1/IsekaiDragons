@@ -1,0 +1,19 @@
+Wire a one-shot egg-hatch animation into the "hatching" phase, with a per-element fallback so elements without a clip keep the current behavior. Do NOT change the finishHatching / hatchDragon / intro / completeIntro logic — the hatching -> intro -> journey sequence and the hasSeenIntro gate already work and must stay intact. We are only changing WHAT renders during "hatching" and WHAT triggers finishHatching, and only for elements that have a hatch clip.
+
+Asset: a play-once animated WebP has been placed at assets/dragons/fire/egg-hatch.webp (encoded to loop once and hold its final frame). Its duration is about 5.1 seconds.
+
+1. In src/constants/assets.ts, add a new lookup next to eggImages:
+   export const eggHatchAnimations: Partial<Record<DragonElement, { source: ImageSourcePropType; durationMs: number }>> = {
+     fire: { source: require("../../assets/dragons/fire/egg-hatch.webp"), durationMs: 5300 }
+   };
+   (durationMs is the clip length plus a small buffer so the advance never cuts the clip short. Only fire for now; the others are intentionally absent and will fall back.)
+
+2. In src/components/EggAwakeningStage.tsx:
+   - Compute const hatchAnim = eggHatchAnimations[focusedElement]; near the other focusedElement-derived values.
+   - In the useEffect that runs when state.phase === "hatching" (currently the Animated.parallel([...]).start(() => dispatch({ type: "finishHatching" }))):
+     * If hatchAnim exists: do NOT run the shell-split Animated.parallel. Instead start a timer for hatchAnim.durationMs that dispatches finishHatching. Store the timer id in a useRef and clear it in the effect cleanup (return () => clearTimeout(ref.current)), matching the clearTimeout pattern used in App.tsx for the preload timer. Reset the relevant Animated.Values as the existing else-branch does.
+     * If hatchAnim does NOT exist: keep the existing Animated.parallel + finishHatching behavior exactly as it is today.
+   - In the render, during the "hatching" phase: if hatchAnim exists, render <SafeExpoImage source={hatchAnim.source} contentFit="contain" /> filling the same egg display area/size the shell halves currently occupy, and do NOT render the split shell halves (lines ~288-313) or the hatchling reveal (lines ~314-324). If hatchAnim does NOT exist, render the existing shell halves + hatchling reveal exactly as today.
+   - The tappable egg / crack stages in the "egg" and "question" phases are unchanged.
+
+3. Run npm run typecheck and report exactly what changed, including how the hatch-vs-fallback branch is structured in both the effect and the render.

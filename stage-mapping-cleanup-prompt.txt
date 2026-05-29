@@ -1,0 +1,13 @@
+Consolidate the game-stage to art-stage mapping so the den, battle, and adventure displays all stay in sync.
+
+Right now the mapping from the game's dragon stage to the registry's art DragonStage is duplicated: an inline ternary in BattleScreen.tsx and AdventureScreen.tsx at the DragonImage call sites (with an `as ArtDragonStage` cast, and dragon/wyrm hardcoded to 'young'), plus DragonDisplay.tsx has its own copy.
+
+1. In the file that defines getDragonArt / the art registry (dragonArt.ts), find or create a single exported helper that maps the game's DragonStage (from ../types) to the registry art DragonStage. Use exactly the logic DragonDisplay currently uses as the source of truth. Name it gameStageToArtStage (or similar).
+
+2. Update DragonDisplay.tsx to call this helper instead of its own inline mapping.
+
+3. Update BattleScreen.tsx and AdventureScreen.tsx to import and use this helper at the DragonImage stage={...} props, removing the inline ternary and the `as ArtDragonStage` cast.
+
+Important: do NOT hardcode dragon/wyrm -> 'young' at the call sites. The fallback for missing higher-tier art must live inside getDragonArt or the helper, so that when real dragon/wyrm art is later added to the registry, every display (den, combat, adventure) picks it up automatically with no further edits to these files.
+
+Run npm run typecheck and report exactly what changed.

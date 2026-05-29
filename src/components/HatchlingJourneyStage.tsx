@@ -526,7 +526,14 @@ export default function HatchlingJourneyStage({ state, dispatch }: { state: Game
               onSellItem={(itemId) => dispatch({ type: "sellItem", itemId })}
             />
           ) : null}
-          {activePanel === "evolution" ? <EvolutionTreePreviewPanel currentElement={element} /> : null}
+          {activePanel === "evolution" ? (
+            <EvolutionTreePreviewPanel
+              currentElement={element}
+              evolutionPreviewUnlocked={state.dragon.stage !== 'hatchling' || canEvolve}
+              chapters={state.completedAdventureRuns ?? 0}
+              evolutionChapterTarget={evolutionChapterTarget ?? 10}
+            />
+          ) : null}
           {activePanel === "goals" ? (
             <GoalsPanelContent
               state={state}
@@ -655,7 +662,17 @@ export function BottomNav({ activePanel, onSelect }: { activePanel: IdlePanelKey
   );
 }
 
-export function EvolutionTreePreviewPanel({ currentElement }: { currentElement: DragonElement }) {
+export function EvolutionTreePreviewPanel({
+  currentElement,
+  evolutionPreviewUnlocked,
+  chapters,
+  evolutionChapterTarget,
+}: {
+  currentElement: DragonElement;
+  evolutionPreviewUnlocked: boolean;
+  chapters: number;
+  evolutionChapterTarget: number;
+}) {
   const [selectedEvolutionElement, setSelectedEvolutionElement] = useState<EvolutionPreviewElementId>(currentElement);
   const [selectedEvolutionStage, setSelectedEvolutionStage] = useState<EvolutionPreviewStageId>("drake");
   const element = getEvolutionPreviewElement(selectedEvolutionElement);
@@ -707,51 +724,61 @@ export function EvolutionTreePreviewPanel({ currentElement }: { currentElement: 
         ))}
       </View>
 
-      <LinearGradient colors={[`${element.primary}44`, "rgba(9,6,22,0.94)"]} style={styles.evolutionPreviewHeroCard}>
-        <View style={styles.evolutionPreviewHeroCopy}>
-          <Text style={[styles.evolutionPreviewHeroKicker, { color: element.secondary }]}>Build fantasy</Text>
-          <Text style={styles.evolutionPreviewHeroTitle}>{element.label} {branch.label} Path</Text>
-          <Text style={styles.evolutionPreviewHeroText}>{branch.buildFantasy}. {element.fantasy}</Text>
-          <Text style={styles.evolutionPreviewHeroNote}>Representative placeholder: {previewOptions[0]?.label ?? `${branch.label} Drake`}</Text>
-        </View>
-        <SafeExpoImage source={heroImage} style={styles.evolutionPreviewHeroImage} contentFit="contain" />
-      </LinearGradient>
+      {evolutionPreviewUnlocked ? (
+        <>
+          <LinearGradient colors={[`${element.primary}44`, "rgba(9,6,22,0.94)"]} style={styles.evolutionPreviewHeroCard}>
+            <View style={styles.evolutionPreviewHeroCopy}>
+              <Text style={[styles.evolutionPreviewHeroKicker, { color: element.secondary }]}>Build fantasy</Text>
+              <Text style={styles.evolutionPreviewHeroTitle}>{element.label} {branch.label} Path</Text>
+              <Text style={styles.evolutionPreviewHeroText}>{branch.buildFantasy}. {element.fantasy}</Text>
+              <Text style={styles.evolutionPreviewHeroNote}>Representative placeholder: {previewOptions[0]?.label ?? `${branch.label} Drake`}</Text>
+            </View>
+            <SafeExpoImage source={heroImage} style={styles.evolutionPreviewHeroImage} contentFit="contain" />
+          </LinearGradient>
 
-      <Text style={styles.debugSectionLabel}>First big choice</Text>
-      <View style={styles.evolutionPreviewBranchGrid}>
-        {element.branches.map((candidate) => (
-          <Pressable
-            key={candidate.id}
-            onPress={() => setSelectedEvolutionBranch(candidate.id)}
-            style={[
-              styles.evolutionPreviewBranchCard,
-              selectedEvolutionBranch === candidate.id && { borderColor: element.secondary, backgroundColor: `${element.primary}24` }
-            ]}
-          >
-            <SafeExpoImage source={candidate.drakeImage} style={styles.evolutionPreviewBranchImage} contentFit="contain" />
-            <Text style={[styles.evolutionPreviewBranchName, selectedEvolutionBranch === candidate.id && { color: element.secondary }]}>{candidate.label}</Text>
-            <Text style={styles.evolutionPreviewBranchFantasy}>{candidate.buildFantasy}</Text>
-          </Pressable>
-        ))}
-      </View>
+          <Text style={styles.debugSectionLabel}>First big choice</Text>
+          <View style={styles.evolutionPreviewBranchGrid}>
+            {element.branches.map((candidate) => (
+              <Pressable
+                key={candidate.id}
+                onPress={() => setSelectedEvolutionBranch(candidate.id)}
+                style={[
+                  styles.evolutionPreviewBranchCard,
+                  selectedEvolutionBranch === candidate.id && { borderColor: element.secondary, backgroundColor: `${element.primary}24` }
+                ]}
+              >
+                <SafeExpoImage source={candidate.drakeImage} style={styles.evolutionPreviewBranchImage} contentFit="contain" />
+                <Text style={[styles.evolutionPreviewBranchName, selectedEvolutionBranch === candidate.id && { color: element.secondary }]}>{candidate.label}</Text>
+                <Text style={styles.evolutionPreviewBranchFantasy}>{candidate.buildFantasy}</Text>
+              </Pressable>
+            ))}
+          </View>
 
-      <View style={styles.evolutionPreviewOptionPanel}>
-        <Text style={styles.evolutionPreviewOptionTitle}>{selectedEvolutionStage === "ancient" ? "Capstone futures" : `${evolutionPreviewStages.find((stage) => stage.id === selectedEvolutionStage)?.label ?? "Stage"} options`}</Text>
-        <Text style={styles.panelMutedText}>{previewOptions.length} placeholders available for the selected branch at this tier.</Text>
-        <View style={styles.evolutionPreviewOptionGrid}>
-          {previewOptions.slice(0, selectedEvolutionStage === "ancient" ? 8 : 4).map((option) => (
-            <EvolutionPreviewOptionTile key={option.id} option={option} accent={element.secondary} />
-          ))}
-        </View>
-      </View>
+          <View style={styles.evolutionPreviewOptionPanel}>
+            <Text style={styles.evolutionPreviewOptionTitle}>{selectedEvolutionStage === "ancient" ? "Capstone futures" : `${evolutionPreviewStages.find((stage) => stage.id === selectedEvolutionStage)?.label ?? "Stage"} options`}</Text>
+            <Text style={styles.panelMutedText}>{previewOptions.length} placeholders available for the selected branch at this tier.</Text>
+            <View style={styles.evolutionPreviewOptionGrid}>
+              {previewOptions.slice(0, selectedEvolutionStage === "ancient" ? 8 : 4).map((option) => (
+                <EvolutionPreviewOptionTile key={option.id} option={option} accent={element.secondary} />
+              ))}
+            </View>
+          </View>
 
-      {contactSheet ? (
-        <View style={styles.evolutionPreviewContactSheetPanel}>
-          <Text style={styles.evolutionPreviewOptionTitle}>Full art coverage</Text>
-          <Text style={styles.panelMutedText}>Element contact sheet for quick branch review at this stage.</Text>
-          <SafeExpoImage source={contactSheet} style={styles.evolutionPreviewContactSheet} contentFit="contain" />
+          {contactSheet ? (
+            <View style={styles.evolutionPreviewContactSheetPanel}>
+              <Text style={styles.evolutionPreviewOptionTitle}>Full art coverage</Text>
+              <Text style={styles.panelMutedText}>Element contact sheet for quick branch review at this stage.</Text>
+              <SafeExpoImage source={contactSheet} style={styles.evolutionPreviewContactSheet} contentFit="contain" />
+            </View>
+          ) : null}
+        </>
+      ) : (
+        <View style={styles.evolutionPreviewLockedBox}>
+          <Text style={styles.evolutionPreviewLockedGlyph}>[ locked ]</Text>
+          <Text style={styles.evolutionPreviewLockedTitle}>Evolution paths reveal at Chapter {evolutionChapterTarget}</Text>
+          <Text style={styles.evolutionPreviewLockedProgress}>Chapter {chapters}/{evolutionChapterTarget}</Text>
         </View>
-      ) : null}
+      )}
     </View>
   );
 }
@@ -1609,6 +1636,35 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "900",
     marginBottom: 4
+  },
+  evolutionPreviewLockedBox: {
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderColor: "rgba(255,255,255,0.1)",
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 32
+  },
+  evolutionPreviewLockedGlyph: {
+    color: "rgba(255,255,255,0.3)",
+    fontSize: 13,
+    fontWeight: "900",
+    letterSpacing: 2,
+    textTransform: "uppercase"
+  },
+  evolutionPreviewLockedProgress: {
+    color: "rgba(255,255,255,0.4)",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0.5
+  },
+  evolutionPreviewLockedTitle: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: 15,
+    fontWeight: "900",
+    textAlign: "center"
   },
   evolutionPreviewPanel: {
     gap: 16,

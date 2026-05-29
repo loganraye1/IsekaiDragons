@@ -99,7 +99,7 @@ export type AdventureDifficultyId =
   | "riftEdge"
   | "ancientRift";
 
-export type GamePhase = "egg" | "question" | "hatching" | "journey";
+export type GamePhase = "egg" | "question" | "hatching" | "intro" | "journey";
 
 export type NumberFormat = "compact" | "full";
 
@@ -468,6 +468,7 @@ export type GameState = {
   completedAdventureRuns: number;
   lastAdventureRewards: AdventureRewardBundle | null;
   lastSkillDraftOffer: EliteSkillDraftOffer | null;
+  hasSeenIntro: boolean;
   tutorialCompleted: boolean;
   lastLoginRewardDate: string | null;
   loginStreakDay: number;
@@ -497,6 +498,7 @@ export type GameAction =
   | { type: "claimDailyGoal"; goalId: DailyGoalId }
   | { type: "equipItem"; itemId: string }
   | { type: "sellItem"; itemId: string }
+  | { type: "completeIntro" }
   | { type: "completeTutorial" }
   | { type: "claimDailyLoginReward" }
   | { type: "updateSettings"; settings: Partial<GameSettings> }

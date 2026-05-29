@@ -1,0 +1,17 @@
+Report only — do NOT change anything. We want to wire real registry art (getDragonArt / DragonImage) into the evolution preview shown in the origin info, replacing or overlaying the text placeholders where real art actually exists.
+
+Focus on EggAwakeningStage.tsx, specifically the origin info / origin detail card — the card shown when a player selects or taps an origin element (involving selectedOriginId, selectedOriginOption, eggSelectorOptions, and the branch preview around line 397).
+
+1. List EVERYTHING that card renders for the evolution preview, in order, with line numbers: every text block (stage labels, build-fantasy copy, branch names, "preview/placeholder" notes) AND every image, and for each one the variable and its source (eggImages / branchPreview.drakeImage / evolutionPreview.ts paths / etc.).
+
+2. For each evolution STAGE referenced anywhere in that card, say which model it's built on:
+   - canonical registry stages: egg, hatchling, drake, young
+   - stale sub-element branches: fire_flame / fire_smoke / fire_magma style
+   - dragon / ancient / wyrm
+   This tells us which previews can map to real registry art vs which have no counterpart.
+
+3. At the point this card renders, is there any selected or default dragon CLASS (guardian/raider/mystic) or PATH (physical/elemental) in scope? The registry's getDragonArt needs class for drake and class+path for young, so report whether those values exist here or would have to be defaulted.
+
+4. Show the import list at the top of EggAwakeningStage.tsx (so we know whether getDragonArt / DragonImage are already imported).
+
+Report with file paths and line numbers.

@@ -3,7 +3,9 @@ import { Animated, Easing, Image, ImageBackground, Pressable, StyleSheet, Text, 
 import { LinearGradient } from "expo-linear-gradient";
 import { elementTheme } from "../content";
 import { dragonPathDefinitions, getElementMatchupMultiplier, getNodeKindLabel, getRunCardBoostedStats } from "../game";
-import { battleFireHatchlingImage, enemyImages, getDragonStageImage, sceneImages, type EnemyImageKey } from "../constants/assets";
+import { battleFireHatchlingImage, enemyImages, sceneImages, type EnemyImageKey } from "../constants/assets";
+import DragonImage from "./DragonImage";
+import { gameStageToArtStage } from "../constants/dragonArt";
 import { uiTheme } from "../constants/theme";
 import { SafeExpoImage } from "../ui/SafeMedia";
 import type { AreaId, AdventureNode, BattleResult, DragonElement, DragonPathId, Encounter, GameAction, GameState, ScreenKey, Stats } from "../types";
@@ -829,7 +831,12 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
               {useFireBattleHeroImage ? (
                 <SafeExpoImage source={battleFireHatchlingImage} style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight]} contentFit="contain" />
               ) : (
-                <SafeExpoImage source={getDragonStageImage(state.dragon.stage, element)} style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight]} contentFit="contain" />
+                <DragonImage
+                  element={element}
+                  stage={gameStageToArtStage(state.dragon.stage)}
+                  style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight] as any}
+                  resizeMode="contain"
+                />
               )}
               {dragonAttackActive ? <Animated.View style={[styles.battleImpactSlash, styles.battleDragonProjectile, { opacity: hitFlashOpacity }]} /> : null}
               {activeExchange ? <Animated.View style={[styles.battleImpactRing, styles.battleImpactRingDragon, { opacity: hitFlashOpacity, transform: [{ scale: damageFloatScale }] }]} /> : null}

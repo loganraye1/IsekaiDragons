@@ -3,18 +3,16 @@ import { Animated, Pressable, StyleSheet, Text, View, type ImageSourcePropType }
 import { LinearGradient } from "expo-linear-gradient";
 import { elementTheme } from "../content";
 import { BALANCE } from "../balance";
-import { SpineFrameDragon } from "./SpineFrameDragon";
 import {
   type ArtValidationBackgroundKey,
-  approvedFireHatchlingSourceImage,
   artValidationBackgrounds,
   auraEffects,
   evolutionBurstEffect,
-  fireHatchlingLayerImages
 } from "../constants/assets";
 import { uiTheme } from "../constants/theme";
 import type { DragonElement, DragonStage } from "../types";
-import type { DragonClass, DragonPath, DragonStage as ArtDragonStage } from "../constants/dragonArt";
+import type { DragonClass, DragonPath } from "../constants/dragonArt";
+import { gameStageToArtStage } from "../constants/dragonArt";
 import DragonImage from "./DragonImage";
 import GlowPulse from "../ui/GlowPulse";
 import { SafeExpoImage, SafeLottie } from "../ui/SafeMedia";
@@ -96,30 +94,6 @@ function getElementMotionProfile(element: DragonElement, anticipationLevel: Anti
   };
 }
 
-function HatchlingArtFallback({ element, validationEnabled }: { element: DragonElement; validationEnabled: boolean }) {
-  const theme = elementTheme[element];
-  const isFire = element === "fire";
-  const isWater = element === "water";
-  return (
-    <View style={[styles.hatchlingFallback, validationEnabled && styles.hatchlingFallbackValidation]}>
-      <View style={[styles.hatchlingFallbackWing, styles.hatchlingFallbackWingLeft, { backgroundColor: theme.primary }]} />
-      <View style={[styles.hatchlingFallbackWing, styles.hatchlingFallbackWingRight, { backgroundColor: theme.primary }]} />
-      <View style={[styles.hatchlingFallbackBody, { backgroundColor: validationEnabled ? "#8d8d8d" : theme.primary }]}>
-        <View style={[styles.hatchlingFallbackBelly, { backgroundColor: validationEnabled ? "#d0d0d0" : theme.secondary }]} />
-      </View>
-      <View style={[styles.hatchlingFallbackHead, { backgroundColor: validationEnabled ? "#9b9b9b" : theme.primary }]}>
-        <View style={[styles.hatchlingFallbackHorn, styles.hatchlingFallbackHornLeft, { backgroundColor: validationEnabled ? "#d7d7d7" : theme.secondary }]} />
-        <View style={[styles.hatchlingFallbackHorn, styles.hatchlingFallbackHornRight, { backgroundColor: validationEnabled ? "#d7d7d7" : theme.secondary }]} />
-        {isWater ? <View style={[styles.hatchlingFallbackFin, { backgroundColor: validationEnabled ? "#c7c7c7" : theme.secondary }]} /> : null}
-        {isFire ? <View style={[styles.hatchlingFallbackCrest, { backgroundColor: validationEnabled ? "#eeeeee" : theme.secondary }]} /> : null}
-        <View style={[styles.hatchlingFallbackEye, styles.hatchlingFallbackEyeLeft]} />
-        <View style={[styles.hatchlingFallbackEye, styles.hatchlingFallbackEyeRight]} />
-      </View>
-      <View style={[styles.hatchlingFallbackTail, { backgroundColor: validationEnabled ? "#777" : theme.primary }]} />
-    </View>
-  );
-}
-
 function FloatingText({ text, color }: { text: string; color: string }) {
   const float = useRef(new Animated.Value(0)).current;
 
@@ -136,33 +110,6 @@ function FloatingText({ text, color }: { text: string; color: string }) {
     <Animated.Text style={[styles.floatingText, { color, opacity, transform: [{ translateY }, { scale }] }]}>
       {text}
     </Animated.Text>
-  );
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function LayeredFireHatchling({ breath, bounce, disabled }: { breath: Animated.Value; bounce: Animated.Value; disabled: boolean }) {
-  const headNod = disabled ? 0 : breath.interpolate({ inputRange: [0, 1], outputRange: [0, -3] });
-  const headRotate = disabled ? "0deg" : breath.interpolate({ inputRange: [0, 1], outputRange: ["-0.8deg", "1.2deg"] });
-  const wingNearLift = disabled ? 0 : breath.interpolate({ inputRange: [0, 1], outputRange: [1, -3] });
-  const wingNearRotate = disabled ? "0deg" : breath.interpolate({ inputRange: [0, 1], outputRange: ["-1.5deg", "2deg"] });
-  const wingFarLift = disabled ? 0 : breath.interpolate({ inputRange: [0, 1], outputRange: [0, -2] });
-  const wingFarRotate = disabled ? "0deg" : breath.interpolate({ inputRange: [0, 1], outputRange: ["1deg", "-1.5deg"] });
-  const tailSway = disabled ? 0 : breath.interpolate({ inputRange: [0, 1], outputRange: [-1, 2] });
-  const tailRotate = disabled ? "0deg" : breath.interpolate({ inputRange: [0, 1], outputRange: ["-1.5deg", "2deg"] });
-  const tapHead = disabled ? 0 : bounce.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, -3, 0] });
-  const tapWing = disabled ? 0 : bounce.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, -5, 0] });
-  const tapTail = disabled ? 0 : bounce.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, 4, 0] });
-
-  const overlayOpacity = 0.72;
-
-  return (
-    <View pointerEvents="none" style={styles.layeredFireHatchlingCanvas}>
-      <Animated.Image source={fireHatchlingLayerImages.body} style={styles.layeredFireFullImage} resizeMode="contain" />
-      <Animated.Image source={fireHatchlingLayerImages.wingFar} style={[styles.layeredFireFullImage, { opacity: overlayOpacity, transform: [{ translateY: wingFarLift }, { rotate: wingFarRotate }] }]} resizeMode="contain" />
-      <Animated.Image source={fireHatchlingLayerImages.tail} style={[styles.layeredFireFullImage, { opacity: overlayOpacity, transform: [{ translateX: tailSway }, { translateX: tapTail }, { rotate: tailRotate }] }]} resizeMode="contain" />
-      <Animated.Image source={fireHatchlingLayerImages.wingNear} style={[styles.layeredFireFullImage, { opacity: overlayOpacity, transform: [{ translateY: wingNearLift }, { translateY: tapWing }, { rotate: wingNearRotate }] }]} resizeMode="contain" />
-      <Animated.Image source={fireHatchlingLayerImages.head} style={[styles.layeredFireFullImage, { opacity: overlayOpacity, transform: [{ translateY: headNod }, { translateY: tapHead }, { rotate: headRotate }] }]} resizeMode="contain" />
-    </View>
   );
 }
 
@@ -274,20 +221,7 @@ export default function DragonDisplay({
           ? [{ translateY: -10 }, { scale: 1.08 }]
         : [];
   const showAuraFx = !reducedMotion && !auraDisabled;
-  // Map game DragonStage to art registry stage ('young' = art name for the dragon tier).
-  const artStage: ArtDragonStage =
-    dragonStage === 'egg' ? 'egg' :
-    dragonStage === 'hatchling' ? 'hatchling' :
-    dragonStage === 'drake' ? 'drake' :
-    'young'; // dragon / wyrm both use 'young' art; wyrm gets DragonImage's fallback if no art
-  const useFireSpineFrameDragon =
-    element === "fire" &&
-    behaviorElement === "fire" &&
-    dragonStage === "hatchling" &&
-    !thumbnailMode &&
-    !grayscaleMode &&
-    !isEvolutionSilhouette;
-  const useFireDenHeroTreatment = useFireSpineFrameDragon && !compact;
+  const artStage = gameStageToArtStage(dragonStage);
 
   return (
     <View style={[styles.dragonDisplay, compact && styles.dragonDisplayCompact]}>
@@ -298,8 +232,7 @@ export default function DragonDisplay({
           {(isEvolutionWarmup || isEvolutionSilhouette || isEvolutionReveal) && !reducedMotion ? (
             <GlowPulse color={theme.secondary} duration={1900} minOpacity={0.18} maxOpacity={0.42} style={styles.evolutionWarmGlow} />
           ) : null}
-          {useFireDenHeroTreatment ? <View style={styles.fireDenNestGlow} /> : null}
-          {showAuraFx && !useFireDenHeroTreatment ? (
+          {showAuraFx ? (
             <GlowPulse
               color={theme.primary}
               duration={motionProfile.glowDuration}
@@ -312,8 +245,8 @@ export default function DragonDisplay({
                 anticipationLevel === "excited" && styles.dragonDisplayGlowExcited
               ]}
             />
-          ) : auraDisabled || useFireDenHeroTreatment ? null : <View style={[styles.dragonDisplayGlow, styles.staticDragonGlow, { backgroundColor: theme.primary }]} />}
-          {showAuraFx && !useFireDenHeroTreatment ? <SafeLottie source={auraEffects[element]} autoPlay loop style={styles.dragonAuraEffect} /> : null}
+          ) : auraDisabled ? null : <View style={[styles.dragonDisplayGlow, styles.staticDragonGlow, { backgroundColor: theme.primary }]} />}
+          {showAuraFx ? <SafeLottie source={auraEffects[element]} autoPlay loop style={styles.dragonAuraEffect} /> : null}
           {showEvolutionBurst ? <SafeLottie source={evolutionBurstEffect} autoPlay loop={false} style={styles.evolutionBurstEffect} /> : null}
           {isEvolutionReveal && pathRevealAccent && !reducedMotion ? (
             <View pointerEvents="none" style={styles.evolutionPathAccentLayer}>
@@ -347,7 +280,6 @@ export default function DragonDisplay({
           <Animated.View
             style={[
               styles.dragonDisplaySprite,
-              useFireDenHeroTreatment && styles.fireDenDragonDisplaySprite,
               thumbnailMode && styles.dragonDisplaySpriteValidation,
               compact && !thumbnailMode && styles.dragonDisplaySpriteCompact,
               {
@@ -365,30 +297,18 @@ export default function DragonDisplay({
               }
             ]}
           >
-            {useFireDenHeroTreatment ? (
-              <SafeExpoImage
-                source={approvedFireHatchlingSourceImage}
-                style={styles.dragonDisplayImage}
-                contentFit="contain"
-                transition={180}
-                fallback={<SpineFrameDragon animationId="idle_loop" reducedMotion={reducedMotion || idleFrozen} style={styles.dragonDisplayImage} />}
-              />
-            ) : useFireSpineFrameDragon ? (
-              <SpineFrameDragon animationId="idle_loop" reducedMotion={reducedMotion || idleFrozen} style={styles.dragonDisplayImage} />
-            ) : (
-              <DragonImage
-                element={element}
-                stage={artStage}
-                dragonClass={dragonClass}
-                path={dragonPath}
-                placeholder={dragonSource}
-                style={[
-                  styles.dragonDisplayImage,
-                  grayscaleMode && styles.dragonDisplayImageValidation,
-                  isEvolutionSilhouette && styles.dragonDisplayImageSilhouette,
-                ] as any}
-              />
-            )}
+            <DragonImage
+              element={element}
+              stage={artStage}
+              dragonClass={dragonClass}
+              path={dragonPath}
+              placeholder={dragonSource}
+              style={[
+                styles.dragonDisplayImage,
+                grayscaleMode && styles.dragonDisplayImageValidation,
+                isEvolutionSilhouette && styles.dragonDisplayImageSilhouette,
+              ] as any}
+            />
           </Animated.View>
           {validationEnabled ? <Text style={styles.artValidationBadge}>{getArtValidationBadge(artValidationMode)}</Text> : null}
           {floatingText ? <FloatingText key={floatingTextKey} text={floatingText} color={theme.secondary} /> : null}
@@ -464,22 +384,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     opacity: 0.18,
     position: "absolute"
-  },
-  fireDenNestGlow: {
-    backgroundColor: "rgba(255, 128, 36, 0.22)",
-    borderColor: "rgba(255, 205, 118, 0.3)",
-    borderRadius: 999,
-    borderWidth: 1,
-    bottom: 18,
-    height: 74,
-    position: "absolute",
-    shadowColor: "#fb923c",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.42,
-    shadowRadius: 24,
-    transform: [{ scaleX: 3.1 }],
-    width: 130,
-    zIndex: 2
   },
   dragonAuraEffect: {
     height: 300,
@@ -578,10 +482,6 @@ const styles = StyleSheet.create({
     width: 220,
     zIndex: 5
   },
-  fireDenDragonDisplaySprite: {
-    height: 340,
-    width: 340
-  },
   dragonDisplaySpriteCompact: {
     height: 158,
     width: 158
@@ -625,18 +525,6 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 7
   },
-  layeredFireHatchlingCanvas: {
-    height: "100%",
-    position: "relative",
-    width: "100%"
-  },
-  layeredFireFullImage: {
-    height: "100%",
-    left: 0,
-    position: "absolute",
-    top: 0,
-    width: "100%"
-  },
   floatingText: {
     fontSize: 22,
     fontWeight: "900",
@@ -648,105 +536,4 @@ const styles = StyleSheet.create({
     top: 54,
     zIndex: 8
   },
-  hatchlingFallback: {
-    alignItems: "center",
-    height: "100%",
-    justifyContent: "center",
-    position: "relative",
-    width: "100%"
-  },
-  hatchlingFallbackValidation: {
-    opacity: 0.95
-  },
-  hatchlingFallbackWing: {
-    borderRadius: 28,
-    height: 74,
-    opacity: 0.78,
-    position: "absolute",
-    top: 86,
-    width: 58
-  },
-  hatchlingFallbackWingLeft: {
-    left: 24,
-    transform: [{ rotate: "-26deg" }]
-  },
-  hatchlingFallbackWingRight: {
-    right: 24,
-    transform: [{ rotate: "26deg" }]
-  },
-  hatchlingFallbackBody: {
-    alignItems: "center",
-    borderRadius: 54,
-    height: 112,
-    justifyContent: "center",
-    marginTop: 62,
-    width: 96
-  },
-  hatchlingFallbackBelly: {
-    borderRadius: 36,
-    height: 74,
-    opacity: 0.78,
-    width: 48
-  },
-  hatchlingFallbackHead: {
-    alignItems: "center",
-    borderRadius: 58,
-    height: 100,
-    justifyContent: "center",
-    position: "absolute",
-    top: 30,
-    width: 116
-  },
-  hatchlingFallbackHorn: {
-    borderRadius: 18,
-    height: 38,
-    position: "absolute",
-    top: -16,
-    width: 18
-  },
-  hatchlingFallbackHornLeft: {
-    left: 24,
-    transform: [{ rotate: "-28deg" }]
-  },
-  hatchlingFallbackHornRight: {
-    right: 24,
-    transform: [{ rotate: "28deg" }]
-  },
-  hatchlingFallbackFin: {
-    borderRadius: 20,
-    height: 44,
-    position: "absolute",
-    top: -20,
-    width: 28
-  },
-  hatchlingFallbackCrest: {
-    borderRadius: 18,
-    height: 36,
-    position: "absolute",
-    top: -18,
-    width: 22
-  },
-  hatchlingFallbackEye: {
-    backgroundColor: "#fff8ef",
-    borderRadius: 999,
-    height: 18,
-    position: "absolute",
-    top: 42,
-    width: 18
-  },
-  hatchlingFallbackEyeLeft: {
-    left: 32
-  },
-  hatchlingFallbackEyeRight: {
-    right: 32
-  },
-  hatchlingFallbackTail: {
-    borderRadius: 24,
-    bottom: 22,
-    height: 34,
-    position: "absolute",
-    right: 36,
-    transform: [{ rotate: "-24deg" }],
-    width: 80
-  }
 });
