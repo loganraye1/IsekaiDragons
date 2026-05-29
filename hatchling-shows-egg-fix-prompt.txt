@@ -1,0 +1,27 @@
+Bug: a freshly hatched dragon (stage "hatchling") is showing the EGG image instead of the hatchling art, in both the den (HatchlingJourneyStage -> DragonDisplay) and combat (BattleScreen / AdventureScreen). Investigate the root cause first, report it, then fix. Run npm run typecheck at the end.
+
+INVESTIGATE:
+
+1. Read getDragonArt in src/constants/dragonArt.ts. Report exactly how it builds its lookup key per stage, whether it uses dragonClass and path for the "egg" and "hatchling" stages (which are element-only), and — critically — what it returns when a lookup MISSES (does the fallback chain end at the egg image?).
+
+2. For a dragon at stage "hatchling", report what each of these passes to DragonImage and what source ultimately resolves:
+   - DragonDisplay (as rendered by HatchlingJourneyStage) — element, stage, dragonClass, path, placeholder
+   - BattleScreen.tsx
+   - AdventureScreen.tsx
+
+3. Report what state.dragon.path and any class value are at the hatchling stage (null? a default like "fireGuardian"?). If a class is being derived and passed while stage is hatchling, note whether that makes the hatchling key miss.
+
+4. Confirm the registry's hatchling entries actually point at hatchling art files, not egg files.
+
+FIX (apply the minimal correct fix based on findings):
+
+- getDragonArt must IGNORE dragonClass and path for element-only stages (egg, hatchling) so those keys never miss due to an extraneous class/path.
+- The fallback for a missing dragon lookup must NOT degrade to the egg image. An egg is never a valid stand-in for a hatched dragon. Fallback should resolve toward a valid dragon form (e.g. same element + stage without class/path), and only the "egg" stage should ever return egg art.
+- Do not change gameStageToArtStage's stage mapping or the eggHatchAnimations work.
+
+VERIFY and report:
+- Hatchling renders hatchling art in den, battle, and adventure.
+- Egg stage still renders the egg.
+- Drake still renders the correct class drake.
+
+Run npm run typecheck and report the cause, the fix, and the changed files.

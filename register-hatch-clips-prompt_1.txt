@@ -1,0 +1,19 @@
+Register the egg-hatch animation clips for all five elements. The WebP files have been placed at assets/dragons/{element}/egg-hatch.webp for fire, water, earth, light, and dark.
+
+1. In src/constants/assets.ts, update the existing eggHatchAnimations record so it contains all five elements (it currently only has fire). It should read exactly:
+
+export const eggHatchAnimations: Partial<Record<DragonElement, { source: ImageSourcePropType; durationMs: number }>> = {
+  fire: { source: require("../../assets/dragons/fire/egg-hatch.webp"), durationMs: 5300 },
+  water: { source: require("../../assets/dragons/water/egg-hatch.webp"), durationMs: 5300 },
+  earth: { source: require("../../assets/dragons/earth/egg-hatch.webp"), durationMs: 5300 },
+  light: { source: require("../../assets/dragons/light/egg-hatch.webp"), durationMs: 5300 },
+  dark: { source: require("../../assets/dragons/dark/egg-hatch.webp"), durationMs: 5300 },
+};
+
+Keep the type as Partial<Record<...>> (the safety net for graceful fallback if a file is ever missing).
+
+2. Verify each of the five files actually exists on disk at those paths before relying on them. List any that are missing — a require() to a missing asset crashes the entire Metro bundle, so this must be confirmed.
+
+3. Do NOT change anything else — the hatching playback, full-screen render, duration-timer advance, and shell-split fallback are already wired in EggAwakeningStage.tsx and should stay as-is. Adding the four rows is the only code change.
+
+4. Run npm run typecheck and report what changed and the result of the file-existence check.

@@ -3261,8 +3261,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         activeScreen: "egg",
         eggAnswers: { selectedEgg: action.element },
-        eggTaps: 0,
+        eggTaps: 3,
         currentQuestionIndex: 0,
+        phase: "hatching",
         dragon: {
           ...state.dragon,
           element: action.element,

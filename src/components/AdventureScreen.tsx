@@ -3,6 +3,7 @@ import { Animated, Easing, Image, ImageBackground, Pressable, ScrollView, StyleS
 import { LinearGradient } from "expo-linear-gradient";
 import { adventureNodes, elementTheme, encounters } from "../content";
 import {
+  dragonPathDefinitions,
   dragonSkillDrafts,
   fireStarterAdventureMilestones,
   productiveWorkNowSlices,
@@ -423,6 +424,7 @@ function AdventureJourneyScene({ state, onReturnToDen, focused = false }: { stat
         <DragonImage
             element={element}
             stage={gameStageToArtStage(state.dragon.stage)}
+            dragonClass={state.dragon.path ? dragonPathDefinitions[state.dragon.path].role : undefined}
             style={[styles.adventureDragonSprite, styles.adventureDragonSpriteFacingRight] as any}
             resizeMode="contain"
           />

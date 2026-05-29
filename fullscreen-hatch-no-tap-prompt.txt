@@ -1,0 +1,24 @@
+Change the opening so that selecting an egg goes straight into a full-screen hatch animation, with no tap-to-hatch step. Investigate first, then implement. Run npm run typecheck at the end.
+
+=== PART 1: Remove tap-to-hatch, auto-start the hatch on selection ===
+
+1. Report the current flow:
+   - In game.ts, what selectEgg (~line 3255) and tapEgg (~line 3274) do to state.phase and state.eggTaps.
+   - Does ANYTHING transition state.phase to "question"? If there is a real step between selecting the egg and hatching (e.g. a naming screen or quiz), STOP and report it instead of removing it — do not skip a meaningful phase. If "question" is unused/vestigial in this flow, say so.
+   - In EggAwakeningStage.tsx, how the tappable egg's onPress (tapEgg) and the eggTaps >= 3 -> "hatching" gate currently work.
+
+2. Assuming there is no meaningful step to preserve between selection and hatching: change selectEgg so that confirming an egg sets phase directly to "hatching" (selection immediately begins the hatch). Remove the tap-to-hatch interaction in EggAwakeningStage.tsx — the egg's onPress that calls tapEgg and the eggTaps-based transition to "hatching".
+
+3. Keep it low-risk: leave the eggTaps field and the tapEgg reducer case in place but dormant (do NOT remove persisted state fields or do a save migration). We just stop using taps to trigger the hatch. Remove only the now-dead UI wiring.
+
+=== PART 2: Play the hatch clip full-screen ===
+
+When state.phase === "hatching" && hatchAnim (an element with a clip, currently fire):
+- Render the clip as a FULL-SCREEN layer: absolutely positioned, filling the whole screen, with a solid black background and contentFit="contain" (the square clip centers on black and reads full-bleed). It should sit above/cover the egg-selection UI.
+- Do NOT render any surrounding glow / aura / particle / burst effects around the clip (GlowPulse, ParticleField, EggHatchBurst, etc.) — the clip is self-contained. (This also resolves the redundant-aura issue.)
+
+For the fallback (state.phase === "hatching" with NO clip): keep the existing framed shell-split hatch and its effects exactly as they are today — do not make the fallback full-screen.
+
+The hatch still advances via the existing mechanism (the duration timer for clips / the Animated.parallel for the fallback) -> finishHatching -> intro/journey. Do not change finishHatching, the intro phase, or hasSeenIntro.
+
+Run npm run typecheck and report findings + exactly what changed for both parts.

@@ -834,6 +834,7 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
                 <DragonImage
                   element={element}
                   stage={gameStageToArtStage(state.dragon.stage)}
+                  dragonClass={state.dragon.path ? dragonPathDefinitions[state.dragon.path].role : undefined}
                   style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight] as any}
                   resizeMode="contain"
                 />

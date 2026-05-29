@@ -13,7 +13,11 @@ export const eggImages: Record<DragonElement, ImageSourcePropType> = {
 };
 
 export const eggHatchAnimations: Partial<Record<DragonElement, { source: ImageSourcePropType; durationMs: number }>> = {
-  fire: { source: require("../../assets/dragons/fire/egg-hatch.webp"), durationMs: 5300 }
+  fire: { source: require("../../assets/dragons/fire/egg-hatch.webp"), durationMs: 5300 },
+  water: { source: require("../../assets/dragons/water/egg-hatch.webp"), durationMs: 5300 },
+  earth: { source: require("../../assets/dragons/earth/egg-hatch.webp"), durationMs: 5300 },
+  light: { source: require("../../assets/dragons/light/egg-hatch.webp"), durationMs: 5300 },
+  dark: { source: require("../../assets/dragons/dark/egg-hatch.webp"), durationMs: 5300 },
 };
 
 export const eggCrackStageImages: Record<DragonElement, ImageSourcePropType[]> = {

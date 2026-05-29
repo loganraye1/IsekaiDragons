@@ -1,0 +1,20 @@
+Two independent fixes. Investigate each before changing, and run npm run typecheck at the end. Report what you found and what you changed for each.
+
+=== FIX 1: Wrong dragon shows up in battle / adventure ===
+
+The combat art migration made BattleScreen.tsx (~line 834) and AdventureScreen.tsx (~line 423) render the dragon via DragonImage, but they only pass element and stage. DragonImage needs more identity to pick the right form: drake art is keyed by class, and young-dragon art by class + path.
+
+1. Read how DragonDisplay.tsx calls DragonImage — list every prop it passes (element, stage, dragonClass, path, etc.) and where each value comes from (state.dragon.element / state.dragon.dragonClass / state.dragon.path / etc.).
+2. Read the DragonImage call sites in BattleScreen.tsx and AdventureScreen.tsx and list the props they currently pass.
+3. Confirm what the `element` variable in each of those two files actually resolves to — it must be state.dragon.element, not the enemy's or a matchup element.
+4. Fix: make the BattleScreen and AdventureScreen DragonImage calls pass the SAME identity props that DragonDisplay passes (element, stage via gameStageToArtStage, dragonClass, path), sourced from state.dragon, so all three views resolve the identical dragon. Do not change the fire-hatchling battle special case (battleFireHatchlingImage).
+
+=== FIX 2: Remove the redundant aura around the hatch video ===
+
+In EggAwakeningStage.tsx, during the "hatching" phase when a hatch animation clip is active (state.phase === "hatching" && hatchAnim), the egg's surrounding decorative effects double up with the video (the clip already has its own glow/flame baked in).
+
+1. Report which decorative effects render around the egg in the hatch display area during the "hatching" phase — e.g. GlowPulse, ParticleField, EggHatchBurst, CrackOverlay, or any glow/aura View. Give line numbers.
+2. Fix: suppress the glow/aura/particle/burst effects that visibly surround the egg when a hatch clip is playing (state.phase === "hatching" && hatchAnim). Keep all of them rendering for the fallback path (elements with no clip, which still use the shell-split hatch). The plain SafeExpoImage hatch clip should play with no extra glow/particles layered around it.
+3. Do not remove or alter these effects for the "egg"/"question" phases or for the fallback hatch.
+
+Run npm run typecheck and report findings + changes for both fixes.

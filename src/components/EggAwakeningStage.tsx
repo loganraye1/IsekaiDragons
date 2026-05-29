@@ -172,6 +172,7 @@ export default function EggAwakeningStage({
   const highlightedOriginOption = selectedOriginOption ?? previewOriginOption ?? eggSelectorOptions[0];
   const [loadedEggSelectorImages, setLoadedEggSelectorImages] = useState<Record<string, boolean>>({});
   const nextTapLabel = eggTaps === 0 ? "Tap to wake the shell" : eggTaps === 1 ? "Tap again — the shell is splitting" : "One more tap to hatch";
+  const showHatchClip = state.phase === "hatching" && !!hatchAnim;
   const markEggSelectorImageLoaded = useCallback((id: string) => {
     setLoadedEggSelectorImages((current) => (current[id] ? current : { ...current, [id]: true }));
   }, []);
@@ -275,7 +276,7 @@ export default function EggAwakeningStage({
   return (
     <View style={styles.guidedStage}>
       <View style={styles.eggOnlyScene}>
-        <ParticleField color={theme.secondary} count={12} />
+        {!showHatchClip ? <ParticleField color={theme.secondary} count={12} /> : null}
         <LinearGradient colors={["#07030f", theme.dark, "#020104"]} style={[styles.eggOnlyOverlay, !hasSelectedEgg && styles.eggOnlyOverlayOriginChoice]}>
           <View style={styles.titleScreenHeader}>
             <Text style={styles.kicker}>Isekai Dragons</Text>
@@ -283,34 +284,34 @@ export default function EggAwakeningStage({
           </View>
 
           {hasSelectedEgg ? <View style={styles.eggStageCenter}>
-            <Animated.View style={[styles.energyMoteOrbit, { transform: [{ rotate: rotation }] }]}>
-              <View style={[styles.energyMote, { backgroundColor: theme.primary }]} />
-              <View style={[styles.energyMoteSmall, { backgroundColor: theme.secondary }]} />
-            </Animated.View>
-            <Animated.View style={[styles.energyMoteOrbitAlt, { transform: [{ rotate: reverseRotation }] }]}>
-              <View style={[styles.energyMoteSmall, { backgroundColor: theme.primary }]} />
-              <View style={[styles.energyMote, { backgroundColor: theme.secondary }]} />
-            </Animated.View>
-            <Animated.View pointerEvents="none" style={[styles.hatchFlash, { opacity: flashOpacity, backgroundColor: theme.secondary }]} />
-            <Animated.View pointerEvents="none" style={[styles.shellChargeAura, { opacity: shellChargeOpacity, borderColor: theme.secondary, shadowColor: theme.primary, transform: [{ scale: shellChargeScale }] }]} />
-            <EggHatchBurst progress={hatchBurst} color={theme.secondary} accentColor={theme.primary} />
-            <GlowPulse color={theme.primary} />
-            {hasSelectedEgg ? (
-              <Pressable disabled={state.phase !== "egg" && state.phase !== "question"} onPress={() => dispatch({ type: "tapEgg" })}>
-                <FloatingLayer distance={12} scale={1.055} sway={1.3} duration={1450}>
-                  <Animated.View style={{ opacity: hatchOpacity, transform: [{ translateX: eggShakeX }, { rotate: eggShakeRotate }, { scale: hatchScale }] }}>
-                    <View style={styles.focusEggWrap}>
-                      <Image key={`focus-${focusedElement}-${visibleEggStage}`} source={focusedEggImage} style={styles.focusEggImage} resizeMode="contain" />
-                      <Animated.View pointerEvents="none" style={[styles.shellSurfaceGlow, { opacity: shellChargeOpacity, backgroundColor: theme.secondary }]} />
-                      <CrackOverlay breaking={crack} />
-                    </View>
-                  </Animated.View>
-                </FloatingLayer>
-              </Pressable>
+            {!showHatchClip ? (
+              <>
+                <Animated.View style={[styles.energyMoteOrbit, { transform: [{ rotate: rotation }] }]}>
+                  <View style={[styles.energyMote, { backgroundColor: theme.primary }]} />
+                  <View style={[styles.energyMoteSmall, { backgroundColor: theme.secondary }]} />
+                </Animated.View>
+                <Animated.View style={[styles.energyMoteOrbitAlt, { transform: [{ rotate: reverseRotation }] }]}>
+                  <View style={[styles.energyMoteSmall, { backgroundColor: theme.primary }]} />
+                  <View style={[styles.energyMote, { backgroundColor: theme.secondary }]} />
+                </Animated.View>
+              </>
             ) : null}
-            {state.phase === "hatching" && hatchAnim ? (
-              <SafeExpoImage source={hatchAnim.source} contentFit="contain" style={styles.evolutionHatchling} />
-            ) : (
+            <Animated.View pointerEvents="none" style={[styles.hatchFlash, { opacity: flashOpacity, backgroundColor: theme.secondary }]} />
+            {!showHatchClip ? <Animated.View pointerEvents="none" style={[styles.shellChargeAura, { opacity: shellChargeOpacity, borderColor: theme.secondary, shadowColor: theme.primary, transform: [{ scale: shellChargeScale }] }]} /> : null}
+            <EggHatchBurst progress={hatchBurst} color={theme.secondary} accentColor={theme.primary} />
+            {!showHatchClip ? <GlowPulse color={theme.primary} /> : null}
+            <View>
+              <FloatingLayer distance={12} scale={1.055} sway={1.3} duration={1450}>
+                <Animated.View style={{ opacity: hatchOpacity, transform: [{ translateX: eggShakeX }, { rotate: eggShakeRotate }, { scale: hatchScale }] }}>
+                  <View style={styles.focusEggWrap}>
+                    <Image key={`focus-${focusedElement}-${visibleEggStage}`} source={focusedEggImage} style={styles.focusEggImage} resizeMode="contain" />
+                    <Animated.View pointerEvents="none" style={[styles.shellSurfaceGlow, { opacity: shellChargeOpacity, backgroundColor: theme.secondary }]} />
+                    <CrackOverlay breaking={crack} />
+                  </View>
+                </Animated.View>
+              </FloatingLayer>
+            </View>
+            {!showHatchClip ? (
               <>
                 <Animated.View
                   pointerEvents="none"
@@ -350,7 +351,7 @@ export default function EggAwakeningStage({
                   ]}
                 />
               </>
-            )}
+            ) : null}
           </View> : null}
 
           <View style={[styles.eggStartCard, !hasSelectedEgg && styles.eggStartCardOriginChoice]}>
@@ -484,6 +485,11 @@ export default function EggAwakeningStage({
           </View>
         </LinearGradient>
       </View>
+      {state.phase === "hatching" && hatchAnim ? (
+        <View style={styles.hatchClipFullscreen}>
+          <SafeExpoImage source={hatchAnim.source} contentFit="contain" style={StyleSheet.absoluteFillObject} />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -492,6 +498,10 @@ const styles = StyleSheet.create({
   guidedStage: {
     flex: 1,
     paddingBottom: 16
+  },
+  hatchClipFullscreen: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#000"
   },
   eggOnlyScene: {
     borderRadius: 30,
