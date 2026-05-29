@@ -3,11 +3,10 @@ import { Animated, Easing, Image, ImageBackground, Pressable, StyleSheet, Text, 
 import { LinearGradient } from "expo-linear-gradient";
 import { elementTheme } from "../content";
 import { dragonPathDefinitions, getElementMatchupMultiplier, getNodeKindLabel, getRunCardBoostedStats } from "../game";
-import { battleFireHatchlingImage, enemyImages, sceneImages, type EnemyImageKey } from "../constants/assets";
+import { enemyImages, sceneImages, type EnemyImageKey } from "../constants/assets";
 import DragonImage from "./DragonImage";
 import { gameStageToArtStage } from "../constants/dragonArt";
 import { uiTheme } from "../constants/theme";
-import { SafeExpoImage } from "../ui/SafeMedia";
 import type { AreaId, AdventureNode, BattleResult, DragonElement, DragonPathId, Encounter, GameAction, GameState, ScreenKey, Stats } from "../types";
 
 export function getAutoBattleEnemyImageKey(enemyName: string, areaId: AreaId): EnemyImageKey {
@@ -785,8 +784,7 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
     : exchangeComplete
       ? (battle.won ? "Enemy staggered — press the attack" : "Your dragon is pushed back")
       : activeExchange?.label ?? "Fight starts — your dragon advances";
-  const useFireBattleHeroImage = element === "fire" && state.dragon.stage === "hatchling";
-  const enemyDamageBadgeText = activeExchange?.playerDamage ? `HIT -${activeExchange.playerDamage}` : null;
+const enemyDamageBadgeText = activeExchange?.playerDamage ? `HIT -${activeExchange.playerDamage}` : null;
   const dragonDamageBadgeText = activeExchange?.enemyDamage ? `HURT -${activeExchange.enemyDamage}` : null;
   const dragonExchangeSummary = activeExchange?.playerDamage
     ? `Dragon hit: -${activeExchange.playerDamage} enemy HP`
@@ -828,17 +826,13 @@ export default function BattleScreen({ state, dispatch }: { state: GameState; di
           <Animated.View style={[styles.battleArenaCombatants, !exchangeComplete && { transform: [{ translateX: battleArenaShake }] }]}>
             <Animated.View style={[styles.battleDragonSide, !exchangeComplete && { transform: [{ translateX: dragonSideMotion }, { scale: hitPauseScale }] }]}>
               <View style={[styles.battleDragonAura, { borderColor: theme.primary, backgroundColor: `${theme.primary}33` }]} />
-              {useFireBattleHeroImage ? (
-                <SafeExpoImage source={battleFireHatchlingImage} style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight]} contentFit="contain" />
-              ) : (
-                <DragonImage
+              <DragonImage
                   element={element}
                   stage={gameStageToArtStage(state.dragon.stage)}
                   dragonClass={state.dragon.path ? dragonPathDefinitions[state.dragon.path].role : undefined}
                   style={[styles.battleDragonHeroSprite, styles.battleDragonFacingRight] as any}
                   resizeMode="contain"
                 />
-              )}
               {dragonAttackActive ? <Animated.View style={[styles.battleImpactSlash, styles.battleDragonProjectile, { opacity: hitFlashOpacity }]} /> : null}
               {activeExchange ? <Animated.View style={[styles.battleImpactRing, styles.battleImpactRingDragon, { opacity: hitFlashOpacity, transform: [{ scale: damageFloatScale }] }]} /> : null}
               {enemyAttackActive ? <Animated.View style={[styles.battleImpactSpark, styles.battleImpactSparkDragon, { opacity: hitFlashOpacity }]} /> : null}

@@ -1,0 +1,17 @@
+Combat is still showing the old fire-hatchling battle sprite instead of the registry art. Investigate, then remove the special case so all elements render the same way in battle. Run npm run typecheck at the end.
+
+INVESTIGATE:
+1. In BattleScreen.tsx around line 830, report the condition that gates the fire-hatchling special case (likely a variable like useFireBattleHeroImage) — what exactly makes it true (element === 'fire' and stage hatchling?), and what battleFireHatchlingImage resolves to.
+2. Confirm that the non-special-case branch already renders via DragonImage (the registry) for all other elements/stages, and that for fire it WOULD resolve to the real registry fire art if the special case were removed.
+
+FIX:
+3. Remove the fire-hatchling battle special case entirely: delete the useFireBattleHeroImage conditional branch so EVERY element/stage — including fire — renders through the single DragonImage call (element, stage via gameStageToArtStage, dragonClass). The result should be one unconditional DragonImage render for the player's dragon, no element-specific branch.
+4. Remove the now-unused battleFireHatchlingImage import (and the useFireBattleHeroImage variable) from BattleScreen.tsx if nothing else references them — check first.
+5. Do NOT change enemy sprites, scene backgrounds, or the AdventureScreen dragon (it already has no special case).
+
+VERIFY and report:
+- Fire in battle now shows the registry fire dragon (hatchling/drake per stage), matching the den.
+- Other elements unchanged.
+- Report exactly what was removed and which imports/variables you deleted.
+
+Run npm run typecheck and report.
